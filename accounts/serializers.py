@@ -18,7 +18,4 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         if user and not user.is_active:
             user.delete()
 
-        if User.objects.filter(email=attrs['email']).exists():
-            raise serializers.ValidationError({'email': 'این ایمیل قبلاً ثبت شده است.'})
-
         return attrs

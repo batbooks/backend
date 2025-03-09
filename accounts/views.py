@@ -14,13 +14,7 @@ class RegisterView(APIView):
         ser_data.validate(request.data)
         if ser_data.is_valid(raise_exception=True):
             otp_code = random.randint(100000, 999999)
-            send_mail(
-                'کد تأیید ثبت‌نام',
-                f' کد تأیید شما: {otp_code} ',
-                settings.EMAIL_HOST_USER,
-                [request.data['email']],
-                fail_silently=False,
-            )
+
             user = User.objects.filter(email=request.data['email'])
             if user.exists():
                 if user.first().is_active:
@@ -29,6 +23,13 @@ class RegisterView(APIView):
             else:
                 user = User.objects.create_user(email=request.data['email'], password=request.data['password'])
             OTP.objects.get_or_create(user=user, code=otp_code)
+            send_mail(
+                'کد تأیید ثبت‌نام',
+                f' کد تأیید شما: {otp_code} ',
+                settings.EMAIL_HOST_USER,
+                [request.data['email']],
+                fail_silently=False,
+            )
             return Response({'stat': 'success', }, status=status.HTTP_200_OK)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
