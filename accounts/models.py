@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from .manager import UserManager
-
+import random
 class User(AbstractBaseUser):
     email = models.EmailField(max_length=320, unique=True)
     name = models.CharField(max_length=255)
@@ -31,3 +31,12 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+
+class OTP(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def generate_otp(self):
+        return str(random.randint(100000, 999999))
