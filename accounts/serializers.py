@@ -1,12 +1,24 @@
 from rest_framework import serializers
 from .models import User
 
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     c_password = serializers.CharField(write_only=True)
+
     class Meta:
+
         model = User
-        fields= ['email', 'password','c_password']
+        fields = ['email', 'password', 'c_password']
         extra_kwargs = {
-            'password':{'write_only':True}
+            'password': {'write_only': True}
         }
 
+    def validate(self, attrs):
+        user = User.objects.filter(email=attrs['email']).first()
+        if user and not user.is_active:
+            user.delete()
+
+        if User.objects.filter(email=attrs['email']).exists():
+            raise serializers.ValidationError({'email': 'این ایمیل قبلاً ثبت شده است.'})
+
+        return attrs
