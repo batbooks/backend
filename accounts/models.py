@@ -7,6 +7,7 @@ class User(AbstractBaseUser):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    joined_date = models.DateTimeField(auto_now_add=True)
 
     objects = UserManager()
     USERNAME_FIELD = 'email'
@@ -20,10 +21,12 @@ class User(AbstractBaseUser):
     def has_module_perms(self, perms):
         return True
 
-    def save(self, *args, **kwargs):
-        email_split = self.email.split('@')
+
+    def set_name(self,email):
+        email_split = email.split('@')
         self.name = email_split[0] + '.' + email_split[1][0]
-        super().save(*args, **kwargs)
+
+
 
     @property
     def is_staff(self):

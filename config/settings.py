@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+from datetime import timedelta
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,13 +42,15 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     'accounts.apps.AccountsConfig',
+    'home.apps.HomeConfig',
 ]
 
 # Third party apps
 
 INSTALLED_APPS += [
     'rest_framework',
-    'debug_toolbar'
+    'debug_toolbar',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -119,7 +122,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
@@ -135,6 +138,20 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+
+
+# EMAIL
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = #password associated with above email-id (not the regular password)
+
+
+
 # DEBUG TOOLBAR
 
 INTERNAL_IPS = [
@@ -142,3 +159,19 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
+# REST_FRAMEWORK
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+
+}
+
+# SIMPLE JWT
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}

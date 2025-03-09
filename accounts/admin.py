@@ -6,6 +6,7 @@ from django.contrib.auth.models import Group
 
 
 class UserAdmin(BaseUserAdmin):
+    readonly_fields = ['joined_date']
     form = UserChangeForm
     add_form = UserCreationForm
 
@@ -15,7 +16,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {
             "fields": ['email', 'password'],
         }), (
-            "Personal Info", {"fields": ['name', 'last_login']}
+            "Personal Info", {"fields": ['name', 'last_login','joined_date']}
         ),
         ("Permissions", {"fields": ["is_admin"]}),
 
@@ -23,7 +24,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = [
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password')
+            'fields': ('email', 'password1', 'password2')
 
         })
     ]

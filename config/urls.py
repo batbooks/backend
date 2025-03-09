@@ -20,7 +20,8 @@ from debug_toolbar.toolbar import debug_toolbar_urls
 from django.conf import settings
 urlpatterns = ([
     path('admin/', admin.site.urls),
-    path('/auth/',include('accounts.urls')),
+    path('auth/',include('accounts.urls')),
+    path('',include('home.urls')),
 ] )
 
 if settings.DEBUG:

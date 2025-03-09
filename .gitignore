@@ -1,5 +1,10 @@
 .idea/
 */migrations/
 */__pycache__/
+/home
 
+
+
+
+.env
 db.sqlite3
