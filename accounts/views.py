@@ -22,7 +22,8 @@ class RegisterView(APIView):
                 return Response({'error': 'Email already registered'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 user = User.objects.create_user(email=request.data['email'], password=request.data['password'])
-            OTP.objects.get_or_create(user=user, code=otp_code)
+            otp , created = OTP.objects.get_or_create(user=user, code=otp_code)
+            print(created)
             send_mail(
                 'کد تأیید ثبت ‌نام',
                 f' کد تأیید شما: {otp_code} ',
@@ -43,7 +44,7 @@ class VerifyOTPView(APIView):
                 user.is_active = True
                 user.save()
                 otp.delete()
-                return Response({'message': 'register is successful'}, status=status.HTTP_201_CREATED)
+                return Response({'message': 'OTP is Correct'}, status=status.HTTP_201_CREATED)
             return Response({'error': 'OTP not found'}, status=status.HTTP_404_NOT_FOUND)
         except OTP.DoesNotExist:
             return Response({'error': 'OTP not found'}, status=status.HTTP_404_NOT_FOUND)
