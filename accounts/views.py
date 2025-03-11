@@ -24,13 +24,13 @@ class RegisterView(APIView):
                 user = User.objects.create_user(email=request.data['email'], password=request.data['password'])
             OTP.objects.get_or_create(user=user, code=otp_code)
             send_mail(
-                'کد تأیید ثبت‌نام',
+                'کد تأیید ثبت ‌نام',
                 f' کد تأیید شما: {otp_code} ',
                 settings.EMAIL_HOST_USER,
                 [request.data['email']],
                 fail_silently=False,
             )
-            return Response({'stat': 'success', }, status=status.HTTP_200_OK)
+            return Response({'message': 'success', }, status=status.HTTP_200_OK)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -44,6 +44,6 @@ class VerifyOTPView(APIView):
                 user.save()
                 otp.delete()
                 return Response({'message': 'register is successful'}, status=status.HTTP_201_CREATED)
-            return Response({'error': 'OTP یافت نشد'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'OTP not found'}, status=status.HTTP_404_NOT_FOUND)
         except OTP.DoesNotExist:
-            return Response({'error': 'OTP یافت نشد'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'OTP not found'}, status=status.HTTP_404_NOT_FOUND)
