@@ -16,13 +16,7 @@ class RegisterView(APIView):
         if ser_data.is_valid(raise_exception=True):
             otp_code = random.randint(100000, 999999)
 
-            user = User.objects.filter(email=request.data['email'])
-            if user.exists():
-                if user.first().is_active:
-                    user.filter().delete()
-                return Response({'error': 'Email already registered'}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                user = User.objects.create_user(email=request.data['email'], password=request.data['password'])
+            user = User.objects.create_user(email=request.data['email'], password=request.data['password'])
             otp , created = OTP.objects.get_or_create(user=user, code=otp_code)
             print(created)
             send_mail(
@@ -83,26 +77,27 @@ class SendOTPResetView(APIView):
 
 class VerifyOTPAndResetPasswordView(APIView):
     def post(self, request):
-        serializer = ResetPasswordSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        ser_data = ResetPasswordSerializer(data=request.data)
+        ser_data.validate(request.data)
+        if ser_data.is_valid(raise_exception=True):
+            email = request.data['email']
+            code = request.data['code']
+            new_password = request.data['new_password']
+            new_password_conf = request.data['new_password_conf']
 
-        email = serializer.validated_data['email']
-        code = serializer.validated_data['code']
-        new_password = serializer.validated_data['new_password']
-        new_password_conf = serializer.validated_data['new_password_conf']
+            try:
+                # Verify the OTP matches the user's email
+                otp = OTP.objects.get(user__email=email, code=code)
+            except OTP.DoesNotExist:
+                return Response({'error': 'Invalid OTP or email'}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            # Verify the OTP matches the user's email
-            otp = OTP.objects.get(user__email=email, code=code)
-        except OTP.DoesNotExist:
-            return Response({'error': 'Invalid OTP or email'}, status=status.HTTP_400_BAD_REQUEST)
+            # Update the user's password
+            user = otp.user
+            user.password = make_password(new_password)
+            user.save()
 
-        # Update the user's password
-        user = otp.user
-        user.password = make_password(new_password)
-        user.save()
+            # Delete the OTP to prevent reuse
+            otp.delete()
 
-        # Delete the OTP to prevent reuse
-        otp.delete()
-
-        return Response({'message': 'Password has been reset successfully'}, status=status.HTTP_200_OK)
+            return Response({'message': 'Password has been reset successfully'}, status=status.HTTP_200_OK)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
