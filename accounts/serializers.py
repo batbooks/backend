@@ -27,3 +27,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             user.delete()
 
         return attrs
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.IntegerField()
+    new_password = serializers.CharField(write_only=True)
