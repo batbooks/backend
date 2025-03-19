@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import User
 
 # Create your models here.
 
@@ -19,6 +20,7 @@ class Book(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     rating = models.DecimalField(max_digits=2,decimal_places=1)
     status = models.CharField(choices=STATUS_CHOICE,max_length=256)
+    Author = models.ForeignKey(User,on_delete=models.PROTECT)
 
     class Meta:
         ordering = ['rating', 'name']
