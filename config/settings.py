@@ -47,6 +47,7 @@ INSTALLED_APPS += [
     'accounts.apps.AccountsConfig',
     'home.apps.HomeConfig',
     'book.apps.BookConfig'
+    'user_info.apps.UserInfoConfig',
 ]
 
 # Third party apps
