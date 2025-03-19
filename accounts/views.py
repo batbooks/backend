@@ -1,14 +1,22 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import *
+from .serializers import UserReadSerializer,ResetPasswordSerializer,UserRegisterSerializer
 from .models import User, OTP
 from rest_framework import status
 from django.core.mail import send_mail
 from django.conf import settings
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
 import random
 
-
+class UserView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request:Request):
+        print('hello')
+        user = request.user
+        ser_data = UserReadSerializer(instance = user)
+        return Response(ser_data.data, status=status.HTTP_200_OK)
 class RegisterView(APIView):
     def post(self, request):
         ser_data = UserRegisterSerializer(data=request.data)
@@ -101,3 +109,5 @@ class VerifyOTPAndResetPasswordView(APIView):
 
             return Response({'message': 'Password has been reset successfully'}, status=status.HTTP_200_OK)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

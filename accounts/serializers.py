@@ -2,6 +2,12 @@ from rest_framework import serializers
 from .models import User
 
 
+class UserReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'name']
+
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     c_password = serializers.CharField(write_only=True)
 
@@ -28,6 +34,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         return attrs
 
+
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
     code = serializers.IntegerField()
@@ -46,4 +53,3 @@ class ResetPasswordSerializer(serializers.Serializer):
         user = User.objects.filter(email=attrs['email']).first()
 
         return attrs
-

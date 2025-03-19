@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from .manager import UserManager
 
+
 class User(AbstractBaseUser):
     email = models.EmailField(max_length=320, unique=True)
     name = models.CharField(max_length=255)
@@ -21,12 +22,9 @@ class User(AbstractBaseUser):
     def has_module_perms(self, perms):
         return True
 
-
-    def set_name(self,email):
+    def set_name(self, email):
         email_split = email.split('@')
         self.name = email_split[0] + '.' + email_split[1][0]
-
-
 
     @property
     def is_staff(self):
