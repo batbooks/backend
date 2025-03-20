@@ -36,7 +36,7 @@ class Chapter(models.Model):
     title = models.CharField(max_length=256)
     book = models.ForeignKey(Book,on_delete=models.CASCADE,related_name='chapters')
     body = models.TextField()
-    is_active = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

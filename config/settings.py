@@ -48,6 +48,7 @@ INSTALLED_APPS += [
     'home.apps.HomeConfig',
     'book.apps.BookConfig',
     'user_info.apps.UserInfoConfig',
+    'comments.apps.CommentsConfig',
 ]
 
 # Third party apps
@@ -161,7 +162,7 @@ INTERNAL_IPS = [
 
 REST_FRAMEWORK = {
 
-'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 
