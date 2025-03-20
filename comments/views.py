@@ -1,13 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
 from book.models import Chapter
 from .serializers import CommentSerializer,ReplyCommentSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models import Comment
 from django.shortcuts import get_object_or_404
-
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 class CommentCreateAPIView(APIView):
@@ -63,10 +62,21 @@ class CommentReplyAPIView(APIView):
             return Response(ser_data.data, status=status.HTTP_201_CREATED)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CustomPagination(PageNumberPagination):
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'results': data
+        })
 class CommentChapterAPIView(APIView):
-
     def get(self, request, chapter_id):
         chapter = get_object_or_404(Chapter, pk=chapter_id)
         comments = Comment.objects.filter(chapter=chapter)
-        ser_data = CommentSerializer(comments, many=True)
-        return Response(ser_data.data, status=status.HTTP_200_OK)
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(comments,request)
+        ser_data = CommentSerializer(page, many=True)
+        return paginator.get_paginated_response(ser_data.data)
