@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Book
+from .models import Book , Chapter
 
 User = get_user_model()
 
@@ -35,3 +35,21 @@ class BookGetSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
 
 
+
+class ChapterGetSerializer(serializers.ModelSerializer):
+    book = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    Author = serializers.SerializerMethodField()
+    class Meta:
+        model = Chapter
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at','book']
+
+    def get_Author(self, obj):
+        return obj.book.Author.name
+
+
+class ChapterCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Chapter
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at']
