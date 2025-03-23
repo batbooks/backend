@@ -27,3 +27,18 @@ class BookIsOwnerOrReadOnly(BasePermission):
             return True
 
         return obj.Author == request.user
+
+
+class ChapterIsOwnerOrReadOnly(BasePermission):
+    message = 'You are not Author of this chapter'
+
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        return request.user.is_authenticated and request.user
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+
+        return obj.book.Author == request.user
