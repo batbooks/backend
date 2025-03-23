@@ -16,7 +16,8 @@ class BookAdmin(admin.ModelAdmin):
         link = reverse("admin:book_book_change", args=[obj.book.id])  # model name has to be lowercase
         return mark_safe(f'<a href="{link}">{escape(obj.book.__str__())}</a>')
 
+
     Book_link.allow_tags = True
-    list_display = ['title','show_body','is_approved','updated_at','Book_link']
+    list_display = ['title','show_body','is_approved','updated_at','Book_link',]
     filter_horizontal = ()
     list_filter = ['is_approved']

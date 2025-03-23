@@ -5,8 +5,8 @@ from book.models import Chapter
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='comments')
-    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='u_comments')
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='c_comments')
     reply = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name='replies', blank=True, null=True)
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
