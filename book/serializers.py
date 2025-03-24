@@ -10,7 +10,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author',]
+        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author','image']
         read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
 
     def validate_name(self, value):
