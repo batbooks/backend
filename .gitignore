@@ -4,5 +4,6 @@
 __pycache__
 */fixtures
 media/
+
 .env
 db.sqlite3
