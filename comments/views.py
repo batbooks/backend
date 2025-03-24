@@ -88,3 +88,13 @@ class CommentChapterAPIView(APIView):
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
         return paginator.get_paginated_response(ser_data.data)
+
+
+class CommentGetAllReplyAPIView(APIView):
+    def get(self, request, comment_id):
+        comments = Comment.objects.prefetch_related('replies', 'replies__like', 'replies__dislike').get(
+            pk=comment_id).replies.all()
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(comments, request)
+        ser_data = CommentSerializer(page, many=True)
+        return paginator.get_paginated_response(ser_data.data)

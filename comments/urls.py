@@ -6,4 +6,5 @@ urlpatterns =[
     path('dislike/<int:comment_id>/',views.CommentDisLikeAPIView.as_view(),name='comment-dislike'),
     path('reply_to/<int:comment_id>/',views.CommentReplyAPIView.as_view(),name='comment-reply'),
     path('chapter/<int:chapter_id>/',views.CommentChapterAPIView.as_view(),name='comment-chapter'),
+    path('comment/<int:comment_id>/',views.CommentGetAllReplyAPIView.as_view(),name='comment-chapter'),
 ]
