@@ -13,7 +13,7 @@ import random
 class UserView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request:Request):
-        print('hello')
+
         user = request.user
         ser_data = UserReadSerializer(instance = user)
         return Response(ser_data.data, status=status.HTTP_200_OK)
@@ -26,7 +26,6 @@ class RegisterView(APIView):
 
             user = User.objects.create_user(email=request.data['email'], password=request.data['password'])
             otp , created = OTP.objects.get_or_create(user=user, code=otp_code)
-            print(created)
             send_mail(
                 'کد تأیید ثبت ‌نام',
                 f' کد تأیید شما: {otp_code} ',
