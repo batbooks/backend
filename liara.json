@@ -1,0 +1,9 @@
+{
+  "app": "batbooks",
+  "port": 80,
+  "team-id": "67d96bb7a536dd80b0bd8cd1",
+  "build": {
+    "location": "iran"
+  },
+  "disks": []
+}
