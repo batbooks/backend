@@ -28,7 +28,7 @@ class CommentLikeAPIView(APIView):
         comment = get_object_or_404(Comment, pk=comment_id)
         user = request.user
         if user in comment.dislike.all():
-            return Response({"error": 'you are dislike this comment'}, status=status.HTTP_400_BAD_REQUEST)
+            comment.dislike.remove(user)
         if user in comment.like.all():
             comment.like.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -44,7 +44,7 @@ class CommentDisLikeAPIView(APIView):
         user = request.user
 
         if user in comment.like.all():
-            return Response({"error": 'you are like this comment'}, status=status.HTTP_400_BAD_REQUEST)
+            comment.like.remove(user)
 
         if user in comment.dislike.all():
             comment.dislike.remove(user)
@@ -58,14 +58,17 @@ class CommentReplyAPIView(APIView):
 
     def post(self, request, comment_id):
         reply_to_comment = get_object_or_404(Comment, pk=comment_id)
-        if not reply_to_comment.reply:
-            ser_data = ReplyCommentSerializer(data=request.data)
-            if ser_data.is_valid():
-                ser_data.save(user=request.user, reply=reply_to_comment, chapter=reply_to_comment.chapter)
-                return Response(ser_data.data, status=status.HTTP_201_CREATED)
+        ser_data = ReplyCommentSerializer(data=request.data)
+        if ser_data.is_valid():
+            if not reply_to_comment.reply:
+                ser_data.save(user=request.user, reply=reply_to_comment, chapter=reply_to_comment.chapter,
+                              tag=reply_to_comment.user)
+            else:
+                ser_data.save(user=request.user, reply=reply_to_comment.reply, chapter=reply_to_comment.chapter,
+                              tag=reply_to_comment.user)
+            return Response(ser_data.data, status=status.HTTP_201_CREATED)
 
-            return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"error":'parent comment have got reply to'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomPagination(PageNumberPagination):
