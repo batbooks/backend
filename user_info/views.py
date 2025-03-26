@@ -7,8 +7,9 @@ from permissions import IsOwnerOrReadOnly
 from .models import UserInfo
 from .serializers import UserInfoSerializer
 import string
-
-
+from accounts.serializers import UserReadSerializer
+from django.db.models import Q
+from paginations import  CustomPagination
 class UserInfoView(APIView):
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
@@ -64,3 +65,16 @@ class UserInfoUpdateView(APIView):
                 return Response(ser_data.data, status=status.HTTP_200_OK)
             return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'id is not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class SearchUserView(APIView):
+    def setup(self, request, *args, **kwargs):
+        self.user_model = get_user_model()
+        super().setup(request, *args, **kwargs)
+
+    def get(self, request, user_name):
+        users = self.user_model.objects.filter(Q(name__icontains=user_name)&Q(is_admin=False))
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(users,request)
+        data = UserReadSerializer(page, context={"hide_field": ['email']}, many=True).data
+        return paginator.get_paginated_response(data)

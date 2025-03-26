@@ -25,7 +25,7 @@ urlpatterns = ([
     path('auth/',include('accounts.urls')),
     path('',include('home.urls')),
     path('book/',include('book.urls')),
-    path('user/info/',include('user_info.urls')),
+    path('user/',include('user_info.urls')),
     path('comments/',include('comments.urls')),
 ] )
 

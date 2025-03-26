@@ -6,7 +6,7 @@ from .serializers import CommentSerializer, ReplyCommentSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models import Comment
 from django.shortcuts import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
+from paginations import CustomPagination
 
 
 # Create your views here.
@@ -71,16 +71,7 @@ class CommentReplyAPIView(APIView):
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomPagination(PageNumberPagination):
-    def get_paginated_response(self, data):
-        return Response({
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get_previous_link()
-            },
-            'count': self.page.paginator.count,
-            'results': data
-        })
+
 
 
 class CommentChapterAPIView(APIView):

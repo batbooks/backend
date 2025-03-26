@@ -39,7 +39,7 @@ class BookAllGetSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
 
 
-class BookGetSerializer(serializers.ModelSerializer):
+class BookGetAllSerializer(serializers.ModelSerializer):
     Author = serializers.SlugRelatedField(slug_field='name', read_only=True)
     chapters = serializers.SerializerMethodField()
 
@@ -52,6 +52,14 @@ class BookGetSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author', 'chapters','image']
         read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
 
+
+class BookGetSerializer(serializers.ModelSerializer):
+    Author = serializers.SlugRelatedField(slug_field='name', read_only=True)
+
+    class Meta:
+        model = Book
+        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author','image']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
 
 class ChapterGetSerializer(serializers.ModelSerializer):
     book = serializers.SlugRelatedField(slug_field='name', read_only=True)
