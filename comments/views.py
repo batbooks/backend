@@ -1,12 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from book.models import Chapter
-from .serializers import CommentSerializer, ReplyCommentSerializer
+from book.models import Chapter,Book
+from .serializers import CommentSerializer, ReplyCommentSerializer,ReviewSerializer
 from rest_framework.permissions import IsAuthenticated
-from .models import Comment
+from .models import Comment,Review
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
+from django.db.models import Case, When, Value, IntegerField
 
 
 # Create your views here.
@@ -92,3 +93,61 @@ class CommentGetAllReplyAPIView(APIView):
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
         return paginator.get_paginated_response(ser_data.data)
+
+
+class ReviewCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, pk=book_id)
+        existing_review = Review.objects.filter(user=request.user, book=book).first()
+
+        if existing_review:
+            return Response(
+                {"error": "You have already reviewed this book. Please update your existing review."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, book=book)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReviewListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, book_id):
+        book = get_object_or_404(Book, pk=book_id)
+
+        reviews = Review.objects.filter(book=book).annotate(
+            priority=Case(When(user=request.user, then=Value(0)),default=Value(1),output_field=IntegerField())).order_by('priority', '-created')
+
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(reviews, request)
+        serializer = ReviewSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class ReviewUpdateDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, book_id):
+        book = get_object_or_404(Book, pk=book_id)
+        review = get_object_or_404(Review, user=request.user, book=book)
+
+        serializer = ReviewSerializer(review, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, book_id):
+        book = get_object_or_404(Book, pk=book_id)
+        review = get_object_or_404(Review, user=request.user, book=book)
+        review.delete()
+        return Response({"message": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+

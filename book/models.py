@@ -1,5 +1,8 @@
 from django.db import models
 from accounts.models import User
+from django.db.models import Avg
+
+
 
 # Create your models here.
 
@@ -32,6 +35,8 @@ class Book(models.Model):
 
 
 
+
+
 class Chapter(models.Model):
 
     title = models.CharField(max_length=256)
@@ -46,8 +51,11 @@ class Chapter(models.Model):
 
     def show_body(self):
         return self.body[:30]
+
     def __str__(self):
         return self.title
+
+
 
 
 
