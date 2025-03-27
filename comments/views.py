@@ -71,13 +71,11 @@ class CommentReplyAPIView(APIView):
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
 class CommentChapterAPIView(APIView):
     def get(self, request, chapter_id):
-        comments = Chapter.objects.prefetch_related('c_comments', 'c_comments__like', 'c_comments__dislike').get(
-            pk=chapter_id).c_comments.all()
+        comments = Chapter.objects.prefetch_related('ch_comments_comment', 'ch_comments_comment__like',
+                                                    'ch_comments_comment__dislike').get(
+            pk=chapter_id).ch_comments_comment.all()
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
