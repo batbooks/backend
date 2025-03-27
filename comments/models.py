@@ -3,9 +3,10 @@ from django.contrib.auth import get_user_model
 
 from book.models import Chapter,Book
 
+
 class CommentAbstract(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='u_%(app_label)s_%(class)s')
-    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='ch_%(app_label)s_%(class)s')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='u_comments')
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='c_comments')
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     like = models.ManyToManyField(get_user_model(), related_name='likes', blank=True)
