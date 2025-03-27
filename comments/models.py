@@ -12,8 +12,10 @@ class CommentAbstract(models.Model):
     like = models.ManyToManyField(get_user_model(), related_name='%(app_label)s_%(class)s_likes', blank=True)
     dislike = models.ManyToManyField(get_user_model(), related_name='%(app_label)s_%(class)s_dislikes', blank=True)
 
+
     class Meta:
         abstract = True
+        ordering = ['-created']
 
     def like_counter(self):
         return self.like.all().count()
@@ -36,10 +38,10 @@ class Comment(CommentAbstract):
 class Review(CommentAbstract):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
     rating = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)], null=True, blank=True)
-    last_read_chapter = models.ForeignKey(Chapter, on_delete=models.SET_NULL, null=True, blank=True, related_name='last_read_by')
 
     class Meta:
         unique_together = ('user', 'book')
+
 
     def __str__(self):
         return f"{self.user.name} - {self.book.name} ({self.rating})"

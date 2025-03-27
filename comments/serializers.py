@@ -24,8 +24,8 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
 
-    last_read_chapter = serializers.PrimaryKeyRelatedField(queryset=Chapter.objects.all(), allow_null=True, required=False)
+
     class Meta:
         model = Review
-        fields = ['id', 'user', 'book', 'rating', 'body', 'created']
+        fields = '__all__'
         read_only_fields = ['user','book']

@@ -94,9 +94,10 @@ class CommentGetAllReplyAPIView(APIView):
 
 
 class ReviewCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, book_id):
+        print(request.data)
         book = get_object_or_404(Book, pk=book_id)
         existing_review = Review.objects.filter(user=request.user, book=book).first()
 
@@ -107,6 +108,7 @@ class ReviewCreateAPIView(APIView):
             )
 
         serializer = ReviewSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save(user=request.user, book=book)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -115,7 +117,7 @@ class ReviewCreateAPIView(APIView):
 
 
 class ReviewListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, book_id):
         book = get_object_or_404(Book, pk=book_id)
@@ -130,7 +132,7 @@ class ReviewListAPIView(APIView):
 
 
 class ReviewUpdateDeleteAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def put(self, request, book_id):
         book = get_object_or_404(Book, pk=book_id)
@@ -148,4 +150,39 @@ class ReviewUpdateDeleteAPIView(APIView):
         review = get_object_or_404(Review, user=request.user, book=book)
         review.delete()
         return Response({"message": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+class ReviewLikeAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, review_id):
+        review = get_object_or_404(Review, pk=review_id)
+        user = request.user
+        if user in review.dislike.all():
+            review.dislike.remove(user)
+        if user in review.like.all():
+            review.like.remove(user)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        review.like.add(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ReviewDisLikeAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, review_id):
+        review = get_object_or_404(Review, pk=review_id)
+        user = request.user
+
+        if user in review.like.all():
+            review.like.remove(user)
+
+        if user in review.dislike.all():
+            review.dislike.remove(user)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        review.dislike.add(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
