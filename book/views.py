@@ -82,6 +82,9 @@ class ChapterCreateAPIView(APIView):
 
 class BookSearchAPIView(APIView):
     def get(self, request,book_name):
+        book_name = book_name.strip()
+        if len(book_name) < 3:
+            return Response({"error": 'book name must be greater than 3 letter'}, status=status.HTTP_400_BAD_REQUEST)
         books = Book.objects.filter(name__icontains=book_name)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(books, request)

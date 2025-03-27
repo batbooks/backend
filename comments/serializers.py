@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from book.models import Chapter
 from .models import Comment,Review
 
 
@@ -19,7 +18,9 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {
             'chapter':{'read_only':True},
+            'user': {'read_only': True},
         }
+
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -29,3 +30,5 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = '__all__'
         read_only_fields = ['user','book']
+
+
