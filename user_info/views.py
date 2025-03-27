@@ -73,6 +73,9 @@ class SearchUserView(APIView):
         super().setup(request, *args, **kwargs)
 
     def get(self, request, user_name):
+        user_name = user_name.strip()
+        if len(user_name) < 3:
+            return Response({"error":'username must be greater than 3 letter'}, status=status.HTTP_400_BAD_REQUEST)
         users = self.user_model.objects.filter(Q(name__icontains=user_name)&Q(is_admin=False))
         paginator = CustomPagination()
         page = paginator.paginate_queryset(users,request)

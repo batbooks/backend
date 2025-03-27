@@ -19,4 +19,5 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {
             'chapter':{'read_only':True},
+            'user':{'read_only':True},
         }
