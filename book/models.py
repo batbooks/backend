@@ -33,6 +33,10 @@ class Book(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def average_rating(self):
+        # The 'reviews' is the reverse relation to the Book model in Review
+        return self.reviews.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
 
 
 
