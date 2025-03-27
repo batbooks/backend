@@ -9,8 +9,8 @@ class CommentAbstract(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='ch_%(app_label)s_%(class)s')
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
-    like = models.ManyToManyField(get_user_model(), related_name='likes', blank=True)
-    dislike = models.ManyToManyField(get_user_model(), related_name='dislikes', blank=True)
+    like = models.ManyToManyField(get_user_model(), related_name='%(app_label)s_%(class)s_likes', blank=True)
+    dislike = models.ManyToManyField(get_user_model(), related_name='%(app_label)s_%(class)s_dislikes', blank=True)
 
     class Meta:
         abstract = True
