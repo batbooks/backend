@@ -1,12 +1,23 @@
 from rest_framework import serializers
 from .models import User
-
+from user_info.serializers import UserInfoSerializer
 
 class UserReadSerializer(serializers.ModelSerializer):
+    user_info = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'email', 'name']
+        fields = ['id', 'email', 'name','user_info']
 
+    def get_user_info(self, obj):
+        user_inf = obj.user_info
+        return UserInfoSerializer(user_inf).data
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        hide_field = self.context.get('hide_field',[])
+        for f in hide_field:
+            data.pop(f, None)
+        return data
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     c_password = serializers.CharField(write_only=True)

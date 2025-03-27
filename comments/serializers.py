@@ -4,6 +4,7 @@ from .models import Comment
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    tag = serializers.SlugRelatedField(slug_field='name', read_only=True)
 
     class Meta:
         model = Comment
@@ -13,7 +14,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class ReplyCommentSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Comment
         fields = '__all__'
