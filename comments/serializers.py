@@ -4,15 +4,21 @@ from .models import Comment,Review
 
 class CommentSerializer(serializers.ModelSerializer):
     tag = serializers.SlugRelatedField(slug_field='name', read_only=True)
-
+    reply_count = serializers.SerializerMethodField()
     class Meta:
         model = Comment
         fields = '__all__'
-        read_only_fields =['is_approved','user']
+        read_only_fields =['user',]
+
+    def get_reply_count(self,obj):
+        if obj.replies :
+            return obj.replies.all().count()
 
 
 
 class ReplyCommentSerializer(serializers.ModelSerializer):
+    tag = serializers.SlugRelatedField(slug_field='name', read_only=True)
+
     class Meta:
         model = Comment
         fields = '__all__'
