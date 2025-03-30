@@ -50,6 +50,7 @@ INSTALLED_APPS += [
     'user_info.apps.UserInfoConfig',
     'comments.apps.CommentsConfig',
     'book_actions.apps.BookActionsConfig',
+    'tag.apps.TagConfig',
 ]
 
 # Third party apps

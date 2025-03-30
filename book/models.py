@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import User
+from tag.models import Tag,Genre
 from django.db.models import Avg
 
 
@@ -26,6 +27,8 @@ class Book(models.Model):
     rating = models.DecimalField(max_digits=2,decimal_places=1)
     status = models.CharField(choices=STATUS_CHOICE,max_length=256)
     Author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='books')
+    tags = models.ManyToManyField(Tag, related_name='books', blank=True)
+    genres = models.ManyToManyField(Genre, related_name='books', blank=True)
 
     class Meta:
         ordering = ['rating', 'name']
