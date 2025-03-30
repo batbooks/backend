@@ -49,6 +49,7 @@ INSTALLED_APPS += [
     'book.apps.BookConfig',
     'user_info.apps.UserInfoConfig',
     'comments.apps.CommentsConfig',
+    'tag.apps.TagConfig'
 ]
 
 # Third party apps
