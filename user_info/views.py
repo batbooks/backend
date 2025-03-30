@@ -24,6 +24,9 @@ class UserInfoView(APIView):
 
             user_info = UserInfo.objects.get(user=user.first())
             ser_data = UserInfoSerializer(instance=user_info).data
+            if request.user != user.first():
+                ser_data = UserInfoSerializer(instance=user_info,context={'hide_field':['favorite_count']}).data
+
             return Response(ser_data, status=status.HTTP_200_OK)
         return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
