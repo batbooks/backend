@@ -3,11 +3,36 @@ from  .models import Book , Chapter
 from django.urls import reverse
 from django.utils.html import mark_safe,escape
 
-# Register your models here.
+
+def all_tags(book):
+    # Join all tag titles into a comma-separated string
+    return ", ".join(tag.title for tag in book.tags.all())
+
+# Set a short description for the admin panel
+all_tags.short_description = "Tags"
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ['name','created_at','updated_at','status','rating','Author']
+    list_display = ('name', 'Author', 'rating', 'status', 'created_at', 'updated_at', all_tags)
+    list_filter = ('status', 'genres', 'tags__category__title', 'Author')
+    search_fields = ('name', 'Author__username', 'description', 'tags__title', 'tags__category__title')
+    ordering = ('-rating', 'name')
+    filter_horizontal = ('tags', 'genres')
+    list_per_page = 10
 
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'description', 'image', 'status', 'rating', 'Author')
+        }),
+        ('Categories and Tags', {
+            'fields': ('tags', 'genres')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    readonly_fields = ('created_at', 'updated_at')
 
 
 @admin.register(Chapter)

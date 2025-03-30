@@ -1,0 +1,12 @@
+[
+    {"model": "tag.tagcategory", "pk": 1, "fields": {"title": "Magic System", "description": "Defines how magic works in a story."}},
+    {"model": "tag.tagcategory", "pk": 2, "fields": {"title": "Game Elements", "description": "The story follows RPG mechanics like levels, stats, dungeons."}},
+    {"model": "tag.tagcategory", "pk": 3, "fields": {"title": "Cultivation", "description": "Characters grow stronger by harnessing energy (Qi)."}},
+    {"model": "tag.tagcategory", "pk": 4, "fields": {"title": "Dystopian Society", "description": "A world with oppressive governments, surveillance, or rebellion themes."}},
+    {"model": "tag.tagcategory", "pk": 5, "fields": {"title": "Psychological", "description": "Focuses on mental struggles, mind games, or deep character psychology."}},
+    {"model": "tag.tagcategory", "pk": 6, "fields": {"title": "Slow Burn", "description": "Relationships develop gradually, emphasizing character growth."}},
+    {"model": "tag.tagcategory", "pk": 7, "fields": {"title": "Survival", "description": "Characters must endure extreme conditions like zombie outbreaks or disasters."}},
+    {"model": "tag.tagcategory", "pk": 8, "fields": {"title": "Dark Fantasy", "description": "A fantasy world with grim settings, brutal conflicts, and morally gray characters."}},
+    {"model": "tag.tagcategory", "pk": 9, "fields": {"title": "Multiple Timelines", "description": "The narrative switches between different points in time."}},
+    {"model": "tag.tagcategory", "pk": 10, "fields": {"title": "Kingdom Building", "description": "The protagonist constructs and governs a territory."}}
+]
