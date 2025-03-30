@@ -15,6 +15,6 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ("title", "category", "description")  # Use "category" instead of "tags"
-    search_fields = ("title", "category__title")  # Search by the title of the related category
-    list_filter = ("category",)  # Filter by category
+    list_display = ("title", "category", "description")
+    search_fields = ("title", "category__title")
+    list_filter = ("category",)
