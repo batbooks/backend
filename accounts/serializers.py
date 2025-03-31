@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import User
 from user_info.serializers import UserInfoSerializer
 
@@ -64,3 +65,5 @@ class ResetPasswordSerializer(serializers.Serializer):
         user = User.objects.filter(email=attrs['email']).first()
 
         return attrs
+
+
