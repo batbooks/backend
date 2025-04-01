@@ -3,7 +3,7 @@
     "model": "book.Book",
     "pk": 1,
     "fields": {
-      "name" : "mahdi" ,
+      "name" : "harry potter" ,
       "description": "a",
       "created_at": "2025-03-12 12:23:02",
       "updated_at": "2025-03-12 12:23:02",
@@ -16,7 +16,7 @@
     "model": "book.Book",
     "pk": 2,
     "fields": {
-      "name" : "ali" ,
+      "name" : "mohandes jan" ,
       "description": "abc",
       "created_at": "2025-03-12 12:23:02",
       "updated_at": "2025-03-12 12:23:02",

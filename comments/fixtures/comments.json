@@ -1,0 +1,58 @@
+[
+  {
+    "model": "comments.comment",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "chapter": 1,
+      "body": "این یک نظر تستی است!",
+      "created": "2024-04-01T12:00:00Z",
+      "like": [2, 3],
+      "dislike": [1],
+      "reply": null,
+      "tag": null
+    }
+  },
+  {
+    "model": "comments.comment",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "chapter": 1,
+      "body": "پاسخی به نظر اول",
+      "created": "2024-04-01T12:10:00Z",
+      "like": [],
+      "dislike": [],
+      "reply": 1,
+      "tag": 1
+    }
+  },
+  {
+    "model": "comments.review",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "book": 1,
+      "body": "این کتاب فوق‌العاده بود!",
+      "chapter": 1,
+      "created": "2024-04-01T13:00:00Z",
+      "like": [2],
+      "dislike": [],
+      "rating": 5
+    }
+  },
+  {
+    "model": "comments.review",
+    "pk": 2,
+    "fields": {
+      "user": 3,
+      "book": 2,
+      "chapter": 1,
+      "body": "متوسط بود، انتظار بیشتری داشتم.",
+      "created": "2024-04-01T13:30:00Z",
+      "like": [],
+      "dislike": [1],
+      "rating": 3
+    }
+  }
+]

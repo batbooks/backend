@@ -1,31 +1,342 @@
 [
-    {"model": "tag.tag", "pk": 1, "fields": {"title": "Hard Magic Rules", "description": "Clearly defined magical laws and mechanics.", "category": 1}},
-    {"model": "tag.tag", "pk": 2, "fields": {"title": "Forbidden Magic", "description": "Magic that is dangerous, illegal, or taboo.", "category": 1}},
-
-    {"model": "tag.tag", "pk": 3, "fields": {"title": "Skill Leveling", "description": "Characters gain new abilities and power-ups over time.", "category": 2}},
-    {"model": "tag.tag", "pk": 4, "fields": {"title": "Dungeons & Boss Battles", "description": "The story features structured challenges with increasing difficulty.", "category": 2}},
-
-    {"model": "tag.tag", "pk": 5, "fields": {"title": "Heavenly Tribulation", "description": "A powerful breakthrough comes with divine punishment.", "category": 3}},
-    {"model": "tag.tag", "pk": 6, "fields": {"title": "Immortal Ascension", "description": "The ultimate goal is achieving godhood.", "category": 3}},
-
-    {"model": "tag.tag", "pk": 7, "fields": {"title": "Totalitarian Regime", "description": "A government that controls all aspects of life.", "category": 4}},
-    {"model": "tag.tag", "pk": 8, "fields": {"title": "Underground Resistance", "description": "A hidden group fights against oppression.", "category": 4}},
-
-    {"model": "tag.tag", "pk": 9, "fields": {"title": "Mind Games", "description": "Characters engage in battles of intellect and manipulation.", "category": 5}},
-    {"model": "tag.tag", "pk": 10, "fields": {"title": "Unreliable Narrator", "description": "The protagonist's perception of reality is distorted.", "category": 5}},
-
-    {"model": "tag.tag", "pk": 11, "fields": {"title": "Unspoken Feelings", "description": "Characters struggle to confess their emotions.", "category": 6}},
-    {"model": "tag.tag", "pk": 12, "fields": {"title": "Mutual Pining", "description": "Both love interests like each other but don't realize it.", "category": 6}},
-
-    {"model": "tag.tag", "pk": 13, "fields": {"title": "Resource Scarcity", "description": "Food, water, or other essentials are extremely limited.", "category": 7}},
-    {"model": "tag.tag", "pk": 14, "fields": {"title": "Zombie Apocalypse", "description": "The world is overrun by the undead.", "category": 7}},
-
-    {"model": "tag.tag", "pk": 15, "fields": {"title": "Anti-Hero Protagonist", "description": "The main character has questionable morals.", "category": 8}},
-    {"model": "tag.tag", "pk": 16, "fields": {"title": "Eldritch Horror", "description": "Creatures beyond human comprehension appear.", "category": 8}},
-
-    {"model": "tag.tag", "pk": 17, "fields": {"title": "Time Paradox", "description": "Changing the past alters the future unexpectedly.", "category": 9}},
-    {"model": "tag.tag", "pk": 18, "fields": {"title": "Parallel Worlds", "description": "Alternate realities exist alongside the main one.", "category": 9}},
-
-    {"model": "tag.tag", "pk": 19, "fields": {"title": "Nation Management", "description": "The protagonist governs a land.", "category": 10}},
-    {"model": "tag.tag", "pk": 20, "fields": {"title": "Diplomatic Conflict", "description": "Political struggles between kingdoms.", "category": 10}}
+  {
+    "model": "tag.tag",
+    "pk": 1,
+    "fields": {
+      "title": "Hard Magic Rules",
+      "description": "Clearly defined magical laws and mechanics.",
+      "category": 1
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 2,
+    "fields": {
+      "title": "Forbidden Magic",
+      "description": "Magic that is dangerous, illegal, or taboo.",
+      "category": 1
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 3,
+    "fields": {
+      "title": "Skill Leveling",
+      "description": "Characters gain new abilities and power-ups over time.",
+      "category": 2
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 4,
+    "fields": {
+      "title": "Dungeons & Boss Battles",
+      "description": "The story features structured challenges with increasing difficulty.",
+      "category": 2
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 5,
+    "fields": {
+      "title": "Heavenly Tribulation",
+      "description": "A powerful breakthrough comes with divine punishment.",
+      "category": 3
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 6,
+    "fields": {
+      "title": "Immortal Ascension",
+      "description": "The ultimate goal is achieving godhood.",
+      "category": 3
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 7,
+    "fields": {
+      "title": "Totalitarian Regime",
+      "description": "A government that controls all aspects of life.",
+      "category": 4
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 8,
+    "fields": {
+      "title": "Underground Resistance",
+      "description": "A hidden group fights against oppression.",
+      "category": 4
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 9,
+    "fields": {
+      "title": "Mind Games",
+      "description": "Characters engage in battles of intellect and manipulation.",
+      "category": 5
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 10,
+    "fields": {
+      "title": "Unreliable Narrator",
+      "description": "The protagonist's perception of reality is distorted.",
+      "category": 5
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 11,
+    "fields": {
+      "title": "Unspoken Feelings",
+      "description": "Characters struggle to confess their emotions.",
+      "category": 6
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 12,
+    "fields": {
+      "title": "Mutual Pining",
+      "description": "Both love interests like each other but don't realize it.",
+      "category": 6
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 13,
+    "fields": {
+      "title": "Resource Scarcity",
+      "description": "Food, water, or other essentials are extremely limited.",
+      "category": 7
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 14,
+    "fields": {
+      "title": "Zombie Apocalypse",
+      "description": "The world is overrun by the undead.",
+      "category": 7
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 15,
+    "fields": {
+      "title": "Anti-Hero Protagonist",
+      "description": "The main character has questionable morals.",
+      "category": 8
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 16,
+    "fields": {
+      "title": "Eldritch Horror",
+      "description": "Creatures beyond human comprehension appear.",
+      "category": 8
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 1,
+    "fields": {
+      "title": "Fantasy",
+      "description": "Stories set in imaginary worlds with magic and mythical creatures."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 2,
+    "fields": {
+      "title": "Science Fiction",
+      "description": "Explores futuristic concepts like space, AI, and time travel."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 3,
+    "fields": {
+      "title": "Romance",
+      "description": "Focuses on love and relationships."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 4,
+    "fields": {
+      "title": "Mystery",
+      "description": "Stories involving crime-solving, suspense, or detective work."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 5,
+    "fields": {
+      "title": "Horror",
+      "description": "Designed to evoke fear, dread, or unease."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 6,
+    "fields": {
+      "title": "Historical Fiction",
+      "description": "Set in the past with real historical events and figures."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 7,
+    "fields": {
+      "title": "Slice of Life",
+      "description": "Focuses on everyday experiences and realistic characters."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 8,
+    "fields": {
+      "title": "LitRPG",
+      "description": "Blends literature and role-playing games with stats and leveling."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 9,
+    "fields": {
+      "title": "Dystopian",
+      "description": "Set in a bleak or ruined future with societal collapse."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 10,
+    "fields": {
+      "title": "Isekai",
+      "description": "Protagonists are transported to another world."
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 17,
+    "fields": {
+      "title": "Time Paradox",
+      "description": "Changing the past alters the future unexpectedly.",
+      "category": 9
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 18,
+    "fields": {
+      "title": "Parallel Worlds",
+      "description": "Alternate realities exist alongside the main one.",
+      "category": 9
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 19,
+    "fields": {
+      "title": "Nation Management",
+      "description": "The protagonist governs a land.",
+      "category": 10
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 20,
+    "fields": {
+      "title": "Diplomatic Conflict",
+      "description": "Political struggles between kingdoms.",
+      "category": 10
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 1,
+    "fields": {
+      "title": "Magic System",
+      "description": "Defines how magic works in a story."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 2,
+    "fields": {
+      "title": "Game Elements",
+      "description": "The story follows RPG mechanics like levels, stats, dungeons."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 3,
+    "fields": {
+      "title": "Cultivation",
+      "description": "Characters grow stronger by harnessing energy (Qi)."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 4,
+    "fields": {
+      "title": "Dystopian Society",
+      "description": "A world with oppressive governments, surveillance, or rebellion themes."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 5,
+    "fields": {
+      "title": "Psychological",
+      "description": "Focuses on mental struggles, mind games, or deep character psychology."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 6,
+    "fields": {
+      "title": "Slow Burn",
+      "description": "Relationships develop gradually, emphasizing character growth."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 7,
+    "fields": {
+      "title": "Survival",
+      "description": "Characters must endure extreme conditions like zombie outbreaks or disasters."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 8,
+    "fields": {
+      "title": "Dark Fantasy",
+      "description": "A fantasy world with grim settings, brutal conflicts, and morally gray characters."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 9,
+    "fields": {
+      "title": "Multiple Timelines",
+      "description": "The narrative switches between different points in time."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 10,
+    "fields": {
+      "title": "Kingdom Building",
+      "description": "The protagonist constructs and governs a territory."
+    }
+  }
 ]
