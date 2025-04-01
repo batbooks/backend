@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from book.models import Chapter,Book
-from .serializers import CommentSerializer, ReplyCommentSerializer,ReviewSerializer
+from book.models import Chapter, Book
+from .serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer
 from rest_framework.permissions import IsAuthenticated
-from .models import Comment,Review
+from .models import Comment, Review
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
 from django.db.models import Case, When, Value, IntegerField
@@ -74,8 +74,9 @@ class CommentReplyAPIView(APIView):
 
 class CommentChapterAPIView(APIView):
     def get(self, request, chapter_id):
-        comments = Chapter.objects.prefetch_related('ch_comments_comment', 'ch_comments_comment__like',
-                                                    'ch_comments_comment__dislike').get(
+        comments = get_object_or_404(
+            Chapter.objects.prefetch_related('ch_comments_comment', 'ch_comments_comment__like',
+                                             'ch_comments_comment__dislike'),
             pk=chapter_id).ch_comments_comment.filter(reply__isnull=True)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
@@ -85,8 +86,8 @@ class CommentChapterAPIView(APIView):
 
 class CommentGetAllReplyAPIView(APIView):
     def get(self, request, comment_id):
-        comments = Comment.objects.prefetch_related('replies', 'replies__like', 'replies__dislike').get(
-            pk=comment_id).replies.all()
+        comments = get_object_or_404(Comment.objects.prefetch_related('replies', 'replies__like', 'replies__dislike'),
+                                     pk=comment_id).replies.all()
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
@@ -123,7 +124,8 @@ class ReviewListAPIView(APIView):
         book = get_object_or_404(Book, pk=book_id)
 
         reviews = Review.objects.filter(book=book).annotate(
-            priority=Case(When(user=request.user, then=Value(0)),default=Value(1),output_field=IntegerField())).order_by('priority', '-created')
+            priority=Case(When(user=request.user, then=Value(0)), default=Value(1),
+                          output_field=IntegerField())).order_by('priority', '-created')
 
         paginator = CustomPagination()
         page = paginator.paginate_queryset(reviews, request)
@@ -150,7 +152,6 @@ class ReviewUpdateDeleteAPIView(APIView):
         review = get_object_or_404(Review, user=request.user, book=book)
         review.delete()
         return Response({"message": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
-
 
 
 class ReviewLikeAPIView(APIView):
@@ -183,6 +184,3 @@ class ReviewDisLikeAPIView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         review.dislike.add(user)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
