@@ -1,0 +1,64 @@
+[
+  {
+    "model": "book.Book",
+    "pk": 1,
+    "fields": {
+      "name" : "mahdi" ,
+      "description": "a",
+      "created_at": "2025-03-12 12:23:02",
+      "updated_at": "2025-03-12 12:23:02",
+      "rating" : 3.3,
+      "status" : "O",
+      "Author" : 1
+    }
+  },
+  {
+    "model": "book.Book",
+    "pk": 2,
+    "fields": {
+      "name" : "ali" ,
+      "description": "abc",
+      "created_at": "2025-03-12 12:23:02",
+      "updated_at": "2025-03-12 12:23:02",
+      "rating" : 3.6,
+      "status" : "O",
+      "Author" : 2
+    }
+  },
+  {
+        "model": "book.Chapter",
+        "pk": 1,
+        "fields": {
+            "title": "Introduction",
+            "book": 1,
+            "body": "This is the introduction chapter of the book.",
+            "is_approved": true,
+            "created_at": "2025-03-20T10:00:00Z",
+            "updated_at": "2025-03-20T10:00:00Z"
+        }
+    },
+    {
+        "model": "book.Chapter",
+        "pk": 2,
+        "fields": {
+            "title": "Chapter One",
+            "book": 1,
+            "body": "The first main chapter with detailed content.",
+            "is_approved": false,
+            "created_at": "2025-03-20T12:00:00Z",
+            "updated_at": "2025-03-20T12:00:00Z"
+        }
+    },
+    {
+        "model": "book.Chapter",
+        "pk": 3,
+        "fields": {
+            "title": "Conclusion",
+            "book": 2,
+            "body": "Wrapping up the book with final thoughts.",
+            "is_approved": true,
+            "created_at": "2025-03-20T14:00:00Z",
+            "updated_at": "2025-03-20T14:00:00Z"
+        }
+    }
+]
