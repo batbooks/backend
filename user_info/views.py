@@ -7,7 +7,7 @@ from rest_framework import status
 
 from permissions import IsOwnerOrReadOnly
 from .models import UserInfo, UserFollow,UserNotInterested
-from .serializers import UserInfoSerializer, FollowSerializer
+from .serializers import UserInfoSerializer, FollowSerializer,NotInterestedSerializer
 import string
 from accounts.serializers import UserReadSerializer
 from django.db.models import Q
@@ -159,6 +159,6 @@ class NotInterestedView(APIView):
         not_interested_qs = UserNotInterested.objects.filter(user=request.user, not_interested__is_admin=False)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(not_interested_qs, request)
-        data = FollowSerializer(page, context={"hide_field": ['not_interested']}, many=True).data
+        data = NotInterestedSerializer(page, many=True).data
         return paginator.get_paginated_response(data)
 

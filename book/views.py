@@ -2,17 +2,31 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Book, Chapter
 from permissions import  BookIsOwnerOrReadOnly,ChapterIsOwnerOrReadOnly
 from .serializers import BookSerializer, BookGetAllSerializer, ChapterGetSerializer, ChapterCreateSerializer, \
     BookAllGetSerializer, BookGetSerializer
+from  book_actions.models import Blocked
 from paginations import CustomPagination
 
 class BookListAPIView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request):
-        books = Book.objects.all()
+        user = request.user
+
+        if user.is_authenticated:
+            try:
+                blocked_books = Blocked.objects.get(user=user).book.all()
+            except Blocked.DoesNotExist:
+                blocked_books = Book.objects.none()
+
+            books = Book.objects.exclude(id__in=blocked_books.values_list('id', flat=True))
+        else:
+            books = Book.objects.all()
+
         serializer = BookAllGetSerializer(books, many=True)
         return Response(serializer.data)
 class BookCreateAPIView(APIView):
