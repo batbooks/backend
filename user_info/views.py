@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 
 from permissions import IsOwnerOrReadOnly
-from .models import UserInfo, UserFollow
+from .models import UserInfo, UserFollow,UserNotInterested
 from .serializers import UserInfoSerializer, FollowSerializer
 import string
 from accounts.serializers import UserReadSerializer
@@ -130,3 +130,35 @@ class FollowingView(APIView):
         page = paginator.paginate_queryset(followers, request)
         data = FollowSerializer(page, context={"hide_field": ['follower']}, many=True).data
         return paginator.get_paginated_response(data)
+
+
+
+class ToggleNotInterestedUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def setup(self, request, *args, **kwargs):
+        self.user_model = get_user_model()
+        super().setup(request, *args, **kwargs)
+
+    def get(self, request, user_id):
+        user = get_object_or_404(self.user_model, pk=user_id, is_admin=False)
+        if request.user == user:
+            return Response({"You cant notInterested yourself"}, status=status.HTTP_403_FORBIDDEN)
+        not_interested = UserNotInterested.objects.filter(user=request.user, not_interested=user)
+        if not_interested.exists():
+            not_interested.delete()
+        else:
+            UserNotInterested.objects.create(user=request.user, not_interested=user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class NotInterestedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        not_interested_qs = UserNotInterested.objects.filter(user=request.user, not_interested__is_admin=False)
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(not_interested_qs, request)
+        data = FollowSerializer(page, context={"hide_field": ['not_interested']}, many=True).data
+        return paginator.get_paginated_response(data)
+
