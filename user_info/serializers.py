@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserInfo, UserFollow
+from .models import UserInfo, UserFollow,UserNotInterested
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -42,4 +42,23 @@ class FollowSerializer(serializers.ModelSerializer):
         hidden_field = self.context.get('hide_field',[])
         for f in hidden_field:
             data.pop(f, None)
+        return data
+
+
+
+class NotInterestedSerializer(serializers.ModelSerializer):
+    not_interested = serializers.SlugRelatedField(
+        slug_field='name',
+        read_only=True
+    )
+
+    class Meta:
+        model = UserNotInterested
+        fields = ['not_interested', 'created_at']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        hidden_fields = self.context.get('hide_field', [])
+        for field in hidden_fields:
+            data.pop(field, None)
         return data

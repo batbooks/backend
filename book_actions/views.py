@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from book.models import Book
-from .models import Favorite
+from .models import Favorite,Blocked
 from rest_framework.response import Response
 from rest_framework import status
 from book.serializers import BookAllGetSerializer
@@ -31,3 +31,33 @@ class UserFavoriteView(APIView):
         page = paginator.paginate_queryset(favorite.book.all(), request)
         ser_date = BookAllGetSerializer(page,many=True)
         return paginator.get_paginated_response(ser_date.data)
+
+
+class BookToggleBlockedView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, book_id, *args, **kwargs):
+        book = Book.objects.get(pk=book_id)
+        blocked = Blocked.objects.filter(user=request.user)
+        if blocked.exists():
+            blocked = blocked.first()
+            if book in blocked.book.all():
+                blocked.book.remove(book)
+            else:
+                blocked.book.add(book)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        blocked = Blocked.objects.create(user=request.user)
+        blocked.book.add(book)
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class UserBlockedView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        blocked = Blocked.objects.get(user=request.user)
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(blocked.book.all(), request)
+        ser_date = BookAllGetSerializer(page, many=True)
+        return paginator.get_paginated_response(ser_date.data)
+
