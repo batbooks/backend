@@ -9,4 +9,7 @@ urlpatterns = [
     path('toggle/follow/<int:user_id>/',views.ToggleFollowUserView.as_view(), name='follow'),
     path('followers/', views.FollowersView.as_view(), name='followers'),
     path('following/', views.FollowingView.as_view(), name='followers'),
+    path('toggle/Not_Interested/<int:user_id>/', views.ToggleNotInterestedUserView.as_view(), name='Toggle_Not_Interested'),
+    path('Not_Interested/all', views.NotInterestedView.as_view(), name='Show_all_Not_Interested'),
+
 ]

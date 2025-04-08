@@ -5,7 +5,6 @@ from django.utils.html import mark_safe,escape
 
 
 def all_tags(book):
-    # Join all tag titles into a comma-separated string
     return ", ".join(tag.title for tag in book.tags.all())
 
 # Set a short description for the admin panel

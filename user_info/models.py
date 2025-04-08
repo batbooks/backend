@@ -16,3 +16,13 @@ class UserFollow(models.Model):
 
     def __str__(self):
         return f'{self.follower}'
+
+
+class UserNotInterested(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='not_interested_users')
+    not_interested = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='uninterested_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.not_interested}'
+
