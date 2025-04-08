@@ -1,9 +1,19 @@
+# PyCharm
 .idea/
-*/migrations/
-*/__pycache__/
-__pycache__/
-__pycache__
-media/
 
-.env
+# Django migrations - ignore all migration files except __init__.py
+# Django migrations - ignore all migration files except __init__.py
+**/migrations/*.py
+!**/migrations/__init__.py
+# __pycache__ folders
+__pycache__/
+**/__pycache__/
+
+# SQLite database
 db.sqlite3
+
+# Environment variables
+.env
+
+# Media files
+media/
