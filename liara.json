@@ -9,6 +9,10 @@
     {
       "name": "my-disk",
       "mountTo": "media"
+    },
+    {
+      "name": "migrations",
+      "mountTo": "*/migrations"
     }
   ]
 }
