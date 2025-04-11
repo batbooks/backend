@@ -7,10 +7,6 @@
   },
   "disks": [
     {
-      "name": "my-disk",
-      "mountTo": "media"
-    },
-    {
       "name": "migrations",
       "mountTo": "book/migrations"
     },
@@ -29,6 +25,10 @@
     {
       "name": "migrations",
       "mountTo": "user_info/migrations"
+    },
+    {
+      "name": "migrations",
+      "mountTo": "accounts/migrations"
     }
   ]
 }
