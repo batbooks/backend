@@ -10,6 +10,7 @@ from .serializers import BookSerializer, BookGetAllSerializer, ChapterGetSeriali
     BookAllGetSerializer, BookGetSerializer
 from  book_actions.models import Blocked
 from paginations import CustomPagination
+from rest_framework.exceptions import NotFound
 
 class BookListAPIView(APIView):
     permission_classes = [AllowAny]
@@ -65,7 +66,7 @@ class ChapterDetailUpdateDeleteAPIView(APIView):
         if chapter.is_approved:
             ser_data = ChapterGetSerializer(chapter)
             return Response(ser_data.data, status=status.HTTP_200_OK)
-        return Response({'msg':'chapter not found'},status=status.HTTP_404_NOT_FOUND)
+        return Response({'ارور':'چپتر پیدا نشد'},status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, id):
         chapter = get_object_or_404(Chapter, pk=id)
@@ -80,12 +81,20 @@ class ChapterDetailUpdateDeleteAPIView(APIView):
         chapter = get_object_or_404(Chapter, pk=id)
         self.check_object_permissions(request,chapter)
         chapter.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'پیام':'چپتر با موفقیت پاک شد'},status=status.HTTP_204_NO_CONTENT)
 
 class ChapterCreateAPIView(APIView):
     permission_classes = [BookIsOwnerOrReadOnly]
     def post(self, request):
-        book = get_object_or_404(Book, pk=request.data['book'])
+
+        try:
+            book = Book.objects.get(pk=request.data['book'])
+        except Book.DoesNotExist:
+            return Response(
+                {"ارور": "کتاب مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
         self.check_object_permissions(request,book)
         ser_data = ChapterCreateSerializer(data=request.data)
         if ser_data.is_valid():
@@ -98,7 +107,7 @@ class BookSearchAPIView(APIView):
     def get(self, request,book_name):
         book_name = book_name.strip()
         if len(book_name) < 3:
-            return Response({"error": 'book name must be greater than 3 letter'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"ارور": 'اسم کتاب باید حداقل سه حرف باشد.'}, status=status.HTTP_400_BAD_REQUEST)
         books = Book.objects.filter(name__icontains=book_name)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(books, request)

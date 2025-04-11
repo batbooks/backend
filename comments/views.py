@@ -19,14 +19,20 @@ class CommentCreateAPIView(APIView):
         if ser_data.is_valid():
             ser_data.save(user=request.user)
             return Response(ser_data.data, status=status.HTTP_201_CREATED)
-        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"ارور": 'درخواست بد داده شده است.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommentLikeAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, comment_id):
-        comment = get_object_or_404(Comment, pk=comment_id)
+        try:
+            comment = Comment.objects.get(pk=comment_id)
+        except Comment.DoesNotExist:
+            return Response(
+                {"ارور": "کامنت مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         user = request.user
         if user in comment.dislike.all():
             comment.dislike.remove(user)
@@ -41,7 +47,13 @@ class CommentDisLikeAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, comment_id):
-        comment = get_object_or_404(Comment, pk=comment_id)
+        try:
+            comment = Comment.objects.get(pk=comment_id)
+        except Comment.DoesNotExist:
+            return Response(
+                {"ارور": "کامنت مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         user = request.user
 
         if user in comment.like.all():
@@ -58,7 +70,14 @@ class CommentReplyAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, comment_id):
-        reply_to_comment = get_object_or_404(Comment, pk=comment_id)
+
+        try:
+            reply_to_comment = Comment.objects.get(pk=comment_id)
+        except Comment.DoesNotExist:
+            return Response(
+                {"ارور": "کامنتی برای پاسخ دادن پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         ser_data = ReplyCommentSerializer(data=request.data)
         if ser_data.is_valid():
             if not reply_to_comment.reply:
