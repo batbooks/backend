@@ -29,6 +29,10 @@
     {
       "name": "migrations",
       "mountTo": "accounts/migrations"
+    },
+    {
+      "name": "diskmedia",
+      "mountTo": "media"
     }
   ]
 }
