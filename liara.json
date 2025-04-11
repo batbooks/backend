@@ -7,30 +7,6 @@
   },
   "disks": [
     {
-      "name": "migrations",
-      "mountTo": "book/migrations"
-    },
-    {
-      "name": "migrations",
-      "mountTo": "book_actions/migrations"
-    },
-    {
-      "name": "migrations",
-      "mountTo": "comments/migrations"
-    },
-    {
-      "name": "migrations",
-      "mountTo": "tag/migrations"
-    },
-    {
-      "name": "migrations",
-      "mountTo": "user_info/migrations"
-    },
-    {
-      "name": "migrations",
-      "mountTo": "accounts/migrations"
-    },
-    {
       "name": "diskmedia",
       "mountTo": "media"
     }
