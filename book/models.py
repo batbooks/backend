@@ -24,14 +24,14 @@ class Book(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='books/%Y/%m/%d', null=True, blank=True)
-    rating = models.DecimalField(max_digits=2,decimal_places=1)
+
     status = models.CharField(choices=STATUS_CHOICE,max_length=256)
     Author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='books')
     tags = models.ManyToManyField(Tag, related_name='books', blank=True)
     genres = models.ManyToManyField(Genre, related_name='books', blank=True)
 
     class Meta:
-        ordering = ['rating', 'name']
+        ordering = [ 'name']
 
     def __str__(self):
         return self.name

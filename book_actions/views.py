@@ -1,11 +1,15 @@
+from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from book.models import Book
-from .models import Favorite,Blocked
+from .models import Favorite, Blocked, Rating
 from rest_framework.response import Response
 from rest_framework import status
 from book.serializers import BookAllGetSerializer
 from paginations import CustomPagination
+from .serializers import RatingBookSerializer
+
+
 class BookToggleFavoriteView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request,book_id, *args, **kwargs):
@@ -61,3 +65,17 @@ class UserBlockedView(APIView):
         ser_date = BookAllGetSerializer(page, many=True)
         return paginator.get_paginated_response(ser_date.data)
 
+class BookRatingView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request ,*args, **kwargs):
+        book_id = request.data.get('book')
+        if Rating.objects.filter(user=request.user, book=book_id).exists():
+            return Response(
+                {"detail": "You have already rated this book."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        ser_data = RatingBookSerializer(data=request.data)
+        if ser_data.is_valid():
+            ser_data.save(user=request.user)
+            return Response(ser_data.data,status=status.HTTP_201_CREATED)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)

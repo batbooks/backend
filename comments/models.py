@@ -37,7 +37,7 @@ class Comment(CommentAbstract):
 
 class Review(CommentAbstract):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)], null=True, blank=True)
+    rating = models.DecimalField(max_digits=2,decimal_places=1)
 
     class Meta:
         unique_together = ('user', 'book')
