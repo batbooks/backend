@@ -22,7 +22,7 @@ class CommentSerializer(serializers.ModelSerializer):
         if obj.replies :
             return obj.replies.all().count()
 
-    def get_image(self,obj):
+    def get_image(self, obj):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url
 
@@ -41,7 +41,7 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
             'user': {'read_only': True},
         }
 
-    def get_image(self,obj):
+    def get_image(self, obj):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url
 
@@ -54,6 +54,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['user','book']
 
-    def get_image(self,obj):
+    def get_image(self, obj):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url

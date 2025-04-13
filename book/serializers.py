@@ -22,24 +22,19 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author','image']
+        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author','image','genres','tags']
         read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
 
     def validate_name(self, value):
         if len(value) < 3:
-            raise serializers.ValidationError("نام کتاب باید دست‌کم ۳ حرف داشته باشد.")
+            raise serializers.ValidationError({'error': "نام کتاب باید دست‌کم ۳ حرف داشته باشد."})
         return value
 
     def validate_rating(self, value):
         if value < 0 or value > 5:
-            raise serializers.ValidationError("لطفاً عددی بین ۰ تا ۵ برای امتیاز وارد کن :)")
+            raise serializers.ValidationError({'error': "لطفاً عددی بین ۰ تا ۵ برای امتیاز وارد کن :)"} )
         return value
 
-    def validate_status(self, value):
-        valid_statuses = {choice[0] for choice in Book.STATUS_CHOICE}
-        if value not in valid_statuses:
-            raise serializers.ValidationError(f"وضعیتی که انتخاب کردی درست نیست. از بین گزینه‌های مجاز یکی رو انتخاب کن: {valid_statuses}.")
-        return value
 
 
 class BookAllGetSerializer(serializers.ModelSerializer):

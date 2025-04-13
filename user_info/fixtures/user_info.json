@@ -1,0 +1,102 @@
+[
+  {
+    "model": "user_info.UserInfo",
+    "pk": 11,
+    "fields": {
+      "user": 11,
+      "bio": "من عاشق کتاب‌های علمی‌تخیلی هستم.",
+      "gender": "male",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 12,
+    "fields": {
+      "user": 12,
+      "bio": "به نوشتن داستان‌های کوتاه علاقه دارم.",
+      "gender": "female",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 13,
+    "fields": {
+      "user": 13,
+      "bio": "همیشه به یادگیری و رشد علاقه‌مندم.",
+      "gender": "male",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 14,
+    "fields": {
+      "user": 14,
+      "bio": "به عکاسی و هنر دیجیتال علاقه دارم.",
+      "gender": "female",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 15,
+    "fields": {
+      "user": 15,
+      "bio": "یک فرد هنری با علاقه به نویسندگی.",
+      "gender": "male",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 16,
+    "fields": {
+      "user": 16,
+      "bio": "من به سفر و کشف مکان‌های جدید علاقه دارم.",
+      "gender": "female",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 17,
+    "fields": {
+      "user": 17,
+      "bio": "آشپزی یکی از بزرگترین علاقه‌مندی‌های من است.",
+      "gender": "male",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 18,
+    "fields": {
+      "user": 18,
+      "bio": "دوست دارم داستان‌های معمایی بنویسم.",
+      "gender": "female",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 19,
+    "fields": {
+      "user": 19,
+      "bio": "به فلسفه و تفکر عمیق علاقه دارم.",
+      "gender": "male",
+      "image": null
+    }
+  },
+  {
+    "model": "user_info.UserInfo",
+    "pk": 20,
+    "fields": {
+      "user": 20,
+      "bio": "آرامش و سکوت برای من از اهمیت بالایی برخوردار است.",
+      "gender": "female",
+      "image": null
+    }
+  }
+]

@@ -19,7 +19,7 @@ class CommentCreateAPIView(APIView):
         if ser_data.is_valid():
             ser_data.save(user=request.user)
             return Response(ser_data.data, status=status.HTTP_201_CREATED)
-        return Response({"ارور": 'درخواست بد داده شده است.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": 'درخواست بد داده شده است.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommentLikeAPIView(APIView):
@@ -30,7 +30,7 @@ class CommentLikeAPIView(APIView):
             comment = Comment.objects.get(pk=comment_id)
         except Comment.DoesNotExist:
             return Response(
-                {"ارور": "کامنت مورد نظر پیدا نشد."},
+                {"error": "کامنت مورد نظر پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
         user = request.user
@@ -51,7 +51,7 @@ class CommentDisLikeAPIView(APIView):
             comment = Comment.objects.get(pk=comment_id)
         except Comment.DoesNotExist:
             return Response(
-                {"ارور": "کامنت مورد نظر پیدا نشد."},
+                {"error": "کامنت مورد نظر پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
         user = request.user
@@ -75,7 +75,7 @@ class CommentReplyAPIView(APIView):
             reply_to_comment = Comment.objects.get(pk=comment_id)
         except Comment.DoesNotExist:
             return Response(
-                {"ارور": "کامنتی برای پاسخ دادن پیدا نشد."},
+                {"error": "کامنتی برای پاسخ دادن پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
         ser_data = ReplyCommentSerializer(data=request.data)
@@ -93,10 +93,19 @@ class CommentReplyAPIView(APIView):
 
 class CommentChapterAPIView(APIView):
     def get(self, request, chapter_id):
-        comments = get_object_or_404(
-            Chapter.objects.prefetch_related('ch_comments_comment', 'ch_comments_comment__like',
-                                             'ch_comments_comment__dislike'),
-            pk=chapter_id).ch_comments_comment.filter(reply__isnull=True)
+        try:
+            chapter = Chapter.objects.prefetch_related(
+                'ch_comments_comment',
+                'ch_comments_comment__like',
+                'ch_comments_comment__dislike'
+            ).get(pk=chapter_id)
+        except Chapter.DoesNotExist:
+            return Response(
+                {"error": "چپتری با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        print(chapter)
+        comments = chapter.ch_comments_comment.filter(reply__isnull=True)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
@@ -105,8 +114,19 @@ class CommentChapterAPIView(APIView):
 
 class CommentGetAllReplyAPIView(APIView):
     def get(self, request, comment_id):
-        comments = get_object_or_404(Comment.objects.prefetch_related('replies', 'replies__like', 'replies__dislike'),
-                                     pk=comment_id).replies.all()
+        try:
+            comment = Comment.objects.prefetch_related(
+                'replies',
+                'replies__like',
+                'replies__dislike'
+            ).get(pk=comment_id)
+        except Comment.DoesNotExist:
+            return Response(
+                {"error": "کامنتی با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        comments = comment.replies.all()
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
@@ -118,12 +138,18 @@ class ReviewCreateAPIView(APIView):
 
     def post(self, request, book_id):
         print(request.data)
-        book = get_object_or_404(Book, pk=book_id)
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response(
+                {"error": "کتابی با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         existing_review = Review.objects.filter(user=request.user, book=book).first()
 
         if existing_review:
             return Response(
-                {"error": "You have already reviewed this book. Please update your existing review."},
+                {"error": "شما قبلا در مورد این کتاب نظر داده اید.لطفا نظر ثبت شده خود را تغییر دهید."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -140,7 +166,13 @@ class ReviewListAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, book_id):
-        book = get_object_or_404(Book, pk=book_id)
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response(
+                {"error": "کتابی با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         reviews = Review.objects.filter(book=book).annotate(
             priority=Case(When(user=request.user, then=Value(0)), default=Value(1),
@@ -156,8 +188,20 @@ class ReviewUpdateDeleteAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def put(self, request, book_id):
-        book = get_object_or_404(Book, pk=book_id)
-        review = get_object_or_404(Review, user=request.user, book=book)
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response(
+                {"error": "کتابی با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        try:
+            review = Review.objects.get(user=request.user, book=book)
+        except Review.DoesNotExist:
+            return Response(
+                {"error": "نظری برای این کتاب توسط این کاربر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = ReviewSerializer(review, data=request.data, partial=True)
         if serializer.is_valid():
@@ -167,17 +211,35 @@ class ReviewUpdateDeleteAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, book_id):
-        book = get_object_or_404(Book, pk=book_id)
-        review = get_object_or_404(Review, user=request.user, book=book)
+        try:
+            book = Book.objects.get(pk=book_id)
+        except Book.DoesNotExist:
+            return Response(
+                {"error": "کتاب مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        try:
+            review = Review.objects.get(user=request.user, book=book)
+        except Review.DoesNotExist:
+            return Response(
+                {"error": "نظرات مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         review.delete()
-        return Response({"message": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "نظر شما با موفقیت حذف شد."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class ReviewLikeAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, review_id):
-        review = get_object_or_404(Review, pk=review_id)
+        try:
+            review = Review.objects.get(pk=review_id)
+        except Review.DoesNotExist:
+            return Response(
+                {"error": "نقدی با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         user = request.user
         if user in review.dislike.all():
             review.dislike.remove(user)
@@ -192,7 +254,13 @@ class ReviewDisLikeAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, review_id):
-        review = get_object_or_404(Review, pk=review_id)
+        try:
+            review = Review.objects.get(pk=review_id)
+        except Review.DoesNotExist:
+            return Response(
+                {"error": "نقدی با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         user = request.user
 
         if user in review.like.all():
