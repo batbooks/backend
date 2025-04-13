@@ -7,7 +7,7 @@
   },
   "disks": [
     {
-      "name": "my-disk",
+      "name": "diskmedia",
       "mountTo": "media"
     }
   ]

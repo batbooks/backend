@@ -1,11 +1,17 @@
+from idlelib.rpc import request_queue
+
+from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from book.models import Book
-from .models import Favorite,Blocked
+from .models import Favorite, Blocked, Rating
 from rest_framework.response import Response
 from rest_framework import status
 from book.serializers import BookAllGetSerializer
 from paginations import CustomPagination
+from .serializers import RatingBookSerializer
+
+
 class BookToggleFavoriteView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request,book_id, *args, **kwargs):
@@ -61,3 +67,12 @@ class UserBlockedView(APIView):
         ser_date = BookAllGetSerializer(page, many=True)
         return paginator.get_paginated_response(ser_date.data)
 
+class BookRatingView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request ,*args, **kwargs):
+        print(request.data)
+        ser_data = RatingBookSerializer(data=request.data, context={'request': request})
+        if ser_data.is_valid():
+            ser_data.save(user=request.user)
+            return Response(ser_data.data,status=status.HTTP_201_CREATED)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
