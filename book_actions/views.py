@@ -1,3 +1,5 @@
+from idlelib.rpc import request_queue
+
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -68,13 +70,8 @@ class UserBlockedView(APIView):
 class BookRatingView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request ,*args, **kwargs):
-        book_id = request.data.get('book')
-        if Rating.objects.filter(user=request.user, book=book_id).exists():
-            return Response(
-                {"detail": "You have already rated this book."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        ser_data = RatingBookSerializer(data=request.data)
+        print(request.data)
+        ser_data = RatingBookSerializer(data=request.data, context={'request': request})
         if ser_data.is_valid():
             ser_data.save(user=request.user)
             return Response(ser_data.data,status=status.HTTP_201_CREATED)

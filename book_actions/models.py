@@ -16,3 +16,5 @@ class Rating(models.Model):
     book = models.ForeignKey(Book,on_delete=models.CASCADE,related_name='book_rating')
     rating = models.DecimalField(max_digits=2,decimal_places=1)
 
+
+

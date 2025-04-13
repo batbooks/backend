@@ -11,7 +11,7 @@ class BookSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
-        rating = obj.book_rating.all().aggregate(avg=Avg('rating'))['avg']
+        rating = obj.rating_avg
 
         return str(rating) if rating else '0'
 
@@ -42,7 +42,7 @@ class BookAllGetSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
-        rating = obj.book_rating.all().aggregate(avg=Avg('rating'))['avg']
+        rating = obj.rating_avg
 
         return str(rating) if rating else '0'
 
@@ -56,7 +56,7 @@ class BookGetAllSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
-        rating = obj.book_rating.all().aggregate(avg=Avg('rating'))['avg']
+        rating = obj.rating_avg
 
         return str(rating) if rating else '0'
 
@@ -80,7 +80,7 @@ class BookGetSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
-        rating = obj.book_rating.all().aggregate(avg=Avg('rating'))['avg']
+        rating = obj.rating_avg
 
         return str(rating) if rating else '0'
 

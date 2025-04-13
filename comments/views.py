@@ -2,13 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from book.models import Chapter, Book
+from book_actions.models import Rating
 from .serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models import Comment, Review
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
 from django.db.models import Case, When, Value, IntegerField
-
+from book_actions.serializers import RatingBookSerializer
 
 # Create your views here.
 class CommentCreateAPIView(APIView):
@@ -98,7 +99,6 @@ class ReviewCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, book_id):
-        print(request.data)
         book = get_object_or_404(Book, pk=book_id)
         existing_review = Review.objects.filter(user=request.user, book=book).first()
 
@@ -110,7 +110,20 @@ class ReviewCreateAPIView(APIView):
 
         serializer = ReviewSerializer(data=request.data)
 
+
         if serializer.is_valid():
+
+            rate = request.data['rating']
+            book_id = request.data['book']
+            book = get_object_or_404(Book, pk=book_id)
+            rating = Rating.objects.filter(user=request.user, book=book)
+            if rating.exists():
+                rating = rating.first()
+                rating.rating = rate
+                rating.save()
+            else:
+                Rating.objects.create(user=request.user, book=book, rating=rate)
+
             serializer.save(user=request.user, book=book)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -142,6 +155,12 @@ class ReviewUpdateDeleteAPIView(APIView):
 
         serializer = ReviewSerializer(review, data=request.data, partial=True)
         if serializer.is_valid():
+            if 'rating' in request.data:
+                rate = request.data['rating']
+                rating = Rating.objects.get(user=request.user, book=book)
+                rating.delete()
+                book.refresh_from_db(fields=['rating_sum', 'rating_count'])
+                Rating.objects.create(user=request.user, book=book, rating=rate)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -151,6 +170,8 @@ class ReviewUpdateDeleteAPIView(APIView):
         book = get_object_or_404(Book, pk=book_id)
         review = get_object_or_404(Review, user=request.user, book=book)
         review.delete()
+        rating = get_object_or_404(Rating,user=request.user, book=book)
+        rating.delete()
         return Response({"message": "Review deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 

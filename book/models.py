@@ -30,6 +30,15 @@ class Book(models.Model):
     tags = models.ManyToManyField(Tag, related_name='books', blank=True)
     genres = models.ManyToManyField(Genre, related_name='books', blank=True)
 
+    rating_sum = models.FloatField(default=0)
+    rating_count = models.IntegerField(default=0)
+
+    @property
+    def rating_avg(self):
+        if self.rating_count == 0:
+            return 0
+        return self.rating_sum / self.rating_count
+
     class Meta:
         ordering = [ 'name']
 

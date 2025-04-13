@@ -12,7 +12,7 @@ all_tags.short_description = "Tags"
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('name', 'Author', 'status', 'created_at', 'updated_at', all_tags)
+    list_display = ('name', 'Author', 'status','rating_sum','rating_count', 'created_at', 'updated_at', all_tags)
     list_filter = ('status', 'genres', 'tags__category__title', 'Author')
     search_fields = ('name', 'Author__username', 'description', 'tags__title', 'tags__category__title')
     ordering = ('name',)
@@ -21,7 +21,7 @@ class BookAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'description', 'image', 'status', 'rating', 'Author')
+            'fields': ('name', 'description', 'image', 'status', 'rating_sum','rating_count', 'Author')
         }),
         ('Categories and Tags', {
             'fields': ('tags', 'genres')

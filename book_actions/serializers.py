@@ -1,18 +1,13 @@
 from rest_framework import serializers
 
-from .models import Favorite, Rating
-
+from .models import  Rating
 
 class RatingBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = '__all__'
-        read_only_fields = ('user',)
+        fields = ['id', 'book', 'rating','user']
+        read_only_fields = ['id','user']
 
-    def validate_rating(self, data):
-        if data >= 0 and data <= 5:
-            return data
-        raise serializers.ValidationError("rating must be between 0 and 5")
 
 
 
