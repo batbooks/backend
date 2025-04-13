@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from .models import Favorite,Blocked
+from .models import Favorite, Blocked, Rating
+
+
 def all_books(book):
     return ", ".join(book.name for book in book.book.all())
 
@@ -14,3 +16,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 @admin.register(Blocked)
 class BlockedAdmin(admin.ModelAdmin):
     list_display = ['user',all_books]
+
+@admin.register(Rating)
+class RatingAdmin(admin.ModelAdmin):
+    list_display = ['user', 'book', 'rating']
