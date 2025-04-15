@@ -3,12 +3,12 @@
     "model": "comments.comment",
     "pk": 1,
     "fields": {
-      "user": 1,
+      "user": 11,
       "chapter": 1,
       "body": "این یک نظر تستی است!",
       "created": "2024-04-01T12:00:00Z",
-      "like": [2, 3],
-      "dislike": [1],
+      "like": [12, 13],
+      "dislike": [11],
       "reply": null,
       "tag": null
     }
@@ -17,7 +17,7 @@
     "model": "comments.comment",
     "pk": 2,
     "fields": {
-      "user": 2,
+      "user": 12,
       "chapter": 1,
       "body": "پاسخی به نظر اول",
       "created": "2024-04-01T12:10:00Z",
@@ -31,12 +31,12 @@
     "model": "comments.review",
     "pk": 1,
     "fields": {
-      "user": 1,
+      "user": 11,
       "book": 1,
       "body": "این کتاب فوق‌العاده بود!",
       "chapter": 1,
       "created": "2024-04-01T13:00:00Z",
-      "like": [2],
+      "like": [12],
       "dislike": [],
       "rating": 5
     }
@@ -45,13 +45,13 @@
     "model": "comments.review",
     "pk": 2,
     "fields": {
-      "user": 3,
+      "user": 13,
       "book": 2,
       "chapter": 1,
       "body": "متوسط بود، انتظار بیشتری داشتم.",
       "created": "2024-04-01T13:30:00Z",
       "like": [],
-      "dislike": [1],
+      "dislike": [11],
       "rating": 3
     }
   }

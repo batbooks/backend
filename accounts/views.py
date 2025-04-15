@@ -33,7 +33,7 @@ class RegisterView(APIView):
                 [request.data['email']],
                 fail_silently=False,
             )
-            return Response({'message': 'success', }, status=status.HTTP_200_OK)
+            return Response({'message': 'رمز شما با موفقیت فرستاده شد.', }, status=status.HTTP_200_OK)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -46,32 +46,30 @@ class VerifyOTPView(APIView):
                 user.is_active = True
                 user.save()
                 otp.delete()
-                return Response({'message': 'OTP is Correct'}, status=status.HTTP_201_CREATED)
-            return Response({'error': 'OTP not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'messege': 'رمز OTP صحیح میباشد.'}, status=status.HTTP_201_CREATED)
+            return Response({'error': 'رمز یکبار مصرف اشتباه است'}, status=status.HTTP_404_NOT_FOUND)
         except OTP.DoesNotExist:
-            return Response({'error': 'OTP not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'رمز یکبار مصرف برای این ایمیل پیدا نشد'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class SendOTPResetView(APIView):
     def post(self, request):
         email = request.data.get('email')
         if not email:
-            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({'error': 'ایمیل مورد نیاز است'}, status=status.HTTP_400_BAD_REQUEST)
         try:
             user = User.objects.get(email=email, is_active=True)
         except User.DoesNotExist:
-            return Response({'error': 'User not found or not active'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'کاربر پیدا نشد یا غیر فعال است'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Generate a new OTP code
         otp_code = random.randint(100000, 999999)
-        # Update or create an OTP entry for the user
+
         otp, created = OTP.objects.update_or_create(
             user=user,
             defaults={'code': otp_code}
         )
 
-        # Send the OTP via email
+
         send_mail(
             'کد تایید فراموشی پسورد',
             f' رمز یکبار مصرف شما: {otp_code}',
@@ -79,7 +77,7 @@ class SendOTPResetView(APIView):
             [user.email],
             fail_silently=False,
         )
-        return Response({'message': 'OTP has been sent to your email'}, status=status.HTTP_200_OK)
+        return Response({'messege': 'رمز شما فرستاده شد.'}, status=status.HTTP_200_OK)
 
 
 class VerifyOTPAndResetPasswordView(APIView):
@@ -93,20 +91,17 @@ class VerifyOTPAndResetPasswordView(APIView):
             new_password_conf = request.data['new_password_conf']
 
             try:
-                # Verify the OTP matches the user's email
                 otp = OTP.objects.get(user__email=email, code=code)
             except OTP.DoesNotExist:
-                return Response({'error': 'Invalid OTP or email'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'ایمیل یا رمز یکبار مصرف اشتباه است'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Update the user's password
             user = otp.user
             user.password = make_password(new_password)
             user.save()
 
-            # Delete the OTP to prevent reuse
             otp.delete()
 
-            return Response({'message': 'Password has been reset successfully'}, status=status.HTTP_200_OK)
+            return Response({'messege': 'گذرواژه با موفقیت بازنشانی شد'}, status=status.HTTP_200_OK)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

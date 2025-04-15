@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from .models import User
 from user_info.serializers import UserInfoSerializer
 
@@ -33,12 +32,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def validate_password(self, value):
         if len(value) < 8:
-            raise serializers.ValidationError('Password must be at least 8 characters')
+            raise serializers.ValidationError({'error':'گذرواژه باید حتما حداقل هشت حرف داشته باشد.'})
         return value
 
     def validate(self, attrs):
         if attrs['password'] != attrs['c_password']:
-            raise serializers.ValidationError("Passwords do not match")
+            raise serializers.ValidationError({'error': 'گذرواژه‌ها یکسان نیستند.'})
 
         user = User.objects.filter(email=attrs['email']).first()
         if user and not user.is_active:
@@ -55,12 +54,12 @@ class ResetPasswordSerializer(serializers.Serializer):
 
     def validate_new_password(self, value):
         if len(value) < 8:
-            raise serializers.ValidationError('Password must be at least 8 characters')
+            raise serializers.ValidationError({'error': 'گذرواژه باید حتما حداقل هشت حرف داشته باشد.'})
         return value
 
     def validate(self, attrs):
         if attrs['new_password'] != attrs['new_password_conf']:
-            raise serializers.ValidationError("Passwords do not match")
+            raise serializers.ValidationError({'error': 'گذرواژه‌ها یکسان نیستند.'})
 
         user = User.objects.filter(email=attrs['email']).first()
 

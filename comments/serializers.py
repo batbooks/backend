@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Comment,Review
+from rest_framework.exceptions import ValidationError
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -12,13 +13,20 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields =['user',]
 
+    def validate_text(self, value):
+        if len(value) < 5:
+            raise ValidationError("متن کامنت باید حداقل ۵ حرف باشد.")
+        return value
+
     def get_reply_count(self,obj):
         if obj.replies :
             return obj.replies.all().count()
 
-    def get_image(self,obj):
+    def get_image(self, obj):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url
+
+
 
 class ReplyCommentSerializer(serializers.ModelSerializer):
     tag = serializers.SlugRelatedField(slug_field='name', read_only=True)
@@ -33,7 +41,7 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
             'user': {'read_only': True},
         }
 
-    def get_image(self,obj):
+    def get_image(self, obj):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url
 
@@ -46,6 +54,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['user','book']
 
-    def get_image(self,obj):
+    def get_image(self, obj):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url

@@ -62,3 +62,4 @@ class NotInterestedSerializer(serializers.ModelSerializer):
         for field in hidden_fields:
             data.pop(field, None)
         return data
+
