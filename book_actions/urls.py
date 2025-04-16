@@ -6,5 +6,5 @@ urlpatterns=[
 
     path('toggle/blocked/<int:book_id>/',views.BookToggleBlockedView.as_view(),),
     path('get/blocked/',views.UserBlockedView.as_view(),),
-
+    path('rating/',views.BookRatingView.as_view(),),
 ]
