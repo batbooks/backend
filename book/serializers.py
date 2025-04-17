@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Book, Chapter
+from rest_framework.reverse import reverse
 from django.db.models import Avg
 
 User = get_user_model()
@@ -18,7 +19,7 @@ class BookSerializer(serializers.ModelSerializer):
         }
     )
 
-
+    forum_link = serializers.SerializerMethodField()
     Author = serializers.SlugRelatedField(slug_field='name', read_only=True)
     rating = serializers.SerializerMethodField()
 
@@ -27,10 +28,16 @@ class BookSerializer(serializers.ModelSerializer):
 
         return str(rating) if rating else '0'
 
+    def get_forum_link(self, obj):
+        if hasattr(obj, 'forum'):
+            request = self.context.get('request')
+            return reverse('api_threads_of_forum', kwargs={'pk': obj.forum.pk}, request=request)
+        return None
+
     class Meta:
         model = Book
-        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author','image','genres','tags']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
+        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author','image','genres','tags','forum_link']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'Author','forum_link']
 
     def validate_name(self, value):
         if len(value) < 3:
@@ -66,6 +73,12 @@ class BookGetAllSerializer(serializers.ModelSerializer):
         rating = obj.rating_avg
 
         return str(rating) if rating else '0'
+    forum_link = serializers.SerializerMethodField()
+    def get_forum_link(self, obj):
+        if hasattr(obj, 'forum'):
+            request = self.context.get('request')
+            return reverse('api_threads_of_forum', kwargs={'pk': obj.forum.pk}, request=request)
+        return None
 
     Author = serializers.SlugRelatedField(slug_field='name', read_only=True)
     chapters = serializers.SerializerMethodField()
@@ -79,8 +92,8 @@ class BookGetAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author', 'chapters',
-                  'image', 'genres', 'tags']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
+                  'image', 'genres', 'tags','forum_link']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'Author','forum_link']
 
 
 class BookGetSerializer(serializers.ModelSerializer):

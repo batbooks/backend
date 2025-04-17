@@ -18,9 +18,6 @@ class ForumListAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-
-
 class ThreadCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
