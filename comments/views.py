@@ -5,7 +5,7 @@ from book.models import Chapter, Book
 from forum.models import Thread
 from book_actions.models import Rating
 from comments.serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer,PostSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from permissions import ReviewPostIsOwnerOrReadOnly
 from comments.models import Comment, Review,Post
 from django.shortcuts import get_object_or_404
@@ -185,7 +185,7 @@ class ReviewCreateAPIView(APIView):
 
 
 class ReviewListAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def get(self, request, book_id):
         try:
