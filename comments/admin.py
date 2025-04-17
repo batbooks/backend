@@ -14,7 +14,7 @@ class ReviewAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('user', 'thread', 'created')
+    list_display = ('user', 'thread', 'created','body')
     search_fields = ('body', 'user__username', 'thread__name')
     list_filter = ('created', 'thread')
     ordering = ('-created',)

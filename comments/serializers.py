@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Comment,Review
+from .models import Comment,Review,Post
 from rest_framework.exceptions import ValidationError
 
 
@@ -57,3 +57,10 @@ class ReviewSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url
+
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'
+        read_only_fields = ['user', 'thread']

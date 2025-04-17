@@ -29,6 +29,7 @@ urlpatterns = ([
     path('comments/', include('comments.urls')),
     path('book-actions/', include('book_actions.urls')),
     path('tag/', include('tag.urls')),
+    path('forum/', include('forum.urls')),
 ])
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

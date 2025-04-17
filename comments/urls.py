@@ -13,4 +13,10 @@ urlpatterns =[
     path('review/dislike/<int:review_id>/',views.ReviewDisLikeAPIView.as_view(),name='review-dislike'),
     path('review/like/<int:review_id>/', views.ReviewLikeAPIView.as_view(), name='review-like'),
     path('book/<int:book_id>/reviews/my-review/',views.ReviewUpdateDeleteAPIView.as_view(), name='update-delete-review'),
+
+    path('threads/<int:thread_id>/posts/', views.PostGetAPIView.as_view(), name='api_thread_posts'),
+    path('threads/<int:thread_id>/create/', views.PostCreateAPIView().as_view(), name='api_creating_post'),
+    path('posts/<int:pk>/', views.PostUpdateAPIView.as_view(), name='api_Update_post'),
+    path('posts/<int:post_id>/like/', views.PostLikeAPIView.as_view(), name='post-like'),
+    path('posts/<int:post_id>/dislike/', views.PostDisLikeAPIView.as_view(), name='post-dislike'),
 ]

@@ -2,10 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from book.models import Chapter, Book
+from forum.models import Thread
 from book_actions.models import Rating
-from .serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer
+from comments.serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer,PostSerializer
 from rest_framework.permissions import IsAuthenticated
-from .models import Comment, Review
+from permissions import ReviewPostIsOwnerOrReadOnly
+from comments.models import Comment, Review,Post
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
 from django.db.models import Case, When, Value, IntegerField
@@ -205,7 +207,7 @@ class ReviewListAPIView(APIView):
 
 
 class ReviewUpdateDeleteAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,ReviewPostIsOwnerOrReadOnly)
 
     def put(self, request, book_id):
         try:
@@ -304,4 +306,92 @@ class ReviewDisLikeAPIView(APIView):
             review.dislike.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
         review.dislike.add(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PostGetAPIView(APIView):
+
+    def get(self, request, thread_id):
+        thread = get_object_or_404(Thread, id=thread_id)
+        posts = thread.posts.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
+
+class PostCreateAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, thread_id):
+        thread = get_object_or_404(Thread, id=thread_id)
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, thread=thread)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PostUpdateAPIView(APIView):
+    permission_classes = (IsAuthenticated,ReviewPostIsOwnerOrReadOnly)
+    def get_object(self, pk):
+        return get_object_or_404(Post, pk=pk)
+    def put(self, request, pk):
+        post = self.get_object(pk)
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        post = self.get_object(pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PostLikeAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, post_id):
+        try:
+            post = Post.objects.get(pk=post_id)
+        except Post.DoesNotExist:
+            return Response(
+                {"error": "پستی با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        user = request.user
+
+        if user in post.dislike.all():
+            post.dislike.remove(user)
+
+        if user in post.like.all():
+            post.like.remove(user)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        post.like.add(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PostDisLikeAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, post_id):
+        try:
+            post = Post.objects.get(pk=post_id)
+        except Post.DoesNotExist:
+            return Response(
+                {"error": "پستی با این شناسه پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        user = request.user
+
+        if user in post.like.all():
+            post.like.remove(user)
+
+        if user in post.dislike.all():
+            post.dislike.remove(user)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        post.dislike.add(user)
         return Response(status=status.HTTP_204_NO_CONTENT)

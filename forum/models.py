@@ -4,8 +4,6 @@ from accounts.models import User
 # Create your models here.
 
 class Forum(models.Model):
-
-
     name = models.CharField(max_length=256)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -16,8 +14,6 @@ class Forum(models.Model):
 
     def __str__(self):
         return self.name
-
-
 
 
 class Thread(models.Model):

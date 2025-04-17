@@ -52,5 +52,8 @@ class Post(CommentAbstract):
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='posts')
 
     chapter = None
+
     def __str__(self):
-        return f"{self.user.username} on {self.thread.name}: {self.body[:30]}"
+        return f"{self.user.name} on {self.thread.name}: {self.body[:30]}"
+
+
