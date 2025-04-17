@@ -7,10 +7,10 @@ from django.shortcuts import get_object_or_404
 from .models import Book, Chapter
 from permissions import  BookIsOwnerOrReadOnly,ChapterIsOwnerOrReadOnly
 from .serializers import BookSerializer, BookGetAllSerializer, ChapterGetSerializer, ChapterCreateSerializer, \
-    BookAllGetSerializer, BookGetSerializer
+    BookAllGetSerializer, BookGetSerializer, User
 from  book_actions.models import Blocked
 from paginations import CustomPagination
-from rest_framework.exceptions import NotFound
+from rest_framework import generics
 
 class BookListAPIView(APIView):
     permission_classes = [AllowAny]
@@ -143,3 +143,20 @@ class BookSearchAPIView(APIView):
         page = paginator.paginate_queryset(books, request)
         data = BookGetSerializer(page, context={"hide_field": ['email']}, many=True).data
         return paginator.get_paginated_response(data)
+
+
+##  with generic
+
+class UserBookAPIView(generics.ListAPIView):
+    serializer_class =  BookSerializer
+
+    def get_queryset(self):
+        user = get_object_or_404(User, id=self.kwargs.get('id'))
+        return user.books.all().order_by('-id')
+
+class MyBookAPIView(generics.ListAPIView):
+    serializer_class =  BookSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        user = self.request.user
+        return user.books.all().order_by('-id')

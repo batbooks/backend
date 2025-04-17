@@ -6,7 +6,7 @@ class UserReadSerializer(serializers.ModelSerializer):
     user_info = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'email', 'name','user_info']
+        fields = ['id', 'email', 'name','user_info','joined_date']
 
     def get_user_info(self, obj):
         user_inf = obj.user_info
