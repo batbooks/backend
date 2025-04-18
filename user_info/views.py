@@ -6,8 +6,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 
 from permissions import IsOwnerOrReadOnly
-from .models import UserInfo, UserFollow,UserNotInterested
-from .serializers import UserInfoSerializer, FollowSerializer,NotInterestedSerializer
+from .models import UserInfo, UserFollow, UserNotInterested
+from .serializers import UserInfoSerializer, FollowSerializer, NotInterestedSerializer
 import string
 from accounts.serializers import UserReadSerializer
 from django.db.models import Q
@@ -30,7 +30,7 @@ class UserInfoView(APIView):
             ser_data = UserInfoSerializer(instance=user_info).data
             if request.user != user.first():
                 ser_data = UserInfoSerializer(instance=user_info, context={
-                    'hide_field': ['favorite_count', 'follower_count', 'following_count']}).data
+                    'hide_field': [ 'following_count']}).data
 
             return Response(ser_data, status=status.HTTP_200_OK)
         return Response({'error': 'کاربر پیدا نشد.'}, status=status.HTTP_404_NOT_FOUND)
@@ -62,6 +62,7 @@ class UsernameUpdateView(APIView):
 
 class UserInfoUpdateView(APIView):
     permission_classes = [IsOwnerOrReadOnly]
+
     def put(self, request):
         try:
             user_info = UserInfo.objects.get(user=request.user)
@@ -108,7 +109,7 @@ class ToggleFollowUserView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
         if request.user == user:
-            return Response({"error":"نمیتوانی خودت رو دنبال کنی"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"error": "نمیتوانی خودت رو دنبال کنی"}, status=status.HTTP_403_FORBIDDEN)
         follow = UserFollow.objects.filter(follower=request.user, following=user)
         if follow.exists():
             follow.delete()
@@ -116,6 +117,12 @@ class ToggleFollowUserView(APIView):
             UserFollow.objects.create(follower=request.user, following=user)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class IsFollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, user_id):
+        user = get_object_or_404(get_user_model(), id=user_id)
+        following = UserFollow.objects.filter(follower=request.user, following=user)
+        return Response({"is_follow": following.exists()}, status=status.HTTP_200_OK)
 
 class FollowersView(APIView):
     permission_classes = [IsAuthenticated]
@@ -124,7 +131,8 @@ class FollowersView(APIView):
         followers = UserFollow.objects.filter(following=request.user, follower__is_admin=False)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(followers, request)
-        data = FollowSerializer(page, context={"hide_field": ['following']}, many=True).data
+        data = FollowSerializer(page, context={"hide_field": ['following', 'following_image', 'following_user_id']},
+                                many=True).data
         return paginator.get_paginated_response(data)
 
 
@@ -135,9 +143,9 @@ class FollowingView(APIView):
         followers = UserFollow.objects.filter(follower=request.user, following__is_admin=False)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(followers, request)
-        data = FollowSerializer(page, context={"hide_field": ['follower']}, many=True).data
+        data = FollowSerializer(page, context={"hide_field": ['follower', 'follower_user_id', 'follower_image']},
+                                many=True).data
         return paginator.get_paginated_response(data)
-
 
 
 class ToggleNotInterestedUserView(APIView):
@@ -156,7 +164,7 @@ class ToggleNotInterestedUserView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
         if request.user == user:
-            return Response({"error":"نمیتوانی خودت را بلاک کنی."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"error": "نمیتوانی خودت را بلاک کنی."}, status=status.HTTP_403_FORBIDDEN)
         not_interested = UserNotInterested.objects.filter(user=request.user, not_interested=user)
         if not_interested.exists():
             not_interested.delete()
@@ -174,4 +182,3 @@ class NotInterestedView(APIView):
         page = paginator.paginate_queryset(not_interested_qs, request)
         data = NotInterestedSerializer(page, many=True).data
         return paginator.get_paginated_response(data)
-
