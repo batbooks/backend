@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserInfo, UserFollow,UserNotInterested
+from .models import UserInfo, UserFollow, UserNotInterested
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -7,6 +7,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     favorite_count = serializers.SerializerMethodField()
     follower_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
+
     class Meta:
         model = UserInfo
         fields = '__all__'
@@ -22,28 +23,42 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        hide_field = self.context.get('hide_field',[])
+        hide_field = self.context.get('hide_field', [])
         for f in hide_field:
             data.pop(f, None)
         return data
 
 
-
 class FollowSerializer(serializers.ModelSerializer):
     follower = serializers.SlugRelatedField(slug_field='name', read_only=True)
     following = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    follower_image = serializers.SerializerMethodField()
+    following_image = serializers.SerializerMethodField()
+    follower_user_id = serializers.SerializerMethodField()
+    following_user_id = serializers.SerializerMethodField()
+
+    def get_follower_user_id(self, obj):
+        return obj.follower.id
+
+    def get_following_user_id(self, obj):
+        return obj.following.id
+
+    def get_follower_image(self, obj):
+        return obj.follower.user_info.image.url if obj.follower.user_info.image else None
+
+    def get_following_image(self, obj):
+        return obj.following.user_info.image.url if obj.following.user_info.image else None
+
     class Meta:
         model = UserFollow
         fields = '__all__'
 
-
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        hidden_field = self.context.get('hide_field',[])
+        hidden_field = self.context.get('hide_field', [])
         for f in hidden_field:
             data.pop(f, None)
         return data
-
 
 
 class NotInterestedSerializer(serializers.ModelSerializer):
@@ -62,4 +77,3 @@ class NotInterestedSerializer(serializers.ModelSerializer):
         for field in hidden_fields:
             data.pop(field, None)
         return data
-
