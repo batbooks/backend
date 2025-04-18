@@ -10,4 +10,6 @@ urlpatterns = [
      path('chapter/<int:id>/',views.ChapterDetailUpdateDeleteAPIView.as_view(), name='Chapter-list'),
      path('chapter/create/', views.ChapterCreateAPIView.as_view(), name='Chapter-create'),
      path('search/<str:book_name>/', views.BookSearchAPIView.as_view(), name='book-search'),
+     path('user/<int:id>/', views.UserBookAPIView.as_view(), name='user-detail'),
+     path('my/', views.MyBookAPIView.as_view(), name='user-detail'),
 ]

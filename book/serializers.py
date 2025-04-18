@@ -115,11 +115,18 @@ class BookGetSerializer(serializers.ModelSerializer):
 class ChapterGetSerializer(serializers.ModelSerializer):
     book = serializers.SlugRelatedField(slug_field='name', read_only=True)
     Author = serializers.SerializerMethodField()
+    book_image = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
 
+    def get_rating(self, obj):
+        return obj.book.rating_avg
+
+    def get_book_image(self, obj):
+        return obj.book.image.url if obj.book.image else None
     class Meta:
         model = Chapter
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'book']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'book','book_image']
 
     def get_Author(self, obj):
         return obj.book.Author.name
