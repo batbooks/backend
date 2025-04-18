@@ -323,6 +323,11 @@ class PostCreateAPIView(APIView):
 
     def post(self, request, thread_id):
         thread = get_object_or_404(Thread, id=thread_id)
+
+        if thread.status == Thread.STATUS_CLOSED:
+            return Response({"messeage": "این گفت و گو بسته شده است. نمیتوانید در اینجا پست بگذارید.."},
+                            status=status.HTTP_403_FORBIDDEN)
+
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user, thread=thread)
@@ -330,11 +335,22 @@ class PostCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostUpdateAPIView(APIView):
-    permission_classes = (IsAuthenticated,ReviewPostIsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated, ReviewPostIsOwnerOrReadOnly)
+
     def get_object(self, pk):
         return get_object_or_404(Post, pk=pk)
+
+    def check_thread_status(self, post):
+        if post.thread.status == Thread.STATUS_CLOSED:
+            return Response({"detail": "این گفت و گو بسته شده است. نمیتوانبد پستتات را تغییر دهید یا حذف کنید."},
+                            status=status.HTTP_403_FORBIDDEN)
+
     def put(self, request, pk):
         post = self.get_object(pk)
+        status_check = self.check_thread_status(post)
+        if status_check:
+            return status_check
+
         serializer = PostSerializer(post, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -343,8 +359,13 @@ class PostUpdateAPIView(APIView):
 
     def delete(self, request, pk):
         post = self.get_object(pk)
+        status_check = self.check_thread_status(post)
+        if status_check:
+            return status_check
+
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class PostLikeAPIView(APIView):
