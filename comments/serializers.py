@@ -6,8 +6,9 @@ from rest_framework.exceptions import ValidationError
 class CommentSerializer(serializers.ModelSerializer):
     tag = serializers.SlugRelatedField(slug_field='name', read_only=True)
     reply_count = serializers.SerializerMethodField()
-    user = serializers.SlugRelatedField(slug_field='name', read_only=True)
     image = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
         fields = '__all__'
@@ -26,11 +27,17 @@ class CommentSerializer(serializers.ModelSerializer):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url
 
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "name": obj.user.name
+        }
+
 
 
 class ReplyCommentSerializer(serializers.ModelSerializer):
     tag = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    user = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    user = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
 
     class Meta:
@@ -45,8 +52,14 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url
 
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "name": obj.user.name
+        }
+
 class ReviewSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    user = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
 
     class Meta:
@@ -58,9 +71,20 @@ class ReviewSerializer(serializers.ModelSerializer):
         if obj.user.user_info.image :
             return obj.user.user_info.image.url
 
-
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "name": obj.user.name
+        }
 class PostSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
     class Meta:
         model = Post
         fields = '__all__'
         read_only_fields = ['user', 'thread']
+
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "name": obj.user.name
+        }
