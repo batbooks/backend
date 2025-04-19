@@ -40,7 +40,7 @@ class Book(models.Model):
         return self.rating_sum / self.rating_count
 
     class Meta:
-        ordering = [ 'name']
+        ordering = ['id']
 
     def __str__(self):
         return self.name

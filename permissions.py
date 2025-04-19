@@ -40,5 +40,31 @@ class ChapterIsOwnerOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
-
         return obj.book.Author == request.user
+
+class ForumIsOwnerOrReadOnly(BasePermission):
+    message = 'You are not owner of this thread'
+
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        return request.user.is_authenticated and request.user
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+        return obj.author == request.user
+
+
+class ReviewPostIsOwnerOrReadOnly(BasePermission):
+    message = 'You are not owner of this thread'
+
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        return request.user.is_authenticated and request.user
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+        return obj.user == request.user
