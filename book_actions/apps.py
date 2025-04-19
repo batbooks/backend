@@ -6,4 +6,4 @@ class BookActionsConfig(AppConfig):
     name = 'book_actions'
 
     def ready(self):
-        import book_actions.signals
+        from . import signals
