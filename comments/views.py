@@ -135,7 +135,6 @@ class CommentGetAllReplyAPIView(APIView):
         ser_data = CommentSerializer(page, many=True)
         return paginator.get_paginated_response(ser_data.data)
 
-
 class ReviewCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -148,8 +147,8 @@ class ReviewCreateAPIView(APIView):
                 {"error": "کتابی با این شناسه پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
-        existing_review = Review.objects.filter(user=request.user, book=book).first()
 
+        existing_review = Review.objects.filter(user=request.user, book=book).first()
         if existing_review:
             return Response(
                 {"error": "شما قبلا در مورد این کتاب نظر داده اید.لطفا نظر ثبت شده خود را تغییر دهید."},
@@ -157,22 +156,10 @@ class ReviewCreateAPIView(APIView):
             )
 
         serializer = ReviewSerializer(data=request.data)
-
-
         if serializer.is_valid():
-
-            rate = request.data['rating']
-            book_id = request.data['book']
-            try:
-                book = Book.objects.get(pk=book_id)
-            except Book.DoesNotExist:
-                return Response(
-                    {"error": "کتاب مورد نظر پیدا نشد."},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-            rating = Rating.objects.filter(user=request.user, book=book)
-            if rating.exists():
-                rating = rating.first()
+            rate = request.data.get('rating')  # safely fetch rating
+            rating = Rating.objects.filter(user=request.user, book=book).first()
+            if rating:
                 rating.rating = rate
                 rating.save()
             else:
@@ -182,7 +169,6 @@ class ReviewCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ReviewListAPIView(APIView):
     permission_classes = (AllowAny,)
@@ -196,9 +182,18 @@ class ReviewListAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        reviews = Review.objects.filter(book=book).annotate(
-            priority=Case(When(user=request.user, then=Value(0)), default=Value(1),
-                          output_field=IntegerField())).order_by('priority', '-created')
+        reviews = Review.objects.filter(book=book)
+
+        if request.user.is_authenticated:
+            reviews = reviews.annotate(
+                priority=Case(
+                    When(user=request.user, then=Value(0)),
+                    default=Value(1),
+                    output_field=IntegerField()
+                )
+            ).order_by('priority', '-created')
+        else:
+            reviews = reviews.order_by('-created')
 
         paginator = CustomPagination()
         page = paginator.paginate_queryset(reviews, request)
