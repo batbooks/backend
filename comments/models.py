@@ -37,6 +37,7 @@ class Comment(CommentAbstract):
 
 
 class Review(CommentAbstract):
+    title = models.TextField()
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
     rating = models.DecimalField(max_digits=2,decimal_places=1)
 

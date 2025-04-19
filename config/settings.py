@@ -51,7 +51,7 @@ INSTALLED_APPS += [
     'comments.apps.CommentsConfig',
     'book_actions.apps.BookActionsConfig',
     'tag.apps.TagConfig',
-    'forum.apps.ForumConfig'
+    'forum.apps.ForumConfig',
     'adv_search.apps.AdvSearchConfig',
 ]
 
