@@ -4,7 +4,8 @@ from book.models import Book
 class ProductFilter(filters.FilterSet):
     name = filters.CharFilter(field_name='name', lookup_expr='icontains')
     description = filters.CharFilter(field_name='description', lookup_expr='icontains')
-
+    date = filters.DateFromToRangeFilter(field_name='created_at',)
+    user = filters.CharFilter(field_name='Author__name', lookup_expr='icontains')
     class Meta:
         model = Book
-        fields = ['name', 'description']
+        fields = ['name', 'description','date','user']
