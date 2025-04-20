@@ -43,7 +43,7 @@ class BookIsFavoriteView(APIView):
         book = get_object_or_404(Book, id=book_id)
         favorite = Favorite.objects.filter(user=request.user, book=book)
         return Response({"is_favorite": favorite.exists()}, status=status.HTTP_200_OK)
-    
+
 class BookToggleBlockedView(APIView):
     permission_classes = (IsAuthenticated,)
 
