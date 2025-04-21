@@ -2,6 +2,7 @@
 
 from django.db.models.signals import post_save , post_migrate
 from django.dispatch import receiver
+from book.models import Book,Chapter
 from .models import Book
 from forum.models import Forum
 
@@ -16,3 +17,6 @@ def create_forum_for_book(sender, instance, created, **kwargs):
             image=instance.image
         )
 
+@receiver(post_save, sender=Chapter)
+def update_book_timestamp(sender, instance, **kwargs):
+    instance.book.save()
