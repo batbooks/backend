@@ -129,7 +129,7 @@ class CommentGetAllReplyAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        comments = comment.replies.all()
+        comments = comment.replies.all().order_by('created')
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
