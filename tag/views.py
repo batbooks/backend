@@ -11,27 +11,12 @@ from  tag.serializer import TagCategorySerializer,TagSerializer,GenreSerializer
 class GenreListView(APIView):
     def get(self, request):
         genres = Genre.objects.all()
-        paginator = CustomPagination()
-        page = paginator.paginate_queryset(genres, request)
-
-        serializer = GenreSerializer(page, many=True) if page is not None else GenreSerializer(genres, many=True)
-
-        if page is not None:
-            return paginator.get_paginated_response(serializer.data)
-
+        serializer = GenreSerializer(genres, many=True)
         return Response({"genres": serializer.data}, status=status.HTTP_200_OK)
-
 
 
 class TagCategoryView(APIView):
     def get(self, request):
         tag_categories = TagCategory.objects.all()
-        paginator = CustomPagination()
-        page = paginator.paginate_queryset(tag_categories, request)
-
-        serializer = TagCategorySerializer(page, many=True) if page is not None else TagCategorySerializer(tag_categories, many=True)
-
-        if page is not None:
-            return paginator.get_paginated_response(serializer.data)
-
+        serializer = TagCategorySerializer(tag_categories, many=True)
         return Response({"tag_categories": serializer.data}, status=status.HTTP_200_OK)
