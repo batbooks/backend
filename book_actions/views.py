@@ -1,4 +1,3 @@
-from idlelib.rpc import request_queue
 
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
@@ -38,6 +37,12 @@ class UserFavoriteView(APIView):
         ser_date = BookAllGetSerializer(page,many=True)
         return paginator.get_paginated_response(ser_date.data)
 
+class BookIsFavoriteView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        favorite = Favorite.objects.filter(user=request.user, book=book)
+        return Response({"is_favorite": favorite.exists()}, status=status.HTTP_200_OK)
 
 class BookToggleBlockedView(APIView):
     permission_classes = (IsAuthenticated,)

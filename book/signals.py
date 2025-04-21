@@ -1,8 +1,9 @@
 # signals.py
 
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save , post_migrate
 from django.dispatch import receiver
 from book.models import Book,Chapter
+from .models import Book
 from forum.models import Forum
 
 
