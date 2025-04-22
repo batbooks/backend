@@ -3,8 +3,8 @@
     "model": "tag.tag",
     "pk": 1,
     "fields": {
-      "title": "Hard Magic Rules",
-      "description": "Clearly defined magical laws and mechanics.",
+      "title": "قوانین سخت جادویی",
+      "description": "قوانین و مکانیک‌های جادویی کاملاً مشخص و تعریف‌شده.",
       "category": 1
     }
   },
@@ -12,8 +12,8 @@
     "model": "tag.tag",
     "pk": 2,
     "fields": {
-      "title": "Forbidden Magic",
-      "description": "Magic that is dangerous, illegal, or taboo.",
+      "title": "جادوی ممنوعه",
+      "description": "جادویی که خطرناک، غیرقانونی یا تابو است.",
       "category": 1
     }
   },
@@ -21,8 +21,8 @@
     "model": "tag.tag",
     "pk": 3,
     "fields": {
-      "title": "Skill Leveling",
-      "description": "Characters gain new abilities and power-ups over time.",
+      "title": "ارتقای مهارت",
+      "description": "شخصیت‌ها به‌مرور زمان توانایی‌ها و قدرت‌های جدیدی به دست می‌آورند.",
       "category": 2
     }
   },
@@ -30,8 +30,8 @@
     "model": "tag.tag",
     "pk": 4,
     "fields": {
-      "title": "Dungeons & Boss Battles",
-      "description": "The story features structured challenges with increasing difficulty.",
+      "title": "سیاه‌چاله و نبرد با رئیس",
+      "description": "داستان دارای چالش‌های ساختاریافته با سختی فزاینده است.",
       "category": 2
     }
   },
@@ -39,8 +39,8 @@
     "model": "tag.tag",
     "pk": 5,
     "fields": {
-      "title": "Heavenly Tribulation",
-      "description": "A powerful breakthrough comes with divine punishment.",
+      "title": "محن الهی",
+      "description": "پیشرفتی بزرگ همراه با مجازات الهی فرا می‌رسد.",
       "category": 3
     }
   },
@@ -48,8 +48,8 @@
     "model": "tag.tag",
     "pk": 6,
     "fields": {
-      "title": "Immortal Ascension",
-      "description": "The ultimate goal is achieving godhood.",
+      "title": "صعود به جاودانگی",
+      "description": "هدف نهایی، رسیدن به مقام خدایی است.",
       "category": 3
     }
   },
@@ -57,8 +57,8 @@
     "model": "tag.tag",
     "pk": 7,
     "fields": {
-      "title": "Totalitarian Regime",
-      "description": "A government that controls all aspects of life.",
+      "title": "حکومت تمامیت‌خواه",
+      "description": "دولتی که بر تمام جنبه‌های زندگی مردم کنترل دارد.",
       "category": 4
     }
   },
@@ -66,8 +66,8 @@
     "model": "tag.tag",
     "pk": 8,
     "fields": {
-      "title": "Underground Resistance",
-      "description": "A hidden group fights against oppression.",
+      "title": "مقاومت زیرزمینی",
+      "description": "گروهی مخفیانه علیه ظلم و ستم مبارزه می‌کند.",
       "category": 4
     }
   },
@@ -75,8 +75,8 @@
     "model": "tag.tag",
     "pk": 9,
     "fields": {
-      "title": "Mind Games",
-      "description": "Characters engage in battles of intellect and manipulation.",
+      "title": "بازی‌های ذهنی",
+      "description": "شخصیت‌ها در نبردهای فکری و فریب یکدیگر شرکت می‌کنند.",
       "category": 5
     }
   },
@@ -84,8 +84,8 @@
     "model": "tag.tag",
     "pk": 10,
     "fields": {
-      "title": "Unreliable Narrator",
-      "description": "The protagonist's perception of reality is distorted.",
+      "title": "راوی غیرقابل اعتماد",
+      "description": "درک شخصیت اصلی از واقعیت دچار تحریف است.",
       "category": 5
     }
   },
@@ -93,8 +93,8 @@
     "model": "tag.tag",
     "pk": 11,
     "fields": {
-      "title": "Unspoken Feelings",
-      "description": "Characters struggle to confess their emotions.",
+      "title": "احساسات ناگفته",
+      "description": "شخصیت‌ها در ابراز احساسات خود ناتوان هستند.",
       "category": 6
     }
   },
@@ -102,8 +102,8 @@
     "model": "tag.tag",
     "pk": 12,
     "fields": {
-      "title": "Mutual Pining",
-      "description": "Both love interests like each other but don't realize it.",
+      "title": "عشق دوطرفه پنهان",
+      "description": "هر دو شخصیت به هم علاقه دارند ولی از آن بی‌خبرند.",
       "category": 6
     }
   },
@@ -111,8 +111,8 @@
     "model": "tag.tag",
     "pk": 13,
     "fields": {
-      "title": "Resource Scarcity",
-      "description": "Food, water, or other essentials are extremely limited.",
+      "title": "کمبود منابع",
+      "description": "منابع ضروری مانند غذا یا آب بسیار کمیاب هستند.",
       "category": 7
     }
   },
@@ -120,8 +120,8 @@
     "model": "tag.tag",
     "pk": 14,
     "fields": {
-      "title": "Zombie Apocalypse",
-      "description": "The world is overrun by the undead.",
+      "title": "آخرالزمان زامبی",
+      "description": "دنیا به‌وسیله‌ی مردگان متحرک تسخیر شده است.",
       "category": 7
     }
   },
@@ -129,8 +129,8 @@
     "model": "tag.tag",
     "pk": 15,
     "fields": {
-      "title": "Anti-Hero Protagonist",
-      "description": "The main character has questionable morals.",
+      "title": "پروتاگونیست ضدقهرمان",
+      "description": "شخصیت اصلی دارای اصول اخلاقی مشکوک یا خاکستری است.",
       "category": 8
     }
   },
@@ -138,8 +138,8 @@
     "model": "tag.tag",
     "pk": 16,
     "fields": {
-      "title": "Eldritch Horror",
-      "description": "Creatures beyond human comprehension appear.",
+      "title": "وحشت کهن",
+      "description": "موجوداتی ظاهر می‌شوند که فراتر از درک انسان هستند.",
       "category": 8
     }
   },
@@ -147,88 +147,88 @@
     "model": "tag.genre",
     "pk": 1,
     "fields": {
-      "title": "Fantasy",
-      "description": "Stories set in imaginary worlds with magic and mythical creatures."
+      "title": "فانتزی",
+      "description": "داستان‌هایی در دنیایی خیالی با جادو و موجودات افسانه‌ای."
     }
   },
   {
     "model": "tag.genre",
     "pk": 2,
     "fields": {
-      "title": "Science Fiction",
-      "description": "Explores futuristic concepts like space, AI, and time travel."
+      "title": "علمی-تخیلی",
+      "description": "بررسی مفاهیم آینده‌محور مانند فضا، هوش مصنوعی و سفر در زمان."
     }
   },
   {
     "model": "tag.genre",
     "pk": 3,
     "fields": {
-      "title": "Romance",
-      "description": "Focuses on love and relationships."
+      "title": "عاشقانه",
+      "description": "تمرکز بر روابط و احساسات عاشقانه میان شخصیت‌ها."
     }
   },
   {
     "model": "tag.genre",
     "pk": 4,
     "fields": {
-      "title": "Mystery",
-      "description": "Stories involving crime-solving, suspense, or detective work."
+      "title": "معمایی",
+      "description": "شامل حل معما، تعلیق و داستان‌های کارآگاهی."
     }
   },
   {
     "model": "tag.genre",
     "pk": 5,
     "fields": {
-      "title": "Horror",
-      "description": "Designed to evoke fear, dread, or unease."
+      "title": "وحشت",
+      "description": "طراحی‌شده برای ایجاد ترس، دلهره یا احساس ناراحتی."
     }
   },
   {
     "model": "tag.genre",
     "pk": 6,
     "fields": {
-      "title": "Historical Fiction",
-      "description": "Set in the past with real historical events and figures."
+      "title": "تاریخی",
+      "description": "داستان‌هایی در گذشته با حوادث و شخصیت‌های واقعی تاریخی."
     }
   },
   {
     "model": "tag.genre",
     "pk": 7,
     "fields": {
-      "title": "Slice of Life",
-      "description": "Focuses on everyday experiences and realistic characters."
+      "title": "برشی از زندگی",
+      "description": "تمرکز بر زندگی روزمره و شخصیت‌های واقع‌گرایانه."
     }
   },
   {
     "model": "tag.genre",
     "pk": 8,
     "fields": {
-      "title": "LitRPG",
-      "description": "Blends literature and role-playing games with stats and leveling."
+      "title": "لیتRPG",
+      "description": "ترکیبی از ادبیات و بازی‌های نقش‌آفرینی با سطح‌بندی و آمار."
     }
   },
   {
     "model": "tag.genre",
     "pk": 9,
     "fields": {
-      "title": "Dystopian",
-      "description": "Set in a bleak or ruined future with societal collapse."
+      "title": "دیستوپیایی",
+      "description": "در آینده‌ای تاریک و ویران با فروپاشی اجتماعی."
     }
   },
   {
     "model": "tag.genre",
     "pk": 10,
     "fields": {
-      "title": "Isekai",
-      "description": "Protagonists are transported to another world."
+      "title": "ایسکای",
+      "description": "شخصیت اصلی به دنیایی دیگر منتقل می‌شود."
     }
   },
   {
     "model": "tag.tag",
     "pk": 17,
     "fields": {
-      "title": "Time Paradox",
-      "description": "Changing the past alters the future unexpectedly.",
+      "title": "پارادوکس زمانی",
+      "description": "تغییر گذشته، آینده را به شکل غیرمنتظره‌ای تغییر می‌دهد.",
       "category": 9
     }
   },
@@ -236,8 +236,8 @@
     "model": "tag.tag",
     "pk": 18,
     "fields": {
-      "title": "Parallel Worlds",
-      "description": "Alternate realities exist alongside the main one.",
+      "title": "جهان‌های موازی",
+      "description": "واقعیت‌های جایگزین در کنار واقعیت اصلی وجود دارند.",
       "category": 9
     }
   },
@@ -245,8 +245,8 @@
     "model": "tag.tag",
     "pk": 19,
     "fields": {
-      "title": "Nation Management",
-      "description": "The protagonist governs a land.",
+      "title": "مدیریت کشور",
+      "description": "شخصیت اصلی یک سرزمین را اداره می‌کند.",
       "category": 10
     }
   },
@@ -254,8 +254,8 @@
     "model": "tag.tag",
     "pk": 20,
     "fields": {
-      "title": "Diplomatic Conflict",
-      "description": "Political struggles between kingdoms.",
+      "title": "درگیری دیپلماتیک",
+      "description": "مناقشات سیاسی میان کشورها و پادشاهی‌ها.",
       "category": 10
     }
   },
@@ -263,80 +263,80 @@
     "model": "tag.tagcategory",
     "pk": 1,
     "fields": {
-      "title": "Magic System",
-      "description": "Defines how magic works in a story."
+      "title": "سیستم جادویی",
+      "description": "مشخص می‌کند که جادو چگونه در داستان کار می‌کند."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 2,
     "fields": {
-      "title": "Game Elements",
-      "description": "The story follows RPG mechanics like levels, stats, dungeons."
+      "title": "عناصر بازی",
+      "description": "داستان دارای ویژگی‌های RPG مانند سطح، آمار و سیاه‌چال است."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 3,
     "fields": {
-      "title": "Cultivation",
-      "description": "Characters grow stronger by harnessing energy (Qi)."
+      "title": "کشت",
+      "description": "شخصیت‌ها با مهار انرژی (چی) قوی‌تر می‌شوند."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 4,
     "fields": {
-      "title": "Dystopian Society",
-      "description": "A world with oppressive governments, surveillance, or rebellion themes."
+      "title": "جامعه دیستوپیایی",
+      "description": "جهانی با حکومت‌های سرکوبگر، نظارت یا شورش."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 5,
     "fields": {
-      "title": "Psychological",
-      "description": "Focuses on mental struggles, mind games, or deep character psychology."
+      "title": "روان‌شناختی",
+      "description": "تمرکز بر چالش‌های ذهنی، بازی‌های روانی و شخصیت‌پردازی عمیق."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 6,
     "fields": {
-      "title": "Slow Burn",
-      "description": "Relationships develop gradually, emphasizing character growth."
+      "title": "عشق تدریجی",
+      "description": "رابطه‌ها به‌صورت تدریجی و با رشد شخصیتی توسعه می‌یابند."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 7,
     "fields": {
-      "title": "Survival",
-      "description": "Characters must endure extreme conditions like zombie outbreaks or disasters."
+      "title": "بقا",
+      "description": "شخصیت‌ها باید در شرایط دشوار مانند فجایع یا آخرالزمان دوام بیاورند."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 8,
     "fields": {
-      "title": "Dark Fantasy",
-      "description": "A fantasy world with grim settings, brutal conflicts, and morally gray characters."
+      "title": "فانتزی تاریک",
+      "description": "دنیایی فانتزی با فضای تاریک، درگیری‌های خشن و شخصیت‌های خاکستری."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 9,
     "fields": {
-      "title": "Multiple Timelines",
-      "description": "The narrative switches between different points in time."
+      "title": "خطوط زمانی چندگانه",
+      "description": "روایت بین زمان‌های مختلف جابجا می‌شود."
     }
   },
   {
     "model": "tag.tagcategory",
     "pk": 10,
     "fields": {
-      "title": "Kingdom Building",
-      "description": "The protagonist constructs and governs a territory."
+      "title": "ساخت امپراتوری",
+      "description": "شخصیت اصلی یک قلمرو را ساخته و اداره می‌کند."
     }
   }
 ]
