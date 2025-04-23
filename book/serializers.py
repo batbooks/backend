@@ -86,8 +86,8 @@ class BookGetAllSerializer(serializers.ModelSerializer):
     tags = serializers.StringRelatedField(many=True)
 
     def get_chapters(self, obj):
-        res = obj.chapters.filter(is_approved=True)
-        return ChapterGetSerializer(instance=res, many=True).data
+        res = obj.chapters.filter(is_approved=True).order_by('created_at')
+        return ChapterSummarySerializer(instance=res, many=True).data
 
     class Meta:
         model = Book
@@ -130,6 +130,26 @@ class ChapterGetSerializer(serializers.ModelSerializer):
 
     def get_Author(self, obj):
         return obj.book.Author.name
+
+class ChapterSummarySerializer(serializers.ModelSerializer):
+    book = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    Author = serializers.SerializerMethodField()
+    book_image = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
+
+    def get_rating(self, obj):
+        return obj.book.rating_avg
+
+    def get_book_image(self, obj):
+        return obj.book.image.url if obj.book.image else None
+
+    def get_Author(self, obj):
+        return obj.book.Author.name
+
+    class Meta:
+        model = Chapter
+        exclude = ['body']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'book', 'book_image']
 
 
 class ChapterCreateSerializer(serializers.ModelSerializer):
