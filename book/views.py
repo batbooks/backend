@@ -2,17 +2,32 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Book, Chapter
 from permissions import  BookIsOwnerOrReadOnly,ChapterIsOwnerOrReadOnly
 from .serializers import BookSerializer, BookGetAllSerializer, ChapterGetSerializer, ChapterCreateSerializer, \
-    BookAllGetSerializer, BookGetSerializer
+    BookAllGetSerializer, BookGetSerializer, User
+from  book_actions.models import Blocked
 from paginations import CustomPagination
+from rest_framework import generics
 
 class BookListAPIView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request):
-        books = Book.objects.all()
+        user = request.user
+
+        if user.is_authenticated:
+            try:
+                blocked_books = Blocked.objects.get(user=user).book.all()
+            except Blocked.DoesNotExist:
+                blocked_books = Book.objects.none()
+
+            books = Book.objects.exclude(id__in=blocked_books.values_list('id', flat=True))
+        else:
+            books = Book.objects.all()
+
         serializer = BookAllGetSerializer(books, many=True)
         return Response(serializer.data)
 class BookCreateAPIView(APIView):
@@ -27,12 +42,24 @@ class BookCreateAPIView(APIView):
 class BookDetailAPIView(APIView):
     permission_classes = [BookIsOwnerOrReadOnly]
     def get(self, request, pk):
-        book = get_object_or_404(Book, pk=pk)
+        try:
+            book = Book.objects.get(pk=pk)
+        except Book.DoesNotExist:
+            return Response(
+                {"error": "کتاب مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         serializer = BookGetAllSerializer(book)
         return Response(serializer.data)
 
     def put(self, request, pk):
-        book = get_object_or_404(Book, pk=pk)
+        try:
+            book = Book.objects.get(pk=pk)
+        except Book.DoesNotExist:
+            return Response(
+                {"error": "کتاب مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         self.check_object_permissions(request,book)
         serializer = BookSerializer(book, data=request.data,partial=True)
         if serializer.is_valid():
@@ -47,14 +74,26 @@ class BookDetailAPIView(APIView):
 class ChapterDetailUpdateDeleteAPIView(APIView):
     permission_classes = [ChapterIsOwnerOrReadOnly]
     def get(self, request, id):
-        chapter = get_object_or_404(Chapter, pk=id)
+        try:
+            chapter = Chapter.objects.get(pk=id)
+        except Chapter.DoesNotExist:
+            return Response(
+                {"error": "چپتر مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         if chapter.is_approved:
             ser_data = ChapterGetSerializer(chapter)
             return Response(ser_data.data, status=status.HTTP_200_OK)
-        return Response({'msg':'chapter not found'},status=status.HTTP_404_NOT_FOUND)
+        return Response({'error':'چپتر پیدا نشد'},status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, id):
-        chapter = get_object_or_404(Chapter, pk=id)
+        try:
+            chapter = Chapter.objects.get(pk=id)
+        except Chapter.DoesNotExist:
+            return Response(
+                {"error": "چپتر مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         self.check_object_permissions(request,chapter)
         serializer = ChapterCreateSerializer(data=request.data, instance=chapter, partial=True)
         if serializer.is_valid():
@@ -63,15 +102,29 @@ class ChapterDetailUpdateDeleteAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        chapter = get_object_or_404(Chapter, pk=id)
+        try:
+            chapter = Chapter.objects.get(pk=id)
+        except Chapter.DoesNotExist:
+            return Response(
+                {"error": "چپتر مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
         self.check_object_permissions(request,chapter)
         chapter.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'messege':'چپتر با موفقیت پاک شد'},status=status.HTTP_204_NO_CONTENT)
 
 class ChapterCreateAPIView(APIView):
     permission_classes = [BookIsOwnerOrReadOnly]
     def post(self, request):
-        book = get_object_or_404(Book, pk=request.data['book'])
+
+        try:
+            book = Book.objects.get(pk=request.data['book'])
+        except Book.DoesNotExist:
+            return Response(
+                {"error": "کتاب مورد نظر پیدا نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
         self.check_object_permissions(request,book)
         ser_data = ChapterCreateSerializer(data=request.data)
         if ser_data.is_valid():
@@ -84,9 +137,26 @@ class BookSearchAPIView(APIView):
     def get(self, request,book_name):
         book_name = book_name.strip()
         if len(book_name) < 3:
-            return Response({"error": 'book name must be greater than 3 letter'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": 'اسم کتاب باید حداقل سه حرف باشد.'}, status=status.HTTP_400_BAD_REQUEST)
         books = Book.objects.filter(name__icontains=book_name)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(books, request)
         data = BookGetSerializer(page, context={"hide_field": ['email']}, many=True).data
         return paginator.get_paginated_response(data)
+
+
+##  with generic
+
+class UserBookAPIView(generics.ListAPIView):
+    serializer_class =  BookSerializer
+
+    def get_queryset(self):
+        user = get_object_or_404(User, id=self.kwargs.get('id'))
+        return user.books.all().order_by('-id')
+
+class MyBookAPIView(generics.ListAPIView):
+    serializer_class =  BookSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        user = self.request.user
+        return user.books.all().order_by('-id')

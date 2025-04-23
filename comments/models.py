@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from forum.models import Thread
 
 from book.models import Chapter,Book
 
@@ -36,8 +37,9 @@ class Comment(CommentAbstract):
 
 
 class Review(CommentAbstract):
+    title = models.TextField(default='Untitled Review')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)], null=True, blank=True)
+    rating = models.DecimalField(max_digits=2,decimal_places=1)
 
     class Meta:
         unique_together = ('user', 'book')
@@ -45,3 +47,14 @@ class Review(CommentAbstract):
 
     def __str__(self):
         return f"{self.user.name} - {self.book.name} ({self.rating})"
+
+
+class Post(CommentAbstract):
+    thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='posts')
+
+    chapter = None
+
+    def __str__(self):
+        return f"{self.user.name} on {self.thread.name}: {self.body[:30]}"
+
+

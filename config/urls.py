@@ -22,14 +22,17 @@ from django.conf.urls.static import static
 
 urlpatterns = ([
     path('admin/', admin.site.urls),
-    path('auth/',include('accounts.urls')),
-    path('',include('home.urls')),
-    path('book/',include('book.urls')),
-    path('user/',include('user_info.urls')),
-    path('comments/',include('comments.urls')),
-] )
+    path('auth/', include('accounts.urls')),
+    path('', include('home.urls')),
+    path('book/', include('book.urls')),
+    path('user/', include('user_info.urls')),
+    path('comments/', include('comments.urls')),
+    path('book-actions/', include('book_actions.urls')),
+    path('tag/', include('tag.urls')),
+    path('forum/', include('forum.urls')),
+    path('advance/',include('adv_search.urls'))
+])
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     urlpatterns += debug_toolbar_urls()
-

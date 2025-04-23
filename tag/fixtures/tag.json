@@ -1,0 +1,342 @@
+[
+  {
+    "model": "tag.tag",
+    "pk": 1,
+    "fields": {
+      "title": "قوانین سخت جادویی",
+      "description": "قوانین و مکانیک‌های جادویی کاملاً مشخص و تعریف‌شده.",
+      "category": 1
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 2,
+    "fields": {
+      "title": "جادوی ممنوعه",
+      "description": "جادویی که خطرناک، غیرقانونی یا تابو است.",
+      "category": 1
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 3,
+    "fields": {
+      "title": "ارتقای مهارت",
+      "description": "شخصیت‌ها به‌مرور زمان توانایی‌ها و قدرت‌های جدیدی به دست می‌آورند.",
+      "category": 2
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 4,
+    "fields": {
+      "title": "سیاه‌چاله و نبرد با رئیس",
+      "description": "داستان دارای چالش‌های ساختاریافته با سختی فزاینده است.",
+      "category": 2
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 5,
+    "fields": {
+      "title": "محن الهی",
+      "description": "پیشرفتی بزرگ همراه با مجازات الهی فرا می‌رسد.",
+      "category": 3
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 6,
+    "fields": {
+      "title": "صعود به جاودانگی",
+      "description": "هدف نهایی، رسیدن به مقام خدایی است.",
+      "category": 3
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 7,
+    "fields": {
+      "title": "حکومت تمامیت‌خواه",
+      "description": "دولتی که بر تمام جنبه‌های زندگی مردم کنترل دارد.",
+      "category": 4
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 8,
+    "fields": {
+      "title": "مقاومت زیرزمینی",
+      "description": "گروهی مخفیانه علیه ظلم و ستم مبارزه می‌کند.",
+      "category": 4
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 9,
+    "fields": {
+      "title": "بازی‌های ذهنی",
+      "description": "شخصیت‌ها در نبردهای فکری و فریب یکدیگر شرکت می‌کنند.",
+      "category": 5
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 10,
+    "fields": {
+      "title": "راوی غیرقابل اعتماد",
+      "description": "درک شخصیت اصلی از واقعیت دچار تحریف است.",
+      "category": 5
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 11,
+    "fields": {
+      "title": "احساسات ناگفته",
+      "description": "شخصیت‌ها در ابراز احساسات خود ناتوان هستند.",
+      "category": 6
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 12,
+    "fields": {
+      "title": "عشق دوطرفه پنهان",
+      "description": "هر دو شخصیت به هم علاقه دارند ولی از آن بی‌خبرند.",
+      "category": 6
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 13,
+    "fields": {
+      "title": "کمبود منابع",
+      "description": "منابع ضروری مانند غذا یا آب بسیار کمیاب هستند.",
+      "category": 7
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 14,
+    "fields": {
+      "title": "آخرالزمان زامبی",
+      "description": "دنیا به‌وسیله‌ی مردگان متحرک تسخیر شده است.",
+      "category": 7
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 15,
+    "fields": {
+      "title": "پروتاگونیست ضدقهرمان",
+      "description": "شخصیت اصلی دارای اصول اخلاقی مشکوک یا خاکستری است.",
+      "category": 8
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 16,
+    "fields": {
+      "title": "وحشت کهن",
+      "description": "موجوداتی ظاهر می‌شوند که فراتر از درک انسان هستند.",
+      "category": 8
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 1,
+    "fields": {
+      "title": "فانتزی",
+      "description": "داستان‌هایی در دنیایی خیالی با جادو و موجودات افسانه‌ای."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 2,
+    "fields": {
+      "title": "علمی-تخیلی",
+      "description": "بررسی مفاهیم آینده‌محور مانند فضا، هوش مصنوعی و سفر در زمان."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 3,
+    "fields": {
+      "title": "عاشقانه",
+      "description": "تمرکز بر روابط و احساسات عاشقانه میان شخصیت‌ها."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 4,
+    "fields": {
+      "title": "معمایی",
+      "description": "شامل حل معما، تعلیق و داستان‌های کارآگاهی."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 5,
+    "fields": {
+      "title": "وحشت",
+      "description": "طراحی‌شده برای ایجاد ترس، دلهره یا احساس ناراحتی."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 6,
+    "fields": {
+      "title": "تاریخی",
+      "description": "داستان‌هایی در گذشته با حوادث و شخصیت‌های واقعی تاریخی."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 7,
+    "fields": {
+      "title": "برشی از زندگی",
+      "description": "تمرکز بر زندگی روزمره و شخصیت‌های واقع‌گرایانه."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 8,
+    "fields": {
+      "title": "لیتRPG",
+      "description": "ترکیبی از ادبیات و بازی‌های نقش‌آفرینی با سطح‌بندی و آمار."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 9,
+    "fields": {
+      "title": "دیستوپیایی",
+      "description": "در آینده‌ای تاریک و ویران با فروپاشی اجتماعی."
+    }
+  },
+  {
+    "model": "tag.genre",
+    "pk": 10,
+    "fields": {
+      "title": "ایسکای",
+      "description": "شخصیت اصلی به دنیایی دیگر منتقل می‌شود."
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 17,
+    "fields": {
+      "title": "پارادوکس زمانی",
+      "description": "تغییر گذشته، آینده را به شکل غیرمنتظره‌ای تغییر می‌دهد.",
+      "category": 9
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 18,
+    "fields": {
+      "title": "جهان‌های موازی",
+      "description": "واقعیت‌های جایگزین در کنار واقعیت اصلی وجود دارند.",
+      "category": 9
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 19,
+    "fields": {
+      "title": "مدیریت کشور",
+      "description": "شخصیت اصلی یک سرزمین را اداره می‌کند.",
+      "category": 10
+    }
+  },
+  {
+    "model": "tag.tag",
+    "pk": 20,
+    "fields": {
+      "title": "درگیری دیپلماتیک",
+      "description": "مناقشات سیاسی میان کشورها و پادشاهی‌ها.",
+      "category": 10
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 1,
+    "fields": {
+      "title": "سیستم جادویی",
+      "description": "مشخص می‌کند که جادو چگونه در داستان کار می‌کند."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 2,
+    "fields": {
+      "title": "عناصر بازی",
+      "description": "داستان دارای ویژگی‌های RPG مانند سطح، آمار و سیاه‌چال است."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 3,
+    "fields": {
+      "title": "کشت",
+      "description": "شخصیت‌ها با مهار انرژی (چی) قوی‌تر می‌شوند."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 4,
+    "fields": {
+      "title": "جامعه دیستوپیایی",
+      "description": "جهانی با حکومت‌های سرکوبگر، نظارت یا شورش."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 5,
+    "fields": {
+      "title": "روان‌شناختی",
+      "description": "تمرکز بر چالش‌های ذهنی، بازی‌های روانی و شخصیت‌پردازی عمیق."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 6,
+    "fields": {
+      "title": "عشق تدریجی",
+      "description": "رابطه‌ها به‌صورت تدریجی و با رشد شخصیتی توسعه می‌یابند."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 7,
+    "fields": {
+      "title": "بقا",
+      "description": "شخصیت‌ها باید در شرایط دشوار مانند فجایع یا آخرالزمان دوام بیاورند."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 8,
+    "fields": {
+      "title": "فانتزی تاریک",
+      "description": "دنیایی فانتزی با فضای تاریک، درگیری‌های خشن و شخصیت‌های خاکستری."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 9,
+    "fields": {
+      "title": "خطوط زمانی چندگانه",
+      "description": "روایت بین زمان‌های مختلف جابجا می‌شود."
+    }
+  },
+  {
+    "model": "tag.tagcategory",
+    "pk": 10,
+    "fields": {
+      "title": "ساخت امپراتوری",
+      "description": "شخصیت اصلی یک قلمرو را ساخته و اداره می‌کند."
+    }
+  }
+]
