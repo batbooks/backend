@@ -131,9 +131,8 @@ class ChapterGetSerializer(serializers.ModelSerializer):
         return obj.book.image.url if obj.book.image else None
 
     def get_images(self, obj):
-        # Now using the correct related_name 'images' to get chapter images
         images = []
-        for chapter_image in obj.images.all():  # Use 'images' as the related_name
+        for chapter_image in obj.images.all():
             images.append({
                 'image': chapter_image.image.url,
                 'page_number': chapter_image.page_number
