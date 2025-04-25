@@ -32,12 +32,16 @@ class BookListAPIView(APIView):
             except Blocked.DoesNotExist:
                 blocked_books = Book.objects.none()
 
-            books = Book.objects.exclude(id__in=blocked_books.values_list('id', flat=True))
+            books = Book.objects.select_related('Author').exclude(
+                id__in=blocked_books.values_list('id', flat=True)
+            )
         else:
-            books = Book.objects.all()
+            books = Book.objects.select_related('Author').all()
+
 
         serializer = BookAllGetSerializer(books, many=True)
         return Response(serializer.data)
+
 class BookCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
