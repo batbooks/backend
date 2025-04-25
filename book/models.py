@@ -71,5 +71,17 @@ class Chapter(models.Model):
 
 
 
+class ChapterImage(models.Model):
+    chapter = models.ForeignKey("Chapter", on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="chapter_images/")
+    page_number = models.PositiveIntegerField(null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image for '{self.chapter.title}' (Page {self.page_number or 'N/A'})"
+
+
+
+
 
 

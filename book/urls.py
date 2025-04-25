@@ -12,4 +12,5 @@ urlpatterns = [
      path('search/<str:book_name>/', views.BookSearchAPIView.as_view(), name='book-search'),
      path('user/<int:id>/', views.UserBookAPIView.as_view(), name='user-detail'),
      path('my/', views.MyBookAPIView.as_view(), name='user-detail'),
+     path('uploadfile/', views.PDFUploadAPIView.as_view(), name='upload_pdf'),
 ]
