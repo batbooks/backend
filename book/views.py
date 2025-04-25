@@ -9,7 +9,7 @@ from datetime import datetime
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Book, Chapter,ChapterImage
-from permissions import  BookIsOwnerOrReadOnly,ChapterIsOwnerOrReadOnly
+from permissions import BookIsOwnerOrReadOnly, ChapterIsOwnerOrReadOnly, IsOwnerOrReadOnly
 from .serializers import BookSerializer, BookGetAllSerializer, ChapterGetSerializer, ChapterCreateSerializer, \
     BookAllGetSerializer, BookGetSerializer, User
 from  book_actions.models import Blocked
@@ -178,7 +178,7 @@ class MyBookAPIView(generics.ListAPIView):
 
 class PDFUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
-
+    permission_classes = [BookIsOwnerOrReadOnly]
     def post(self, request, *args, **kwargs):
         pdf_file = request.FILES.get('pdf')
         book_id = request.data.get('book')
@@ -188,6 +188,7 @@ class PDFUploadAPIView(APIView):
 
         try:
             book = Book.objects.get(pk=book_id)
+            self.check_object_permissions(request,book)
         except Book.DoesNotExist:
             return Response({'error': 'کتاب پیدا نشد'}, status=status.HTTP_404_NOT_FOUND)
 
