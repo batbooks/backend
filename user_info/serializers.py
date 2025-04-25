@@ -7,6 +7,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     favorite_count = serializers.SerializerMethodField()
     follower_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
+    joined_date = serializers.SerializerMethodField()
 
     class Meta:
         model = UserInfo
@@ -17,6 +18,9 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def get_follower_count(self, obj):
         return obj.user.following.count()
+
+    def get_joined_date(self, obj):
+        return obj.user.joined_date
 
     def get_following_count(self, obj):
         return obj.user.follower.count()
