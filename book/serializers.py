@@ -132,9 +132,7 @@ class ChapterGetSerializer(serializers.ModelSerializer):
             chapter_num__gt=obj.chapter_num
         ).order_by('chapter_num').first()
         if next_chapter:
-            return self.context['request'].build_absolute_uri(
-                f'/api/chapters/{next_chapter.id}/'
-            )
+            return next_chapter.id
         return None
 
     def get_previous_chapter(self, obj):
@@ -143,9 +141,7 @@ class ChapterGetSerializer(serializers.ModelSerializer):
             chapter_num__lt=obj.chapter_num
         ).order_by('-chapter_num').first()
         if previous_chapter:
-            return self.context['request'].build_absolute_uri(
-                f'/api/chapters/{previous_chapter.id}/'
-            )
+            return previous_chapter.id
         return None
 
     def get_Author(self, obj):
@@ -154,7 +150,8 @@ class ChapterGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'book', 'book_image',]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'book', 'book_image']
+
 class ChapterSummarySerializer(serializers.ModelSerializer):
 
     class Meta:
