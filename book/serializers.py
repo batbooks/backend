@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Book, Chapter,ChapterImage
+from .models import Book, Chapter
 from rest_framework.reverse import reverse
 from django.db.models import Avg
 
@@ -111,18 +111,12 @@ class BookGetSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author', 'image']
         read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
 
-class ChapterImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ChapterImage
-        fields = ['image', 'page_number']
-
 
 class ChapterGetSerializer(serializers.ModelSerializer):
     book = serializers.SlugRelatedField(slug_field='name', read_only=True)
     Author = serializers.SerializerMethodField()
     book_image = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
-    images = serializers.SerializerMethodField()
     next_chapter = serializers.SerializerMethodField()
     previous_chapter = serializers.SerializerMethodField()
 
@@ -131,15 +125,6 @@ class ChapterGetSerializer(serializers.ModelSerializer):
 
     def get_book_image(self, obj):
         return obj.book.image.url if obj.book.image else None
-
-    def get_images(self, obj):
-        images = []
-        for chapter_image in obj.images.all():
-            images.append({
-                'image': chapter_image.image.url,
-                'page_number': chapter_image.page_number
-            })
-        return images
 
     def get_next_chapter(self, obj):
         next_chapter = Chapter.objects.filter(
@@ -169,7 +154,7 @@ class ChapterGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'book', 'book_image', 'images']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'book', 'book_image',]
 class ChapterSummarySerializer(serializers.ModelSerializer):
 
     class Meta:

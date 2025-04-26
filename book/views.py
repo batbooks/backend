@@ -8,8 +8,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import datetime
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.shortcuts import get_object_or_404
-from .models import Book, Chapter,ChapterImage
-from permissions import  BookIsOwnerOrReadOnly,ChapterIsOwnerOrReadOnly
+from .models import Book, Chapter
+from permissions import BookIsOwnerOrReadOnly, ChapterIsOwnerOrReadOnly, IsOwnerOrReadOnly
 from .serializers import BookSerializer, BookGetAllSerializer, ChapterGetSerializer, ChapterCreateSerializer, \
     BookAllGetSerializer, BookGetSerializer, User
 from  book_actions.models import Blocked
@@ -178,16 +178,18 @@ class MyBookAPIView(generics.ListAPIView):
 
 class PDFUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
-
+    permission_classes = [BookIsOwnerOrReadOnly]
     def post(self, request, *args, **kwargs):
         pdf_file = request.FILES.get('pdf')
         book_id = request.data.get('book')
+        title = request.data.get('title',None)
 
         if not pdf_file or not book_id:
             return Response({'error': 'فایل pdf  یا کتاب مورد نظر موجود نیست.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             book = Book.objects.get(pk=book_id)
+            self.check_object_permissions(request,book)
         except Book.DoesNotExist:
             return Response({'error': 'کتاب پیدا نشد'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -239,20 +241,13 @@ class PDFUploadAPIView(APIView):
 
             content += page_content + "\n"
 
-        title = pdf_file.name.rsplit('.', 1)[0]
+        title = pdf_file.name.rsplit('.', 1)[0] if not title else title
         chapter = Chapter.objects.create(
             title=title,
             book=book,
             body=content.strip(),
             is_approved=False
         )
-
-        for image_data in images_to_save:
-            ChapterImage.objects.create(
-                chapter=chapter,
-                image=image_data["image"],
-                page_number=image_data["page_number"]
-            )
 
         return Response({
             'message': 'pdf  با موفقیت اپلود شد.',
