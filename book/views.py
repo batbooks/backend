@@ -94,7 +94,7 @@ class ChapterDetailUpdateDeleteAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
         if chapter.is_approved:
-            ser_data = ChapterGetSerializer(chapter)
+            ser_data = ChapterGetSerializer(chapter, context={'request': request})
             return Response(ser_data.data, status=status.HTTP_200_OK)
         return Response({'error':'چپتر پیدا نشد'},status=status.HTTP_404_NOT_FOUND)
 
@@ -160,7 +160,7 @@ class BookSearchAPIView(APIView):
 ##  with generic
 
 class UserBookAPIView(generics.ListAPIView):
-    serializer_class =  BookSerializer
+    serializer_class = BookSerializer
 
     def get_queryset(self):
         user = get_object_or_404(User, id=self.kwargs.get('id'))

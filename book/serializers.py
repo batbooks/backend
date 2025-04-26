@@ -123,6 +123,8 @@ class ChapterGetSerializer(serializers.ModelSerializer):
     book_image = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
+    next_chapter = serializers.SerializerMethodField()
+    previous_chapter = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
         return obj.book.rating_avg
@@ -138,6 +140,28 @@ class ChapterGetSerializer(serializers.ModelSerializer):
                 'page_number': chapter_image.page_number
             })
         return images
+
+    def get_next_chapter(self, obj):
+        next_chapter = Chapter.objects.filter(
+            book=obj.book,
+            chapter_num__gt=obj.chapter_num
+        ).order_by('chapter_num').first()
+        if next_chapter:
+            return self.context['request'].build_absolute_uri(
+                f'/api/chapters/{next_chapter.id}/'
+            )
+        return None
+
+    def get_previous_chapter(self, obj):
+        previous_chapter = Chapter.objects.filter(
+            book=obj.book,
+            chapter_num__lt=obj.chapter_num
+        ).order_by('-chapter_num').first()
+        if previous_chapter:
+            return self.context['request'].build_absolute_uri(
+                f'/api/chapters/{previous_chapter.id}/'
+            )
+        return None
 
     def get_Author(self, obj):
         return obj.book.Author.name
