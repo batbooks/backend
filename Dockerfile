@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
 
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip
@@ -20,8 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
 
-RUN chown -R appuser:appuser /app
-USER appuser
+
 
 EXPOSE 8000
 
