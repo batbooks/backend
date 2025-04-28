@@ -19,10 +19,10 @@ COPY . /app/
 
 RUN chmod 755 /app/entrypoint.sh
 
-RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
-RUN chown -R appuser:appuser /app
-
-USER appuser
+#RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
+#RUN chown -R appuser:appuser /app
+#
+#USER appuser
 
 EXPOSE 8000
 
