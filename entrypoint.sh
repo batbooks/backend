@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -e  # اسکریپت رو در صورت ارور قطع کن
-
+set -e
 echo ">> Running Migrations"
 python manage.py migrate --noinput
 

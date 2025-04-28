@@ -17,10 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# ساخت یوزر امن
 RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
 
-# ساخت فولدرهای ضروری و دسترسی
 RUN mkdir -p /app/staticfiles && \
     mkdir -p /app/media && \
     chown -R appuser:appuser /app
