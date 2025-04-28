@@ -22,7 +22,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
+      - db
     environment:
       DATABASE_URL: postgres://amrolsibil:razeghroyalroads@db/batbooksdb
       SECRET_KEY: django-insecure-c5br57^imn$9=pen&bwevh7u)ip5^!#+$spk6h-%jh=skhpx9r
