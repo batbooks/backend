@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: postgres
     image: postgres:17.4
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -11,7 +12,8 @@ services:
       - app-network
     restart: always
 
-  web:
+  api:
+    container_name: api
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,7 +22,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - postgres
     environment:
       DATABASE_URL: postgres://amrolsibil:razeghroyalroads@db/batbooksdb
       SECRET_KEY: django-insecure-c5br57^imn$9=pen&bwevh7u)ip5^!#+$spk6h-%jh=skhpx9r
