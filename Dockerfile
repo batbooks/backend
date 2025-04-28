@@ -11,9 +11,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     musl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
-RUN chown -R appuser:appuser /app
-USER appuser
 
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip
@@ -24,8 +21,14 @@ COPY . /app/
 
 
 
-EXPOSE 8000
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+
+RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8000
+
 ENTRYPOINT ["/app/entrypoint.sh"]
