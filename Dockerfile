@@ -15,11 +15,8 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app/
-
-# دادن مجوز به entrypoint.sh
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+WORKDIR /app
+COPY . .
 
 # ساخت یوزر امن
 RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
@@ -32,4 +29,6 @@ USER appuser
 
 EXPOSE 8000
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT [ "bash", "-c", "./entrypoint.sh" ]
+
