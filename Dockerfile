@@ -15,14 +15,13 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app
 COPY . .
 
 # ساخت یوزر امن
 RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
 
 # تغییر مالکیت دایرکتوری
-RUN chown -R appuser:appuser /app
+RUN chown -R appuser:appuser .
 
 # سوییچ به یوزر امن
 USER appuser
