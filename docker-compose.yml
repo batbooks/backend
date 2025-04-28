@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: batbooksdb
+      POSTGRES_USER: amrolsibil
+      POSTGRES_PASSWORD: razeghroyalroads
+    networks:
+      - app-network
+    restart: always
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://amrolsibil:razeghroyalroads@db/batbooksdb
+      SECRET_KEY: django-insecure-c5br57^imn$9=pen&bwevh7u)ip5^!#+$spk6h-%jh=skhpx9r
+      DEBUG: False
+      EMAIL_HOST_USER: batbook2025@gmail.com
+      EMAIL_HOST_PASSWORD: yffxawaytmthfvma
+    networks:
+      - app-network
+    restart: always
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
