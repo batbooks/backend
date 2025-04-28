@@ -20,14 +20,15 @@ COPY . .
 # ساخت یوزر امن
 RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
 
-# تغییر مالکیت دایرکتوری
-RUN chown -R appuser:appuser .
+# ساخت فولدرهای ضروری و دسترسی
+RUN mkdir -p /app/staticfiles && \
+    mkdir -p /app/media && \
+    chown -R appuser:appuser /app
 
-# سوییچ به یوزر امن
+RUN chmod +x entrypoint.sh
+
 USER appuser
 
 EXPOSE 8000
 
-RUN chmod +x entrypoint.sh
-ENTRYPOINT [ "bash", "-c", "./entrypoint.sh" ]
-
+ENTRYPOINT [ "./entrypoint.sh" ]

@@ -1,10 +1,14 @@
 #!/bin/bash
 
-# انجام مایگریشن
-python manage.py migrate --noinput || { echo 'Migration failed!'; exit 1; }
+set -e  # اسکریپت رو در صورت ارور قطع کن
 
-# جمع‌آوری فایل‌های استاتیک
-python manage.py collectstatic --noinput || { echo 'Collectstatic failed!'; exit 1; }
+echo ">> Running Migrations"
+python manage.py migrate --noinput
 
-# شروع gunicorn
+echo ">> Collecting static files"
+python manage.py collectstatic --noinput
+
+echo ">> Loading initial fixtures (optional)"
+python run_fixture.py || echo "Fixtures not loaded!"
+
 exec gunicorn config.wsgi:application --bind 0.0.0.0:8000
