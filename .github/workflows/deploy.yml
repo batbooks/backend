@@ -35,9 +35,10 @@ jobs:
       run: |
         echo "$VPS_SSH_KEY" > /tmp/vps_ssh_key
         chmod 600 /tmp/vps_ssh_key
-        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << 'EOF'
+        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no -T $VPS_USER@$VPS_IP << 'EOF'
           cd /root/project/backend
           git pull origin dev
           docker-compose down
           docker-compose up --build -d
+          rm -f /tmp/vps_ssh_key  
         EOF
