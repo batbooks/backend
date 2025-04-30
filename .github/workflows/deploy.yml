@@ -3,7 +3,7 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - main  
+      - dev
 
 jobs:
   deploy:
@@ -36,8 +36,8 @@ jobs:
         echo "$VPS_SSH_KEY" > /tmp/vps_ssh_key
         chmod 600 /tmp/vps_ssh_key
         ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << 'EOF'
-          cd /path/to/your/project
-          git pull origin main
+          cd /root/project/backend
+          git pull origin dev
           docker-compose down
           docker-compose up --build -d
         EOF
