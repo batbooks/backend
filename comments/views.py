@@ -1,3 +1,6 @@
+from collections import defaultdict
+from math import floor
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,7 +13,7 @@ from permissions import ReviewPostIsOwnerOrReadOnly
 from comments.models import Comment, Review,Post
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, When, Value, IntegerField, Count
 from book_actions.serializers import RatingBookSerializer
 
 # Create your views here.
@@ -198,7 +201,23 @@ class ReviewListAPIView(APIView):
         paginator = CustomPagination()
         page = paginator.paginate_queryset(reviews, request)
         serializer = ReviewSerializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+
+        rating_data = (
+            Rating.objects.filter(book=book)
+            .values('rating')
+            .annotate(count=Count('rating'))
+        )
+
+        rating_counts = defaultdict(int)
+
+        for item in rating_data:
+            quantized_rating = floor(float(item['rating']))
+            rating_counts[quantized_rating] += item['count']
+
+        return paginator.get_paginated_response({
+            'reviews': serializer.data,
+            'rating_counts': rating_counts
+        })
 
 
 class ReviewUpdateDeleteAPIView(APIView):

@@ -40,6 +40,7 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
 
+
     class Meta:
         model = Comment
         fields = '__all__'
@@ -61,6 +62,7 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
+    chapter_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
@@ -76,6 +78,8 @@ class ReviewSerializer(serializers.ModelSerializer):
             "id": obj.user.id,
             "name": obj.user.name
         }
+    def get_chapter_name(self, obj):
+        return obj.chapter.title if obj.chapter else None
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     class Meta:
