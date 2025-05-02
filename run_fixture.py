@@ -6,7 +6,7 @@ django.setup()
 from book_actions.models import Rating
 from book.models import Book
 
-fixtures = ['user','user_info','book','comments','book_actions','tag']
+fixtures = ['user','user_info','book','book_actions','tag']
 for fixture in fixtures:
     print(f'{fixture}...')
     call_command('loaddata', fixture)
