@@ -117,6 +117,8 @@ class ChapterGetSerializer(serializers.ModelSerializer):
     Author = serializers.SerializerMethodField()
     book_image = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
+    next_chapter = serializers.SerializerMethodField()
+    previous_chapter = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
         return obj.book.rating_avg
@@ -124,13 +126,32 @@ class ChapterGetSerializer(serializers.ModelSerializer):
     def get_book_image(self, obj):
         return obj.book.image.url if obj.book.image else None
 
+    def get_next_chapter(self, obj):
+        next_chapter = Chapter.objects.filter(
+            book=obj.book,
+            chapter_num__gt=obj.chapter_num
+        ).order_by('chapter_num').first()
+        if next_chapter:
+            return next_chapter.id
+        return None
+
+    def get_previous_chapter(self, obj):
+        previous_chapter = Chapter.objects.filter(
+            book=obj.book,
+            chapter_num__lt=obj.chapter_num
+        ).order_by('-chapter_num').first()
+        if previous_chapter:
+            return previous_chapter.id
+        return None
+
     def get_Author(self, obj):
         return obj.book.Author.name
 
     class Meta:
         model = Chapter
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'book', 'book_image', ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'book', 'book_image']
+
 class ChapterSummarySerializer(serializers.ModelSerializer):
 
     class Meta:
