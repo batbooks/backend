@@ -1,0 +1,44 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Set up Docker Compose
+      run: sudo apt-get install docker-compose
+
+    - name: SSH to VPS and deploy
+      env:
+        VPS_USER: ${{ secrets.VPS_USER }}
+        VPS_IP: ${{ secrets.VPS_IP }}
+        VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      run: |
+        echo "$VPS_SSH_KEY" > /tmp/vps_ssh_key
+        chmod 600 /tmp/vps_ssh_key
+        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no -T $VPS_USER@$VPS_IP << 'EOF'
+          cd /root/project/backend
+          git pull origin dev
+          docker compose down
+          docker compose up --build -d
+          rm -f /tmp/vps_ssh_key  
+        EOF
