@@ -40,21 +40,17 @@ jobs:
         VPS_IP: ${{ secrets.VPS_IP }}
         DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
       run: |
-        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << 'EOF'
+        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << EOF
           mkdir -p ~/.ssh
-          echo "${DEPLOY_KEY}" > ~/.ssh/id_rsa
+          echo "$DEPLOY_KEY" | base64 -d > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # Create SSH config with explicit formatting
+          # Configure SSH to use this key for GitHub
           echo -e "Host github.com\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/id_rsa\n  StrictHostKeyChecking no" > ~/.ssh/config
           chmod 600 ~/.ssh/config
 
-          # Debug: Display SSH config content
-          echo "SSH config content:"
-          cat ~/.ssh/config
-
-          # Test SSH connection to GitHub
-          ssh -T git@github.com && echo "SSH connection to GitHub successful" || echo "SSH connection to GitHub failed"
+          echo "Testing SSH connection to GitHub..."
+          ssh -T git@github.com || echo "SSH connection to GitHub failed"
         EOF
 
     - name: SSH to VPS and deploy
@@ -62,19 +58,16 @@ jobs:
         VPS_USER: ${{ secrets.VPS_USER }}
         VPS_IP: ${{ secrets.VPS_IP }}
       run: |
-        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << 'EOF'
-          echo "Current directory: $(pwd)"
+        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << EOF
+          echo "Current directory: \$(pwd)"
           ls -la
 
-          # Ensure directory exists
           mkdir -p /root/project/backend
           cd /root/project/backend || { echo "Failed to access /root/project/backend"; exit 1; }
 
-          # Debug: Check Git status
           echo "Checking Git status:"
           git status || echo "Git repository not initialized"
 
-          # Clone or update repository
           if [ ! -d .git ]; then
             echo "Cloning repository..."
             git clone git@github.com:batbooks/backend.git .
@@ -86,11 +79,9 @@ jobs:
             git reset --hard origin/dev
           fi
 
-          # Debug: Show Git status after update
           echo "Git status after update:"
           git status
 
-          # Run Docker Compose
           echo "Running Docker Compose..."
           docker compose down
           docker compose up --build -d --remove-orphans
