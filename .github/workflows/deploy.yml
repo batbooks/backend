@@ -42,11 +42,11 @@ jobs:
       run: |
         ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << 'EOF'
           mkdir -p ~/.ssh
-          echo "${DEPLOY_KEY}" > ~/.ssh/github_deploy_key
-          chmod 600 ~/.ssh/github_deploy_key
+          echo "${DEPLOY_KEY}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
           # Create SSH config with explicit formatting
-          echo -e "Host github.com\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/github_deploy_key\n  StrictHostKeyChecking no" > ~/.ssh/config
+          echo -e "Host github.com\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/id_rsa\n  StrictHostKeyChecking no" > ~/.ssh/config
           chmod 600 ~/.ssh/config
 
           # Debug: Display SSH config content
