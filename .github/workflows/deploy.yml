@@ -31,7 +31,6 @@ jobs:
       env:
         VPS_USER: ${{ secrets.VPS_USER }}
         VPS_IP: ${{ secrets.VPS_IP }}
-        VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
       run: |
         ssh  $VPS_USER@$VPS_IP << 'EOF'
           cd /path/to/your/project
