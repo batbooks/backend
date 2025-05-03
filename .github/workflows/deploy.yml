@@ -3,7 +3,7 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
@@ -11,13 +11,13 @@ jobs:
 
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v1
 
     - name: Cache Docker layers
-      uses: actions/cache@v4
+      uses: actions/cache@v2
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -27,44 +27,15 @@ jobs:
     - name: Set up Docker Compose
       run: sudo apt-get install docker-compose
 
-    - name: Set up SSH key for GitHub access on VPS
-      env:
-        VPS_USER: ${{ secrets.VPS_USER }}
-        VPS_IP: ${{ secrets.VPS_IP }}
-        VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-        GITHUB_DEPLOY_KEY: ${{ secrets.GITHUB_DEPLOY_KEY }}
-      run: |
-        # Save VPS SSH key
-        echo "$VPS_SSH_KEY" > /tmp/vps_ssh_key
-        chmod 600 /tmp/vps_ssh_key
-
-        # Copy GitHub deploy key to VPS
-        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << 'EOF'
-          mkdir -p ~/.ssh
-          echo "${GITHUB_DEPLOY_KEY}" > ~/.ssh/github_deploy_key
-          chmod 600 ~/.ssh/github_deploy_key
-        EOF
-
     - name: SSH to VPS and deploy
       env:
         VPS_USER: ${{ secrets.VPS_USER }}
         VPS_IP: ${{ secrets.VPS_IP }}
+        VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
       run: |
-        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no -T $VPS_USER@$VPS_IP << 'EOF'
-          cd /root/project/backend
-          export GIT_SSH_COMMAND="ssh -i ~/.ssh/github_deploy_key -o StrictHostKeyChecking=no"
-
-          if [ ! -d .git ]; then
-            git clone git@github.com:batbooks/backend.git .
-            git checkout dev
-          else
-            git checkout dev
-            git pull origin dev
-          fi
-
-          docker compose down
-          docker compose up --build -d
+        ssh  $VPS_USER@$VPS_IP << 'EOF'
+          cd /path/to/your/project
+          git pull origin main
+          docker-compose down
+          docker-compose up --build -d
         EOF
-
-        # Clean up local key
-        rm -f /tmp/vps_ssh_key
