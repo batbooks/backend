@@ -41,13 +41,10 @@ jobs:
         DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
       run: |
         ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << EOF
-          mkdir -p ~/.ssh
-          echo "$DEPLOY_KEY" | base64 -d > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          
 
           # Configure SSH to use this key for GitHub
-          echo -e "Host github.com\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/id_rsa\n  StrictHostKeyChecking no" > ~/.ssh/config
-          chmod 600 ~/.ssh/config
+          
 
           echo "Testing SSH connection to GitHub..."
           ssh -T git@github.com || echo "SSH connection to GitHub failed"
