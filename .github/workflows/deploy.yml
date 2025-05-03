@@ -50,9 +50,21 @@ jobs:
         VPS_USER: ${{ secrets.VPS_USER }}
         VPS_IP: ${{ secrets.VPS_IP }}
       run: |
-        ssh  $VPS_USER@$VPS_IP << 'EOF'
+        ssh -i /tmp/vps_ssh_key -o StrictHostKeyChecking=no -T $VPS_USER@$VPS_IP << 'EOF'
           cd /root/project/backend
-          git pull origin main
-          docker-compose down
-          docker-compose up --build -d
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/github_deploy_key -o StrictHostKeyChecking=no"
+
+          if [ ! -d .git ]; then
+            git clone git@github.com:batbooks/backend.git .
+            git checkout dev
+          else
+            git checkout dev
+            git pull origin dev
+          fi
+
+          docker compose down
+          docker compose up --build -d
         EOF
+
+        # Clean up local key
+        rm -f /tmp/vps_ssh_key

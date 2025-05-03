@@ -268,14 +268,6 @@ class ReviewUpdateDeleteAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
         review.delete()
-        try:
-            rating = Rating.objects.get(user=request.user, book=book)
-        except Rating.DoesNotExist:
-            return Response(
-                {"error": "رتبه‌ای برای این کاربر و این کتاب یافت نشد."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        rating.delete()
         return Response({"message": "نظر شما با موفقیت حذف شد."}, status=status.HTTP_204_NO_CONTENT)
 
 
