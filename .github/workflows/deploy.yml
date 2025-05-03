@@ -45,19 +45,16 @@ jobs:
           echo "${DEPLOY_KEY}" > ~/.ssh/github_deploy_key
           chmod 600 ~/.ssh/github_deploy_key
 
-          # Create SSH config with proper formatting
-          cat > ~/.ssh/config << EOL
-Host github.com
-  HostName github.com
-  User git
-  IdentityFile ~/.ssh/github_deploy_key
-  StrictHostKeyChecking no
-EOL
-
+          # Create SSH config with explicit formatting
+          echo -e "Host github.com\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/github_deploy_key\n  StrictHostKeyChecking no" > ~/.ssh/config
           chmod 600 ~/.ssh/config
 
+          # Debug: Display SSH config content
+          echo "SSH config content:"
+          cat ~/.ssh/config
+
           # Test SSH connection to GitHub
-          ssh -T git@github.com || echo "SSH connection to GitHub failed"
+          ssh -T git@github.com && echo "SSH connection to GitHub successful" || echo "SSH connection to GitHub failed"
         EOF
 
     - name: SSH to VPS and deploy
@@ -96,7 +93,7 @@ EOL
           # Run Docker Compose
           echo "Running Docker Compose..."
           docker compose down
-          docker compose up --build -d
+          docker compose up --build -d --remove-orphans
           docker compose ps
         EOF
 
