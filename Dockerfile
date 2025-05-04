@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
+RUN addgroup --system appuser && adduser --system --ingroup appuser --shell /bin/bash appuser
 
 RUN mkdir -p /app/staticfiles && \
     mkdir -p /app/media && \
