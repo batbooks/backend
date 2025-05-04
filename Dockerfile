@@ -25,8 +25,8 @@ RUN mkdir -p /app/staticfiles && \
 
 RUN chmod +x entrypoint.sh
 
-USER appuser
 
 EXPOSE 8000
+USER root
 
 ENTRYPOINT [ "./entrypoint.sh" ]
