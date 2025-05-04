@@ -153,6 +153,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 # EMAIL
 
