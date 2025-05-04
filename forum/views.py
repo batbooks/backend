@@ -7,15 +7,17 @@ from forum.serializer import ThreadSerializer,ForumSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from permissions import ForumIsOwnerOrReadOnly
-
+from paginations import CustomPagination
 # Create your views here.
 
 class ForumListAPIView(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
         forums = Forum.objects.all()
-        serializer = ForumSerializer(forums, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(forums, request)
+        serializer = ForumSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class ThreadCreateAPIView(APIView):
@@ -35,8 +37,10 @@ class ForumThreadListAPIView(APIView):
     def get(self, request, pk):
         forum = get_object_or_404(Forum, id=pk)
         threads = forum.threads.all()
-        serializer = ThreadSerializer(threads, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(threads, request)
+        serializer = ThreadSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class ThreadUpdateAPIView(APIView):
