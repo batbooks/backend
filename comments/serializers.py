@@ -11,7 +11,9 @@ class CommentSerializer(serializers.ModelSerializer):
     tag_id = serializers.SerializerMethodField()
 
     def get_tag_id(self, obj):
-        return obj.tag.id
+        if obj.tag:
+            return obj.tag.id
+        return 0
     class Meta:
         model = Comment
         fields = '__all__'

@@ -111,7 +111,7 @@ class CommentChapterAPIView(APIView):
                 {"error": "چپتری با این شناسه پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
-        print(chapter)
+
         comments = chapter.ch_comments_comment.filter(reply__isnull=True)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
