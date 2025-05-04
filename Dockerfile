@@ -21,7 +21,8 @@ RUN addgroup --system appuser && adduser --system --ingroup appuser --shell /bin
 
 RUN mkdir -p /app/staticfiles && \
     mkdir -p /app/media && \
-    chown -R appuser:appuser /app
+    chown -R appuser:appuser /app \
+
 RUN touch /app/django_errors.log && chmod 666 /app/django_errors.log
 
 RUN chmod +x entrypoint.sh
