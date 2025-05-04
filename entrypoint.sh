@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -e
+chown -R appuser:appuser /app/media
+
 echo ">> Running Migrations"
 python manage.py migrate --noinput
 
