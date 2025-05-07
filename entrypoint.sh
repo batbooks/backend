@@ -9,5 +9,5 @@ python manage.py migrate --noinput
 echo ">> Collecting static files"
 python manage.py collectstatic --noinput
 
-exec su appuser -c "gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --max-requests 1000 --max-requests-jitter 50"
+exec su appuser -c "gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --max-requests 1000 --max-requests-jitter 50 --timeout 120 --graceful-timeout 120"
 
