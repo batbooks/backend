@@ -214,6 +214,7 @@ class ReviewListAPIView(APIView):
             quantized_rating = floor(float(item['rating']))
             rating_counts[quantized_rating] += item['count']
 
+        print(list(rating_data))
         return paginator.get_paginated_response({
             'reviews': serializer.data,
             'rating_counts': rating_counts
