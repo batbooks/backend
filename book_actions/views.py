@@ -75,7 +75,6 @@ class UserBlockedView(APIView):
 class BookRatingView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request ,*args, **kwargs):
-        print(request.data)
         ser_data = RatingBookSerializer(data=request.data, context={'request': request})
         if ser_data.is_valid():
             ser_data.save(user=request.user)

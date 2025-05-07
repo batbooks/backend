@@ -17,16 +17,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
+RUN addgroup --system appuser && adduser --system --ingroup appuser --shell /bin/bash appuser
 
 RUN mkdir -p /app/staticfiles && \
     mkdir -p /app/media && \
+    touch /app/django_errors.log && \
+    chmod 666 /app/django_errors.log && \
     chown -R appuser:appuser /app
+
 
 RUN chmod +x entrypoint.sh
 
-USER appuser
 
 EXPOSE 8000
+USER root
 
 ENTRYPOINT [ "./entrypoint.sh" ]
