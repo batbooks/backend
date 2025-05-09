@@ -8,6 +8,7 @@ User = get_user_model()
 
 
 class BookSerializer(serializers.ModelSerializer):
+    chapter_count = serializers.SerializerMethodField()
     status = serializers.ChoiceField(
         choices=Book.STATUS_CHOICE,
         error_messages={
@@ -23,6 +24,11 @@ class BookSerializer(serializers.ModelSerializer):
     Author = serializers.SlugRelatedField(slug_field='name', read_only=True)
     rating = serializers.SerializerMethodField()
 
+    def get_chapter_count(self, obj):
+        if obj.chapters:
+            return obj.chapters.count()
+        return 0
+
     def get_rating(self, obj):
         rating = obj.rating_avg
 
@@ -36,8 +42,9 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author','image','genres','tags','forum_link']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'Author','forum_link']
+        fields = ['id', 'chapter_count', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status',
+                  'Author', 'image', 'genres', 'tags', 'forum_link']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'Author', 'forum_link']
 
     def validate_name(self, value):
         if len(value) < 3:
@@ -46,9 +53,8 @@ class BookSerializer(serializers.ModelSerializer):
 
     def validate_rating(self, value):
         if value < 0 or value > 5:
-            raise serializers.ValidationError({'error': "لطفاً عددی بین ۰ تا ۵ برای امتیاز وارد کن :)"} )
+            raise serializers.ValidationError({'error': "لطفاً عددی بین ۰ تا ۵ برای امتیاز وارد کن :)"})
         return value
-
 
 
 class BookAllGetSerializer(serializers.ModelSerializer):
@@ -73,7 +79,9 @@ class BookGetAllSerializer(serializers.ModelSerializer):
         rating = obj.rating_avg
 
         return str(rating) if rating else '0'
+
     forum_link = serializers.SerializerMethodField()
+
     def get_forum_link(self, obj):
         if hasattr(obj, 'forum'):
             request = self.context.get('request')
@@ -86,14 +94,14 @@ class BookGetAllSerializer(serializers.ModelSerializer):
     tags = serializers.StringRelatedField(many=True)
 
     def get_chapters(self, obj):
-        res = obj.chapters.filter(is_approved=True)
-        return ChapterGetSerializer(instance=res, many=True).data
+        res = obj.chapters.filter(is_approved=True).order_by('created_at')
+        return ChapterSummarySerializer(instance=res, many=True).data
 
     class Meta:
         model = Book
         fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author', 'chapters',
-                  'image', 'genres', 'tags','forum_link']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'Author','forum_link']
+                  'image', 'genres', 'tags', 'forum_link']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'Author', 'forum_link']
 
 
 class BookGetSerializer(serializers.ModelSerializer):
@@ -117,19 +125,47 @@ class ChapterGetSerializer(serializers.ModelSerializer):
     Author = serializers.SerializerMethodField()
     book_image = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
+    next_chapter = serializers.SerializerMethodField()
+    previous_chapter = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
         return obj.book.rating_avg
 
     def get_book_image(self, obj):
         return obj.book.image.url if obj.book.image else None
-    class Meta:
-        model = Chapter
-        fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'book','book_image']
+
+    def get_next_chapter(self, obj):
+        next_chapter = Chapter.objects.filter(
+            book=obj.book,
+            chapter_num__gt=obj.chapter_num
+        ).order_by('chapter_num').first()
+        if next_chapter:
+            return next_chapter.id
+        return None
+
+    def get_previous_chapter(self, obj):
+        previous_chapter = Chapter.objects.filter(
+            book=obj.book,
+            chapter_num__lt=obj.chapter_num
+        ).order_by('-chapter_num').first()
+        if previous_chapter:
+            return previous_chapter.id
+        return None
 
     def get_Author(self, obj):
         return obj.book.Author.name
+
+    class Meta:
+        model = Chapter
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'book', 'book_image']
+
+
+class ChapterSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Chapter
+        exclude = ['body', 'book']
+        read_only_fields = ['id', 'created_at', 'updated_at', ]
 
 
 class ChapterCreateSerializer(serializers.ModelSerializer):

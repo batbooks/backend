@@ -58,15 +58,31 @@ class Chapter(models.Model):
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    chapter_num = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ['book', 'title']
+        ordering = ['book', 'chapter_num']
+
+
+    def save(self, *args, **kwargs):
+        if self.chapter_num is None:
+            last_chapter = Chapter.objects.filter(book=self.book).order_by('-chapter_num').first()
+            if last_chapter:
+                self.chapter_num = last_chapter.chapter_num + 1
+            else:
+                self.chapter_num = 1
+        super().save(*args, **kwargs)
 
     def show_body(self):
         return self.body[:30]
 
     def __str__(self):
         return self.title
+
+
+
+
+
 
 
 

@@ -1,17 +1,21 @@
+from collections import defaultdict
+from math import floor
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from book.models import Chapter, Book
 from forum.models import Thread
 from book_actions.models import Rating
-from comments.serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer,PostSerializer
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from comments.serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer, PostSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from permissions import ReviewPostIsOwnerOrReadOnly
-from comments.models import Comment, Review,Post
+from comments.models import Comment, Review, Post
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, When, Value, IntegerField, Count
 from book_actions.serializers import RatingBookSerializer
+
 
 # Create your views here.
 class CommentCreateAPIView(APIView):
@@ -107,7 +111,7 @@ class CommentChapterAPIView(APIView):
                 {"error": "چپتری با این شناسه پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
-        print(chapter)
+
         comments = chapter.ch_comments_comment.filter(reply__isnull=True)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
@@ -135,11 +139,11 @@ class CommentGetAllReplyAPIView(APIView):
         ser_data = CommentSerializer(page, many=True)
         return paginator.get_paginated_response(ser_data.data)
 
+
 class ReviewCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, book_id):
-        print(request.data)
         try:
             book = Book.objects.get(pk=book_id)
         except Book.DoesNotExist:
@@ -157,18 +161,11 @@ class ReviewCreateAPIView(APIView):
 
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid():
-            rate = request.data.get('rating')  # safely fetch rating
-            rating = Rating.objects.filter(user=request.user, book=book).first()
-            if rating:
-                rating.rating = rate
-                rating.save()
-            else:
-                Rating.objects.create(user=request.user, book=book, rating=rate)
-
             serializer.save(user=request.user, book=book)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ReviewListAPIView(APIView):
     permission_classes = (AllowAny,)
@@ -198,11 +195,27 @@ class ReviewListAPIView(APIView):
         paginator = CustomPagination()
         page = paginator.paginate_queryset(reviews, request)
         serializer = ReviewSerializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+
+        rating_data = (
+            Rating.objects.filter(book=book)
+            .values('rating')
+            .annotate(count=Count('rating'))
+        )
+
+        rating_counts = defaultdict(int)
+
+        for item in rating_data:
+            quantized_rating = floor(float(item['rating']))
+            rating_counts[quantized_rating] += item['count']
+
+        return paginator.get_paginated_response({
+            'reviews': serializer.data,
+            'rating_counts': rating_counts
+        })
 
 
 class ReviewUpdateDeleteAPIView(APIView):
-    permission_classes = (IsAuthenticated,ReviewPostIsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated, ReviewPostIsOwnerOrReadOnly)
 
     def put(self, request, book_id):
         try:
@@ -249,14 +262,6 @@ class ReviewUpdateDeleteAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
         review.delete()
-        try:
-            rating = Rating.objects.get(user=request.user, book=book)
-        except Rating.DoesNotExist:
-            return Response(
-                {"error": "رتبه‌ای برای این کاربر و این کتاب یافت نشد."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        rating.delete()
         return Response({"message": "نظر شما با موفقیت حذف شد."}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -329,6 +334,7 @@ class PostCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class PostUpdateAPIView(APIView):
     permission_classes = (IsAuthenticated, ReviewPostIsOwnerOrReadOnly)
 
@@ -360,7 +366,6 @@ class PostUpdateAPIView(APIView):
 
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 
 class PostLikeAPIView(APIView):

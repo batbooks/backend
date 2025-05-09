@@ -8,7 +8,12 @@ class CommentSerializer(serializers.ModelSerializer):
     reply_count = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+    tag_id = serializers.SerializerMethodField()
 
+    def get_tag_id(self, obj):
+        if obj.tag:
+            return obj.tag.id
+        return 0
     class Meta:
         model = Comment
         fields = '__all__'
@@ -40,12 +45,14 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
 
+
     class Meta:
         model = Comment
         fields = '__all__'
         extra_kwargs = {
             'chapter':{'read_only':True},
             'user': {'read_only': True},
+            'tag_id': {'read_only': True},
         }
 
     def get_image(self, obj):
@@ -61,6 +68,7 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
+    chapter_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
@@ -76,6 +84,8 @@ class ReviewSerializer(serializers.ModelSerializer):
             "id": obj.user.id,
             "name": obj.user.name
         }
+    def get_chapter_name(self, obj):
+        return obj.chapter.title if obj.chapter else None
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     class Meta:

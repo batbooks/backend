@@ -182,3 +182,11 @@ class NotInterestedView(APIView):
         page = paginator.paginate_queryset(not_interested_qs, request)
         data = NotInterestedSerializer(page, many=True).data
         return paginator.get_paginated_response(data)
+
+
+class IsNotinterestedUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, user_id):
+        user = get_object_or_404(get_user_model(), id=user_id, is_admin=False)
+        exists = UserNotInterested.objects.filter(user=request.user, not_interested=user).exists()
+        return Response({"is_not_interested": exists}, status=status.HTTP_200_OK)
