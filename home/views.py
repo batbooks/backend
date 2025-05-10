@@ -14,7 +14,7 @@ from rest_framework import status
 
 class HomeCategoryView(APIView):
     def get(self, request):
-        Genre_list = Genre.objects.annotate(book_count=Count('books')).order_by('-book_count')[:8]
+        Genre_list = Genre.objects.annotate(book_count=Count('books'))[:8]
         ser_data = GenreSerializer(Genre_list, many=True)
         return Response(ser_data.data, status=status.HTTP_200_OK)
 
