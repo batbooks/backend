@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'chat.apps.ChatConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,7 +64,8 @@ INSTALLED_APPS += [
     'debug_toolbar',
     'rest_framework_simplejwt',
     'corsheaders',
-    'django_filters'
+    'django_filters',
+    'channels',
 
 ]
 
@@ -98,7 +101,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+# WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = "config.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -220,3 +224,12 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
     'http://localhost:5173',
 ]
+
+
+# CHANNELS
+
+CHANNEL_LAYERS = {
+    'default': {
+        "BACKEND":"channels.layers.InMemoryChannelLayer",
+    }
+}
