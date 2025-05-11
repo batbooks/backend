@@ -13,3 +13,10 @@ class Message(models.Model):
         return f'{self.from_user} -> {self.to_user} : {self.message}'
 
 
+class UserChannel(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='channel_user')
+    channel = models.TextField()
+
+    def __str__(self):
+        return f'{self.user} -> {self.channel}'
+
