@@ -41,8 +41,10 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/static
       - media_volume:/media
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
       - "80:80"
+      - "443:443"
     networks:
       - app-network
     restart: always
