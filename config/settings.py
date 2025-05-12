@@ -66,7 +66,7 @@ INSTALLED_APPS += [
     'corsheaders',
     'django_filters',
     'channels',
-
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -209,7 +209,8 @@ REST_FRAMEWORK = {
         # ...
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 
 }
 
@@ -225,11 +226,10 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
 
-
 # CHANNELS
 
 CHANNEL_LAYERS = {
     'default': {
-        "BACKEND":"channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
 }

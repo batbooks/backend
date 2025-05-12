@@ -30,6 +30,7 @@ class BookToggleFavoriteView(APIView):
 
 class UserFavoriteView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = BookAllGetSerializer
     def get(self, request, *args, **kwargs):
         favorite = Favorite.objects.get(user=request.user)
         paginator = CustomPagination()
@@ -64,7 +65,7 @@ class BookToggleBlockedView(APIView):
 
 class UserBlockedView(APIView):
     permission_classes = (IsAuthenticated,)
-
+    serializer_class = BookAllGetSerializer
     def get(self, request, *args, **kwargs):
         blocked = Blocked.objects.get(user=request.user)
         paginator = CustomPagination()
@@ -74,6 +75,7 @@ class UserBlockedView(APIView):
 
 class BookRatingView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = RatingBookSerializer
     def post(self, request ,*args, **kwargs):
         ser_data = RatingBookSerializer(data=request.data, context={'request': request})
         if ser_data.is_valid():
