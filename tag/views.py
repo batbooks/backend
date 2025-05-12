@@ -9,6 +9,7 @@ from  tag.serializer import TagCategorySerializer,TagSerializer,GenreSerializer
 
 # Create your views here.
 class GenreListView(APIView):
+    serializer_class = GenreSerializer
     def get(self, request):
         genres = Genre.objects.all()
         serializer = GenreSerializer(genres, many=True)
@@ -16,6 +17,7 @@ class GenreListView(APIView):
 
 
 class TagCategoryView(APIView):
+    serializer_class = TagSerializer
     def get(self, request):
         tag_categories = TagCategory.objects.all()
         serializer = TagCategorySerializer(tag_categories, many=True)

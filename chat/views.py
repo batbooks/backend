@@ -13,7 +13,7 @@ from asgiref.sync import async_to_sync
 
 class ShowMessageApiView(APIView):
     permission_classes = (IsAuthenticated,)
-
+    serializer_class = ShowMessageSerializer
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
         super().setup(request, *args, **kwargs)
@@ -44,7 +44,6 @@ class ShowMessageApiView(APIView):
 
 class MessageDeleteApiView(APIView):
     permission_classes = (IsOwnerOrReadOnly,)
-
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
         super().setup(request, *args, **kwargs)
