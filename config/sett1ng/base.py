@@ -1,22 +1,25 @@
 from pathlib import Path
-
-import dotenv
 import os
+from dotenv import load_dotenv
 
-dotenv.load_dotenv()
-
+load_dotenv()
 env = os.environ.get
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Debug mode setting
-DEBUG = env("DEBUG") == 'True'
-# DEBUG = True
-# Deployment environment setting
-deploy = env("deploy",default=False)
+# Debug mode settings
+DEBUG = env("DEBUG") == "True"
+
+# Deployment environment settings
+deploy = env("deploy")
 
 # Secret key for security purposes
 SECRET_KEY = env("SECRET_KEY")
+
+
+REDIS_LINK = env("REDIS_LINK")
+RABBIT_URI = env("RABBIT_URI")
+
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -25,3 +28,4 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
