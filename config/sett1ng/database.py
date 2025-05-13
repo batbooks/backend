@@ -1,7 +1,7 @@
 import dj_database_url
 from .base import *
 
-if deploy == "True":
+if deploy:
     DATABASES = {
         "default": dj_database_url.config(
             default=env("DATABASE_URL"),
