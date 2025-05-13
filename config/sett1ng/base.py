@@ -13,7 +13,6 @@ DEBUG = env("DEBUG").lower() == "true"
 # Deployment environment settings
 
 deploy = env("deploy").lower() == "true"
-print(deploy)
 # Secret key for security purposes
 SECRET_KEY = env("SECRET_KEY")
 
