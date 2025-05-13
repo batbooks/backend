@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DEBUG = env("DEBUG") == "True"
 
 # Deployment environment settings
-deploy = env("deploy")
+deploy = env("deploy") == "True"
 
 # Secret key for security purposes
 SECRET_KEY = env("SECRET_KEY")
