@@ -2,7 +2,6 @@ from .base import *
 
 INSTALLED_APPS = [
     'daphne',
-    'chat.apps.ChatConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -22,6 +21,7 @@ INSTALLED_APPS += [
     'tag.apps.TagConfig',
     'forum.apps.ForumConfig',
     'adv_search.apps.AdvSearchConfig',
+    'chat.apps.ChatConfig',
 ]
 
 # Third-Party Apps
