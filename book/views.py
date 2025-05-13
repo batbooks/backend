@@ -1,4 +1,3 @@
-from django.shortcuts import render
 import os
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -164,8 +163,6 @@ class BookSearchAPIView(APIView):
         data = BookGetSerializer(page, context={"hide_field": ['email']}, many=True).data
         return paginator.get_paginated_response(data)
 
-
-##  with generic
 
 class UserBookAPIView(generics.ListAPIView):
     serializer_class = BookSerializer

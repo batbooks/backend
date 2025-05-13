@@ -4,9 +4,6 @@ from tag.models import Tag,Genre
 from django.db.models import Avg
 
 
-
-# Create your models here.
-
 class Book(models.Model):
 
     STATUS_ONGOING = 'O'

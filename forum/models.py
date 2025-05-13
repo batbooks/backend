@@ -2,8 +2,6 @@ from django.db import models
 from accounts.models import User
 from  book.models import Book
 
-# Create your models here.
-
 class Forum(models.Model):
     book = models.OneToOneField(Book, on_delete=models.CASCADE, related_name='forum')
     name = models.CharField(max_length=256)

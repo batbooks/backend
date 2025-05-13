@@ -7,7 +7,6 @@ from tag.models import TagCategory, Tag, Genre
 from  tag.serializer import TagCategorySerializer,TagSerializer,GenreSerializer
 
 
-# Create your views here.
 class GenreListView(APIView):
     serializer_class = GenreSerializer
     def get(self, request):
