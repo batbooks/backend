@@ -34,8 +34,6 @@ INSTALLED_APPS += [
     'channels',
     'drf_spectacular',
 ]
-print("INSTALLED_APPS:", INSTALLED_APPS)
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
