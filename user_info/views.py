@@ -47,12 +47,13 @@ class UsernameUpdateView(APIView):
         super().setup(request, *args, **kwargs)
 
     def put(self, request):
-        if request.data['username']:
-            for v in request.data['username']:
+        username = request.data.get('username')
+        if username:
+            for v in username:
                 if v in string.punctuation or v == ' ':
                     return Response({"error": 'نام کاربری نمیتواند کاراکتر خاص یا فاصله داشته باشد'},
                                     status=status.HTTP_400_BAD_REQUEST)
-            user = self.user_model.objects.filter(name=request.data['username'])
+            user = self.user_model.objects.filter(name=username)
             if user.exists():
                 return Response({'error': 'نام درخواستی گرفته شده است.'}, status=status.HTTP_400_BAD_REQUEST)
             request.user.name = request.data['username']

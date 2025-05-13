@@ -2,7 +2,7 @@ import os
 import django
 from django.core.management import call_command
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.sett1ng')
 django.setup()
 from book_actions.models import Rating
 from book.models import Book

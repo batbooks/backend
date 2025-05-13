@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import Genre, Tag,TagCategory
-# Register your models here.
 
 @admin.register(TagCategory)
 class TagCategoryAdmin(admin.ModelAdmin):

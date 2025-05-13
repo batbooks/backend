@@ -1,6 +1,5 @@
 from collections import defaultdict
 from math import floor
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,10 +13,8 @@ from comments.models import Comment, Review, Post
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
 from django.db.models import Case, When, Value, IntegerField, Count
-from book_actions.serializers import RatingBookSerializer
 
 
-# Create your views here.
 class CommentCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = CommentSerializer
@@ -382,6 +379,7 @@ class PostUpdateAPIView(APIView):
 
 class PostLikeAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+
     def get(self, request, post_id):
         try:
             post = Post.objects.get(pk=post_id)

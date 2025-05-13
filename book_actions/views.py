@@ -1,4 +1,3 @@
-
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -13,12 +12,13 @@ from .serializers import RatingBookSerializer
 
 class BookToggleFavoriteView(APIView):
     permission_classes = (IsAuthenticated,)
-    def get(self, request,book_id, *args, **kwargs):
+
+    def get(self, request, book_id, *args, **kwargs):
         book = Book.objects.get(pk=book_id)
         favorite = Favorite.objects.filter(user=request.user)
         if favorite.exists():
             favorite = favorite.first()
-            if book in favorite.book.all() :
+            if book in favorite.book.all():
                 favorite.book.remove(book)
             else:
                 favorite.book.add(book)
@@ -31,19 +31,23 @@ class BookToggleFavoriteView(APIView):
 class UserFavoriteView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = BookAllGetSerializer
+
     def get(self, request, *args, **kwargs):
         favorite = Favorite.objects.get(user=request.user)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(favorite.book.all(), request)
-        ser_date = BookAllGetSerializer(page,many=True)
+        ser_date = BookAllGetSerializer(page, many=True)
         return paginator.get_paginated_response(ser_date.data)
+
 
 class BookIsFavoriteView(APIView):
     permission_classes = (IsAuthenticated,)
+
     def get(self, request, book_id):
         book = get_object_or_404(Book, id=book_id)
         favorite = Favorite.objects.filter(user=request.user, book=book)
         return Response({"is_favorite": favorite.exists()}, status=status.HTTP_200_OK)
+
 
 class BookToggleBlockedView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -66,6 +70,7 @@ class BookToggleBlockedView(APIView):
 class UserBlockedView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = BookAllGetSerializer
+
     def get(self, request, *args, **kwargs):
         blocked = Blocked.objects.get(user=request.user)
         paginator = CustomPagination()
@@ -73,12 +78,14 @@ class UserBlockedView(APIView):
         ser_date = BookAllGetSerializer(page, many=True)
         return paginator.get_paginated_response(ser_date.data)
 
+
 class BookRatingView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = RatingBookSerializer
-    def post(self, request ,*args, **kwargs):
+
+    def post(self, request, *args, **kwargs):
         ser_data = RatingBookSerializer(data=request.data, context={'request': request})
         if ser_data.is_valid():
             ser_data.save(user=request.user)
-            return Response(ser_data.data,status=status.HTTP_201_CREATED)
+            return Response(ser_data.data, status=status.HTTP_201_CREATED)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
