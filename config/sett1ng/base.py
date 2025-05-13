@@ -8,11 +8,12 @@ env = os.environ.get
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Debug mode settings
-DEBUG = env("DEBUG") == "True"
+DEBUG = env("DEBUG").lower() == "true"
 
 # Deployment environment settings
-deploy = env("deploy") == "True"
 
+deploy = env("deploy").lower() == "true"
+print(deploy)
 # Secret key for security purposes
 SECRET_KEY = env("SECRET_KEY")
 
