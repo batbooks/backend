@@ -2,16 +2,18 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from forum.models import Thread,Forum
-from forum.serializer import ThreadSerializer,ForumSerializer
+from forum.models import Thread, Forum
+from forum.serializer import ThreadSerializer, ForumSerializer
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from permissions import ForumIsOwnerOrReadOnly
 from paginations import CustomPagination
 
 
 class ForumListAPIView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = ForumSerializer
+
     def get(self, request):
         forums = Forum.objects.all()
         paginator = CustomPagination()
@@ -22,6 +24,7 @@ class ForumListAPIView(APIView):
 
 class ThreadCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = ThreadSerializer
 
     def post(self, request):
         serializer = ThreadSerializer(data=request.data)
@@ -33,6 +36,7 @@ class ThreadCreateAPIView(APIView):
 
 class ForumThreadListAPIView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = ThreadSerializer
 
     def get(self, request, pk):
         forum = get_object_or_404(Forum, id=pk)
@@ -45,6 +49,8 @@ class ForumThreadListAPIView(APIView):
 
 class ThreadUpdateAPIView(APIView):
     permission_classes = [ForumIsOwnerOrReadOnly]
+    serializer_class = ThreadSerializer
+
     def put(self, request, pk):
         thread = get_object_or_404(Thread, pk=pk)
         serializer = ThreadSerializer(thread, data=request.data, partial=True)
@@ -57,5 +63,3 @@ class ThreadUpdateAPIView(APIView):
         thread = get_object_or_404(Thread, pk=pk)
         thread.delete()
         return Response({'message': 'با موفقیت حذف شد.'}, status=status.HTTP_204_NO_CONTENT)
-
-

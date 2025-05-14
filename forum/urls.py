@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from forum.views import ForumThreadListAPIView, ThreadUpdateAPIView,ThreadCreateAPIView,ForumListAPIView
 
 urlpatterns = [
     path('', views.ForumListAPIView.as_view(), name='All_forum'),

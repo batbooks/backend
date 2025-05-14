@@ -1,7 +1,6 @@
 from django.contrib import admin
 from forum.models import Forum, Thread
 
-# Register your models here.
 @admin.register(Forum)
 class ForumAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_at')
