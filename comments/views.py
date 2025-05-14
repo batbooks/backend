@@ -13,7 +13,7 @@ from permissions import ReviewPostIsOwnerOrReadOnly
 from comments.models import Comment, Review, Post
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
-from django.db.models import Case, When, Value, IntegerField, Count
+from django.db.models import Case, When, Value, IntegerField, Count, Prefetch
 from book_actions.serializers import RatingBookSerializer
 
 
@@ -102,9 +102,19 @@ class CommentChapterAPIView(APIView):
     def get(self, request, chapter_id):
         try:
             chapter = Chapter.objects.prefetch_related(
-                'ch_comments_comment',
-                'ch_comments_comment__like',
-                'ch_comments_comment__dislike'
+                Prefetch(
+                    'ch_comments_comment',
+                    queryset=Comment.objects.filter(reply__isnull=True)
+                    .select_related('user', 'user__user_info', 'tag')
+                    .prefetch_related(
+                        'like', 'dislike',
+                        Prefetch(
+                            'replies',
+                            queryset=Comment.objects.select_related('user', 'user__user_info')
+                            .prefetch_related('like', 'dislike')
+                        )
+                    )
+                )
             ).get(pk=chapter_id)
         except Chapter.DoesNotExist:
             return Response(
@@ -166,7 +176,6 @@ class ReviewCreateAPIView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class ReviewListAPIView(APIView):
     permission_classes = (AllowAny,)
 
@@ -179,7 +188,12 @@ class ReviewListAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        reviews = Review.objects.filter(book=book)
+        reviews = (
+            Review.objects.filter(book_id=book_id)
+            .select_related('user', 'user__user_info', 'chapter')
+            .prefetch_related('like', 'dislike')
+            .filter(book=book)
+        )
 
         if request.user.is_authenticated:
             reviews = reviews.annotate(
@@ -203,12 +217,10 @@ class ReviewListAPIView(APIView):
         )
 
         rating_counts = defaultdict(int)
-
         for item in rating_data:
             quantized_rating = floor(float(item['rating']))
             rating_counts[quantized_rating] += item['count']
 
-        print(list(rating_data))
         return paginator.get_paginated_response({
             'reviews': serializer.data,
             'rating_counts': rating_counts

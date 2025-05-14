@@ -52,6 +52,7 @@ INSTALLED_APPS += [
     'book_actions.apps.BookActionsConfig',
     'tag.apps.TagConfig',
     'forum.apps.ForumConfig',
+    'playlist.apps.PlaylistConfig',
     'adv_search.apps.AdvSearchConfig',
 ]
 

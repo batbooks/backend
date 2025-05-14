@@ -30,7 +30,8 @@ urlpatterns = ([
     path('book-actions/', include('book_actions.urls')),
     path('tag/', include('tag.urls')),
     path('forum/', include('forum.urls')),
-    path('advance/',include('adv_search.urls'))
+    path('advance/',include('adv_search.urls')),
+    path('user/playlists/',include('playlist.urls'))
 ])
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
