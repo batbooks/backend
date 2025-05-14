@@ -1,6 +1,5 @@
 from collections import defaultdict
 from math import floor
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,12 +13,11 @@ from comments.models import Comment, Review, Post
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
 from django.db.models import Case, When, Value, IntegerField, Count
-from book_actions.serializers import RatingBookSerializer
 
 
-# Create your views here.
 class CommentCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = CommentSerializer
 
     def post(self, request):
         ser_data = CommentSerializer(data=request.data)
@@ -75,6 +73,7 @@ class CommentDisLikeAPIView(APIView):
 
 class CommentReplyAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = ReplyCommentSerializer
 
     def post(self, request, comment_id):
 
@@ -99,6 +98,8 @@ class CommentReplyAPIView(APIView):
 
 
 class CommentChapterAPIView(APIView):
+    serializer_class = CommentSerializer
+
     def get(self, request, chapter_id):
         try:
             chapter = Chapter.objects.prefetch_related(
@@ -120,6 +121,8 @@ class CommentChapterAPIView(APIView):
 
 
 class CommentGetAllReplyAPIView(APIView):
+    serializer_class = CommentSerializer
+
     def get(self, request, comment_id):
         try:
             comment = Comment.objects.prefetch_related(
@@ -142,6 +145,7 @@ class CommentGetAllReplyAPIView(APIView):
 
 class ReviewCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = ReviewSerializer
 
     def post(self, request, book_id):
         try:
@@ -169,6 +173,7 @@ class ReviewCreateAPIView(APIView):
 
 class ReviewListAPIView(APIView):
     permission_classes = (AllowAny,)
+    serializer_class = ReviewSerializer
 
     def get(self, request, book_id):
         try:
@@ -217,6 +222,7 @@ class ReviewListAPIView(APIView):
 
 class ReviewUpdateDeleteAPIView(APIView):
     permission_classes = (IsAuthenticated, ReviewPostIsOwnerOrReadOnly)
+    serializer_class = ReviewSerializer
 
     def put(self, request, book_id):
         try:
@@ -311,6 +317,7 @@ class ReviewDisLikeAPIView(APIView):
 
 
 class PostGetAPIView(APIView):
+    serializer_class = PostSerializer
 
     def get(self, request, thread_id):
         thread = get_object_or_404(Thread, id=thread_id)
@@ -321,6 +328,7 @@ class PostGetAPIView(APIView):
 
 class PostCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = PostSerializer
 
     def post(self, request, thread_id):
         thread = get_object_or_404(Thread, id=thread_id)
@@ -338,6 +346,7 @@ class PostCreateAPIView(APIView):
 
 class PostUpdateAPIView(APIView):
     permission_classes = (IsAuthenticated, ReviewPostIsOwnerOrReadOnly)
+    serializer_class = PostSerializer
 
     def get_object(self, pk):
         return get_object_or_404(Post, pk=pk)

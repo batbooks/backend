@@ -1,5 +1,3 @@
-# signals.py
-
 from django.db.models.signals import post_save , post_migrate
 from django.dispatch import receiver
 from book.models import Book,Chapter

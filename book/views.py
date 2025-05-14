@@ -1,4 +1,3 @@
-from django.shortcuts import render
 import os
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,22 +5,21 @@ from rest_framework import status
 from django.conf import settings
 from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import datetime
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Book, Chapter
 from permissions import BookIsOwnerOrReadOnly, ChapterIsOwnerOrReadOnly, IsOwnerOrReadOnly
 from .serializers import BookSerializer, BookGetAllSerializer, ChapterGetSerializer, ChapterCreateSerializer, \
     BookAllGetSerializer, BookGetSerializer, User
-from  book_actions.models import Blocked
+from book_actions.models import Blocked
 from paginations import CustomPagination
 from rest_framework import generics
 import fitz
 
 
-
-
 class BookListAPIView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = BookAllGetSerializer
 
     def get(self, request):
         user = request.user
@@ -38,12 +36,14 @@ class BookListAPIView(APIView):
         else:
             books = Book.objects.select_related('Author').all()
 
-
         serializer = BookAllGetSerializer(books, many=True)
         return Response(serializer.data)
 
+
 class BookCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = BookSerializer
+
     def post(self, request):
         serializer = BookSerializer(data=request.data)
         if serializer.is_valid():
@@ -51,8 +51,11 @@ class BookCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class BookDetailAPIView(APIView):
     permission_classes = [BookIsOwnerOrReadOnly]
+    serializer_class = BookGetAllSerializer
+
     def get(self, request, pk):
         try:
             book = Book.objects.get(pk=pk)
@@ -72,19 +75,18 @@ class BookDetailAPIView(APIView):
                 {"error": "کتاب مورد نظر پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
-        self.check_object_permissions(request,book)
-        serializer = BookSerializer(book, data=request.data,partial=True)
+        self.check_object_permissions(request, book)
+        serializer = BookSerializer(book, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
 class ChapterDetailUpdateDeleteAPIView(APIView):
     permission_classes = [ChapterIsOwnerOrReadOnly]
+    serializer_class = ChapterGetSerializer
+
     def get(self, request, id):
         try:
             chapter = Chapter.objects.get(pk=id)
@@ -96,7 +98,7 @@ class ChapterDetailUpdateDeleteAPIView(APIView):
         if chapter.is_approved:
             ser_data = ChapterGetSerializer(chapter, context={'request': request})
             return Response(ser_data.data, status=status.HTTP_200_OK)
-        return Response({'error':'چپتر پیدا نشد'},status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'چپتر پیدا نشد'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, id):
         try:
@@ -106,7 +108,7 @@ class ChapterDetailUpdateDeleteAPIView(APIView):
                 {"error": "چپتر مورد نظر پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
-        self.check_object_permissions(request,chapter)
+        self.check_object_permissions(request, chapter)
         serializer = ChapterCreateSerializer(data=request.data, instance=chapter, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -121,12 +123,15 @@ class ChapterDetailUpdateDeleteAPIView(APIView):
                 {"error": "چپتر مورد نظر پیدا نشد."},
                 status=status.HTTP_404_NOT_FOUND
             )
-        self.check_object_permissions(request,chapter)
+        self.check_object_permissions(request, chapter)
         chapter.delete()
-        return Response({'messege':'چپتر با موفقیت پاک شد'},status=status.HTTP_204_NO_CONTENT)
+        return Response({'messege': 'چپتر با موفقیت پاک شد'}, status=status.HTTP_204_NO_CONTENT)
+
 
 class ChapterCreateAPIView(APIView):
     permission_classes = [BookIsOwnerOrReadOnly]
+    serializer_class = ChapterCreateSerializer
+
     def post(self, request):
 
         try:
@@ -137,7 +142,7 @@ class ChapterCreateAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        self.check_object_permissions(request,book)
+        self.check_object_permissions(request, book)
         ser_data = ChapterCreateSerializer(data=request.data)
         if ser_data.is_valid():
             ser_data.save()
@@ -146,7 +151,9 @@ class ChapterCreateAPIView(APIView):
 
 
 class BookSearchAPIView(APIView):
-    def get(self, request,book_name):
+    serializer_class = BookGetSerializer
+
+    def get(self, request, book_name):
         book_name = book_name.strip()
         if len(book_name) < 3:
             return Response({"error": 'اسم کتاب باید حداقل سه حرف باشد.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -157,8 +164,6 @@ class BookSearchAPIView(APIView):
         return paginator.get_paginated_response(data)
 
 
-##  with generic
-
 class UserBookAPIView(generics.ListAPIView):
     serializer_class = BookSerializer
 
@@ -166,30 +171,31 @@ class UserBookAPIView(generics.ListAPIView):
         user = get_object_or_404(User, id=self.kwargs.get('id'))
         return user.books.all().order_by('-id')
 
+
 class MyBookAPIView(generics.ListAPIView):
-    serializer_class =  BookSerializer
+    serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
+
     def get_queryset(self):
         user = self.request.user
         return user.books.all().order_by('-id')
 
 
-
-
 class PDFUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [BookIsOwnerOrReadOnly]
+
     def post(self, request, *args, **kwargs):
         pdf_file = request.FILES.get('pdf')
         book_id = request.data.get('book')
-        title = request.data.get('title',None)
+        title = request.data.get('title', None)
 
         if not pdf_file or not book_id:
             return Response({'error': 'فایل pdf  یا کتاب مورد نظر موجود نیست.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             book = Book.objects.get(pk=book_id)
-            self.check_object_permissions(request,book)
+            self.check_object_permissions(request, book)
         except Book.DoesNotExist:
             return Response({'error': 'کتاب پیدا نشد'}, status=status.HTTP_404_NOT_FOUND)
 

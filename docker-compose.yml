@@ -25,6 +25,9 @@ services:
       DEBUG: False
       EMAIL_HOST_USER: batbook2025@gmail.com
       EMAIL_HOST_PASSWORD: yffxawaytmthfvma
+      deploy: True
+      ACCESS_TOKEN_LIFETIME: 07-00-00
+      REFRESH_TOKEN_LIFETIME: 30-00-00
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media

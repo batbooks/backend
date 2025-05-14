@@ -12,12 +12,14 @@ import random
 
 class UserView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserReadSerializer
     def get(self, request:Request):
 
         user = request.user
         ser_data = UserReadSerializer(instance = user)
         return Response(ser_data.data, status=status.HTTP_200_OK)
 class RegisterView(APIView):
+    serializer_class = UserRegisterSerializer
     def post(self, request):
         ser_data = UserRegisterSerializer(data=request.data)
         ser_data.validate(request.data)
@@ -53,6 +55,7 @@ class VerifyOTPView(APIView):
 
 
 class SendOTPResetView(APIView):
+
     def post(self, request):
         email = request.data.get('email')
         if not email:
@@ -81,6 +84,7 @@ class SendOTPResetView(APIView):
 
 
 class VerifyOTPAndResetPasswordView(APIView):
+    serializer_class = ResetPasswordSerializer
     def post(self, request):
         ser_data = ResetPasswordSerializer(data=request.data)
         ser_data.validate(request.data)
