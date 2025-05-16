@@ -63,6 +63,19 @@ class UsernameUpdateView(APIView):
         else:
             return Response({'error': 'نام کاربری لازم است.'}, status=status.HTTP_400_BAD_REQUEST)
 
+class AllUsersView(APIView):
+    def setup(self, request, *args, **kwargs):
+        self.user_model = get_user_model()
+        super().setup(request, *args, **kwargs)
+
+    def get(self, request):
+        users = self.user_model.objects.filter(is_admin=False)
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(users, request)
+        data = UserReadSerializer(page, context={"hide_field": ['email']}, many=True).data
+        return paginator.get_paginated_response(data)
+
+
 
 class UserInfoUpdateView(APIView):
     permission_classes = [IsOwnerOrReadOnly]
