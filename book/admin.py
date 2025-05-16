@@ -2,15 +2,24 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import mark_safe, escape
 from .models import Book, Chapter
+from django.db import transaction
+
 
 @admin.action(description='Fix chapter numbers for selected books')
 def fix_chapter_numbers(modeladmin, request, queryset):
+    updated_chapters = []
     for book in queryset:
         chapters = Chapter.objects.filter(book=book).order_by('created_at')
         for idx, chapter in enumerate(chapters, start=1):
             if chapter.chapter_num != idx:
                 chapter.chapter_num = idx
-                chapter.save(update_fields=['chapter_num'])
+                updated_chapters.append(chapter)
+
+    # Bulk update all changed chapters in one query
+    if updated_chapters:
+        with transaction.atomic():
+            Chapter.objects.bulk_update(updated_chapters, ['chapter_num'])
+
     modeladmin.message_user(request, "Chapter numbers updated successfully.")
 
 def all_tags(book):
