@@ -15,7 +15,6 @@ def fix_chapter_numbers(modeladmin, request, queryset):
                 chapter.chapter_num = idx
                 updated_chapters.append(chapter)
 
-    # Bulk update all changed chapters in one query
     if updated_chapters:
         with transaction.atomic():
             Chapter.objects.bulk_update(updated_chapters, ['chapter_num'])
