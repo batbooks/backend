@@ -2,16 +2,41 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import mark_safe, escape
 from .models import Book, Chapter
+from django.db import transaction
 
-@admin.action(description='Fix chapter numbers for selected books')
-def fix_chapter_numbers(modeladmin, request, queryset):
+
+@admin.action(description='Fix chapter numbers for selected books by time')
+def fix_chapter_numbers_by_time(modeladmin, request, queryset):
+    updated_chapters = []
     for book in queryset:
         chapters = Chapter.objects.filter(book=book).order_by('created_at')
         for idx, chapter in enumerate(chapters, start=1):
             if chapter.chapter_num != idx:
                 chapter.chapter_num = idx
-                chapter.save(update_fields=['chapter_num'])
-    modeladmin.message_user(request, "Chapter numbers updated successfully.")
+                updated_chapters.append(chapter)
+
+    if updated_chapters:
+        with transaction.atomic():
+            Chapter.objects.bulk_update(updated_chapters, ['chapter_num'])
+
+    modeladmin.message_user(request, "Chapter numbers updated by time successfully.")
+
+
+@admin.action(description='Fix chapter numbers for selected books by id')
+def fix_chapter_numbers_by_id(modeladmin, request, queryset):
+    updated_chapters = []
+    for book in queryset:
+        chapters = Chapter.objects.filter(book=book).order_by('id')  # Change made here
+        for idx, chapter in enumerate(chapters, start=1):
+            if chapter.chapter_num != idx:
+                chapter.chapter_num = idx
+                updated_chapters.append(chapter)
+
+    if updated_chapters:
+        with transaction.atomic():
+            Chapter.objects.bulk_update(updated_chapters, ['chapter_num'])
+
+    modeladmin.message_user(request, "Chapter numbers updated by ID successfully.")
 
 def all_tags(book):
     return ", ".join(tag.title for tag in book.tags.all())
@@ -25,7 +50,7 @@ class BookAdmin(admin.ModelAdmin):
     ordering = ('name',)
     filter_horizontal = ('tags', 'genres')
     list_per_page = 10
-    actions = [fix_chapter_numbers]
+    actions = [fix_chapter_numbers_by_time, fix_chapter_numbers_by_id]
 
     fieldsets = (
         ('Basic Information', {

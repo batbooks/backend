@@ -7,6 +7,8 @@ urlpatterns =[
     path('reply_to/<int:comment_id>/',views.CommentReplyAPIView.as_view(),name='comment-reply'),
     path('chapter/<int:chapter_id>/',views.CommentChapterAPIView.as_view(),name='comment-chapter'),
     path('comment/<int:comment_id>/',views.CommentGetAllReplyAPIView.as_view(),name='comment-chapter'),
+    path('user/reviews/', views.UserReviewListAPIView.as_view(), name='user-reviews'),
+    path('user/comments/', views.UserCommentListAPIView.as_view(), name='user-comments'),
 
     path('book/<int:book_id>/reviews/',views.ReviewListAPIView.as_view(), name='book-reviews'),
     path('book/<int:book_id>/reviews/create/',views.ReviewCreateAPIView.as_view(), name='create-review'),
