@@ -33,6 +33,7 @@ INSTALLED_APPS += [
     'django_filters',
     'channels',
     'drf_spectacular',
+    "anymail",
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

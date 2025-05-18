@@ -28,6 +28,7 @@ services:
       deploy: True
       ACCESS_TOKEN_LIFETIME: 07-00-00
       REFRESH_TOKEN_LIFETIME: 30-00-00
+      RESEND_API_KEY: re_JRQcVUaZ_2YahmZYnfsgEJ6SbtSxcTQvT
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
