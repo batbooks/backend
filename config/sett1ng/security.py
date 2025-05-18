@@ -16,7 +16,7 @@ else:
         'http://localhost:5173',
         'https://batbooks-frontend.liara.run'
     ]
-    ALLOWED_HOSTS = ['batbooks.ir', 'www.batbooks.ir', 'localhost', '127.0.0.1','45.158.169.198']
+    ALLOWED_HOSTS = ['batbooks.ir', 'www.batbooks.ir', 'localhost', '127.0.0.1', '45.158.169.198', 'api']
 
     INTERNAL_IPS = [
         "127.0.0.1",
