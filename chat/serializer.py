@@ -1,6 +1,6 @@
 from rest_framework import serializers
-
-from .models import Message
+from django.contrib.auth import get_user_model
+from .models import Message,GroupMessage,Group
 
 
 class ShowMessageSerializer(serializers.ModelSerializer):
@@ -19,3 +19,22 @@ class ShowMessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = '__all__'
         read_only_fields = ('id', 'from_user', 'to_user')
+
+
+
+User = get_user_model()
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['id', 'name', 'members']
+        extra_kwargs = {
+            'members': {'required': False}
+        }
+
+class GroupMessageSerializer(serializers.ModelSerializer):
+    sender = serializers.StringRelatedField()
+
+    class Meta:
+        model = GroupMessage
+        fields = ['id', 'sender', 'message', 'date']

@@ -23,3 +23,10 @@ def update_all_book_ratings():
 
 
 update_all_book_ratings()
+
+for book in Book.objects.all():
+    if book.rating_sum is None:
+        book.rating_sum = 0
+    if book.rating_count is None:
+        book.rating_count = 0
+    book.save()
