@@ -113,7 +113,6 @@ class SearchUserView(APIView):
         data = UserReadSerializer(page, context={"hide_field": ['email']}, many=True).data
         return paginator.get_paginated_response(data)
 
-
 class ToggleFollowUserView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = EmptySerializer
@@ -158,7 +157,6 @@ class FollowersView(APIView):
         data = FollowSerializer(page, context={"hide_field": ['following', 'following_image', 'following_user_id']},
                                 many=True).data
         return paginator.get_paginated_response(data)
-
 
 class FollowingView(APIView):
     permission_classes = [IsAuthenticated]
@@ -206,7 +204,6 @@ class NotInterestedView(APIView):
         page = paginator.paginate_queryset(not_interested_qs, request)
         data = NotInterestedSerializer(page, many=True).data
         return paginator.get_paginated_response(data)
-
 
 class IsNotinterestedUserView(APIView):
     permission_classes = [IsAuthenticated]

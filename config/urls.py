@@ -15,6 +15,8 @@ urlpatterns = ([
     path('book-actions/', include('book_actions.urls')),
     path('tag/', include('tag.urls')),
     path('forum/', include('forum.urls')),
+    path('advance/',include('adv_search.urls')),
+    path('user/playlists/',include('playlist.urls')),
     path('advance/', include('adv_search.urls')),
     path('chat/', include('chat.urls')),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

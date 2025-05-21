@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import mark_safe, escape
 from .models import Book, Chapter
+from django.utils.safestring import mark_safe
 from django.db import transaction
 
 
@@ -42,6 +43,8 @@ def all_tags(book):
     return ", ".join(tag.title for tag in book.tags.all())
 all_tags.short_description = "Tags"
 
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     list_display = ('name', 'Author', 'status', 'rating_sum', 'rating_count', 'created_at', 'updated_at', all_tags)
@@ -54,7 +57,7 @@ class BookAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'description', 'image', 'status', 'rating_sum', 'rating_count', 'Author')
+            'fields': ('name', 'description', 'image', 'image_preview', 'status', 'rating_sum', 'rating_count', 'Author')
         }),
         ('Categories and Tags', {
             'fields': ('tags', 'genres')
@@ -64,7 +67,9 @@ class BookAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    readonly_fields = ('created_at', 'updated_at')
+
+    readonly_fields = ('created_at', 'updated_at', 'image_preview')
+
 
 @admin.register(Chapter)
 class ChapterAdmin(admin.ModelAdmin):
