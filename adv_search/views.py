@@ -1,4 +1,4 @@
-om django_filters import rest_framework as filters
+from django_filters import rest_framework as filters
 from book.models import Book
 from rest_framework import generics
 from book.serializers import BookSerializer
