@@ -89,3 +89,16 @@ class NotInterestedSerializer(serializers.ModelSerializer):
         for field in hidden_fields:
             data.pop(field, None)
         return data
+
+
+class UsernameUpdateSerializer(serializers.Serializer):
+    name = serializers.CharField()
+
+class EmptySerializer(serializers.Serializer):
+    pass
+
+class IsFollowUserSerializer(serializers.Serializer):
+    is_follow = serializers.BooleanField(read_only=True)
+
+class IsNotinterestedUserSerializer(serializers.Serializer):
+    is_not_interested = serializers.BooleanField(read_only=True)
