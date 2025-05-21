@@ -440,3 +440,38 @@ class PostDisLikeAPIView(APIView):
 
         post.dislike.add(user)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class UserReviewListAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ReviewSerializer
+
+    def get(self, request):
+        reviews = Review.objects.filter(user=request.user).order_by('-created')
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(reviews, request)
+        serializer = self.serializer_class(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class UserCommentListAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CommentSerializer
+
+    def get(self, request):
+        comments = Comment.objects.filter(user=request.user).order_by('-created')
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(comments, request)
+        serializer = self.serializer_class(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+
+
+
+
+
+
+
+

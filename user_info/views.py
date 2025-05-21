@@ -4,11 +4,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework import status
-from tutorial.quickstart.serializers import UserSerializer
 
 from permissions import IsOwnerOrReadOnly
 from .models import UserInfo, UserFollow, UserNotInterested
-from .serializers import UserInfoSerializer, FollowSerializer, NotInterestedSerializer
+from .serializers import UserInfoSerializer, FollowSerializer, NotInterestedSerializer, UsernameUpdateSerializer, \
+    EmptySerializer, IsFollowUserSerializer, IsNotinterestedUserSerializer
 import string
 from accounts.serializers import UserReadSerializer
 from django.db.models import Q
@@ -41,7 +41,7 @@ class UserInfoView(APIView):
 
 class UsernameUpdateView(APIView):
     permission_classes = [IsAuthenticated]
-
+    serializer_class = UsernameUpdateSerializer
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
         super().setup(request, *args, **kwargs)
@@ -62,6 +62,20 @@ class UsernameUpdateView(APIView):
 
         else:
             return Response({'error': 'نام کاربری لازم است.'}, status=status.HTTP_400_BAD_REQUEST)
+
+class AllUsersView(APIView):
+    serializer_class = UserReadSerializer
+    def setup(self, request, *args, **kwargs):
+        self.user_model = get_user_model()
+        super().setup(request, *args, **kwargs)
+
+    def get(self, request):
+        users = self.user_model.objects.filter(is_admin=False)
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(users, request)
+        data = UserReadSerializer(page, context={"hide_field": ['email']}, many=True).data
+        return paginator.get_paginated_response(data)
+
 
 
 class UserInfoUpdateView(APIView):
@@ -101,7 +115,7 @@ class SearchUserView(APIView):
 
 class ToggleFollowUserView(APIView):
     permission_classes = [IsAuthenticated]
-
+    serializer_class = EmptySerializer
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
         super().setup(request, *args, **kwargs)
@@ -126,7 +140,7 @@ class ToggleFollowUserView(APIView):
 
 class IsFollowUserView(APIView):
     permission_classes = [IsAuthenticated]
-
+    serializer_class = IsFollowUserSerializer
     def get(self, request, user_id):
         user = get_object_or_404(get_user_model(), id=user_id)
         following = UserFollow.objects.filter(follower=request.user, following=user)
@@ -158,6 +172,7 @@ class FollowingView(APIView):
 
 class ToggleNotInterestedUserView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = EmptySerializer
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
         super().setup(request, *args, **kwargs)
@@ -192,6 +207,7 @@ class NotInterestedView(APIView):
 
 class IsNotinterestedUserView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = IsNotinterestedUserSerializer
     def get(self, request, user_id):
         user = get_object_or_404(get_user_model(), id=user_id, is_admin=False)
         exists = UserNotInterested.objects.filter(user=request.user, not_interested=user).exists()
