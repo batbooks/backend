@@ -1,8 +1,8 @@
-from channels.generic.websocket import WebsocketConsumer
-from .models import Message, UserChannel
+from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
+from .models import Message, UserChannel,GroupMessage,Group
 from django.contrib.auth import get_user_model
 import json
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -54,3 +54,50 @@ class ChatConsumer(WebsocketConsumer):
     def receiver_function(self, data):
         load_data = json.dumps(data)
         self.send(load_data)
+
+
+class GroupChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.group_id = self.scope['url_route']['kwargs']['group_id']
+        self.group_name = f"group_{self.group_id}"
+
+        await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        user = self.scope['user']
+        message_text = data['message']
+
+
+        group = await sync_to_async(Group.objects.get)(id=self.group_id)
+        await sync_to_async(GroupMessage.objects.create)(
+            group=group, sender=user, message=message_text
+        )
+
+
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                'type': 'group_message',
+                'message': message_text,
+                'sender': user.username,
+            }
+        )
+
+    async def group_message(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'group_message',
+            'message': event['message'],
+            'sender': event['sender'],
+        }))
