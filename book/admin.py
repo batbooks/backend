@@ -57,7 +57,7 @@ class BookAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'description', 'image', 'image_preview', 'status', 'rating_sum', 'rating_count', 'Author')
+            'fields': ('name', 'description', 'image', 'status', 'rating_sum', 'rating_count', 'Author')
         }),
         ('Categories and Tags', {
             'fields': ('tags', 'genres')
@@ -68,7 +68,7 @@ class BookAdmin(admin.ModelAdmin):
         }),
     )
 
-    readonly_fields = ('created_at', 'updated_at', 'image_preview')
+    readonly_fields = ('created_at', 'updated_at',)
 
 
 @admin.register(Chapter)
