@@ -40,6 +40,10 @@ User = get_user_model()
 class GroupSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
     is_last_you = serializers.SerializerMethodField()
+    member_count = serializers.SerializerMethodField()
+
+    def get_member_count(self, obj):
+        return obj.members.count()
 
     def get_is_last_you(self, obj):
         req_user = self.context.get('request').user
@@ -55,7 +59,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ['id', 'name', 'members', 'last_message', 'is_last_you','image']
+        fields = ['id', 'name', 'members', 'last_message', 'is_last_you', 'image', 'member_count']
         read_only_fields = ('members',)
 
 
