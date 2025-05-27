@@ -25,7 +25,7 @@ class ShowMessageApiView(APIView):
             messages = Message.objects.filter(
                 Q(from_user=request.user, to_user=to_user) | Q(from_user=to_user, to_user=request.user))
 
-            user_channel = UserChannel.objects.get(user=request.user)
+            user_channel = UserChannel.objects.get(user=to_user)
             data = {
                 'type': 'receiver_function',
                 'type_of_data': 'message_seen',
