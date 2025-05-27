@@ -85,13 +85,15 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
             group=group, sender=user, message=message_text
         )
 
-
-        await self.channel_layer.group_send(
+        user_info = await sync_to_async(lambda  : user.user_info)()
+        await  self.channel_layer.group_send(
             self.group_name,
             {
                 'type': 'group_message',
                 'message': message_text,
-                'sender': user.username,
+                'sender': user.name,
+                'image': user_info.image.url if user_info.image else None,
+                'user_id': user.id,
             }
         )
 

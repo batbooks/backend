@@ -5,16 +5,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from .models import Message, UserChannel, Group, GroupMessage
-from .serializer import ShowMessageSerializer,GroupMessageSerializer,GroupSerializer
+from .serializer import ShowMessageSerializer, GroupMessageSerializer, GroupSerializer, DirectMessageSerializer
 from django.shortcuts import get_object_or_404
 from .permissions import IsOwnerOrReadOnly
 from django.db.models import Q
 from asgiref.sync import async_to_sync
+from accounts.serializers import UserReadSerializer
 
 
 class ShowMessageApiView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ShowMessageSerializer
+
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
         super().setup(request, *args, **kwargs)
@@ -36,28 +38,54 @@ class ShowMessageApiView(APIView):
             message = Message.objects.filter(from_user=to_user, to_user=request.user)
             message.update(has_been_seen=True)
 
-            ser_data = ShowMessageSerializer(messages, many=True,context={"request":request}).data
+            ser_data = ShowMessageSerializer(messages, many=True, context={"request": request}).data
             return Response(ser_data)
 
         except self.user_model.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class MessageDeleteApiView(APIView):
-    permission_classes = (IsOwnerOrReadOnly,)
+
+
+class DirectMessageGetApiView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = DirectMessageSerializer
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
-        super().setup(request, *args, **kwargs)
+        return super().setup(request, *args, **kwargs)
 
-    def delete(self, request, message_id):
-        try:
-            message = Message.objects.get(pk=message_id)
-            self.check_object_permissions(request, message)
-            message.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Message.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    def get(self, request):
+        user = request.user
 
+        messages = Message.objects.filter(Q(from_user=user) | Q(to_user=user)).order_by('-date')
+
+        user_ids = set()
+        last_messages_dict = {}
+        unread_counts = {}
+
+        for msg in messages:
+            other_user = msg.to_user if msg.from_user == user else msg.from_user
+            user_ids.add(other_user.id)
+
+            if other_user.id not in last_messages_dict:
+                last_messages_dict[other_user.id] = msg.message
+
+            if msg.to_user == user and not msg.has_been_seen:
+                unread_counts[other_user.id] = unread_counts.get(other_user.id, 0) + 1
+
+        users = self.user_model.objects.filter(id__in=user_ids)
+
+        result = []
+        for u in users:
+            result.append({
+                'id': u.id,
+                'name': u.name,
+                'image': u.user_info.image.url if u.user_info.image else None,
+                'last_message': last_messages_dict.get(u.id, ''),
+                'unread_count': unread_counts.get(u.id, 0),
+            })
+
+        return Response(result)
 
 
 class GroupCreateView(APIView):
@@ -77,7 +105,7 @@ class GroupListView(APIView):
 
     def get(self, request):
         groups = Group.objects.filter(members=request.user)
-        serializer = GroupSerializer(groups, many=True)
+        serializer = GroupSerializer(groups, many=True,context={"request": request})
         return Response(serializer.data)
 
 
@@ -85,8 +113,8 @@ class GroupAddMemberView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, group_id):
-        group = get_object_or_404(Group, id=group_id)
-        user_ids = request.data.get('members', [])
+        group = get_object_or_404(Group, id=group_id, members=request.user)
+        user_ids = request.data.get('members', '').split(',')
         for user_id in user_ids:
             group.members.add(user_id)
         return Response({'detail': 'اعضا اضافه شدند.'}, status=status.HTTP_200_OK)
@@ -98,7 +126,17 @@ class GroupMessagesView(APIView):
     def get(self, request, group_id):
         group = get_object_or_404(Group, id=group_id)
         if request.user not in group.members.all():
-            return Response({'detail': 'شما عضو این گروه نیستید.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'error': 'شما عضو این گروه نیستید.'}, status=status.HTTP_403_FORBIDDEN)
         messages = GroupMessage.objects.filter(group=group).order_by('date')
         serializer = GroupMessageSerializer(messages, many=True)
         return Response(serializer.data)
+
+
+class GroupMembersView(APIView):
+    def get(self, request, group_id):
+        group = get_object_or_404(Group, id=group_id)
+        if request.user not in group.members.all():
+            return Response({'error': 'شما عضو این گروه نیستید.'}, status=status.HTTP_403_FORBIDDEN)
+        members = group.members.all()
+        ser_data = UserReadSerializer(members, many=True)
+        return Response({"members":ser_data.data })

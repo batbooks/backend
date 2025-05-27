@@ -26,13 +26,36 @@ class ShowMessageSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'from_user', 'to_user')
 
 
+class DirectMessageSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    image = serializers.CharField(read_only=True)
+    last_message = serializers.CharField(read_only=True)
+    unread_count = serializers.IntegerField(read_only=True)
+
+
 User = get_user_model()
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    last_message = serializers.SerializerMethodField()
+    is_last_you = serializers.SerializerMethodField()
+
+    def get_is_last_you(self, obj):
+        req_user = self.context.get('request').user
+        last_msg = obj.messages.all().order_by('-date').first()
+        if not last_msg:
+            return True
+        msg_user = last_msg.sender
+        return req_user == msg_user
+
+    def get_last_message(self, obj):
+        last_msg = obj.messages.all().order_by('-date').first()
+        return last_msg.message if last_msg else None
+
     class Meta:
         model = Group
-        fields = ['id', 'name', 'members']
+        fields = ['id', 'name', 'members', 'last_message', 'is_last_you','image']
         read_only_fields = ('members',)
 
 
