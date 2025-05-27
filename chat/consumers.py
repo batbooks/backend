@@ -96,8 +96,5 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def group_message(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'group_message',
-            'message': event['message'],
-            'sender': event['sender'],
-        }))
+        load_data = json.dumps(event)
+        await self.send(load_data)

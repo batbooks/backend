@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Message ,UserChannel
+from .models import Message ,UserChannel,Group,GroupMessage
 
 
 @admin.register(Message)
@@ -10,3 +10,12 @@ class MessageAdmin(admin.ModelAdmin):
 @admin.register(UserChannel)
 class UserChannelAdmin(admin.ModelAdmin):
     list_display = ['user','channel']
+
+
+@admin.register(Group)
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ['name']
+
+@admin.register(GroupMessage)
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ['group','message','sender','date']
