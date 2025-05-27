@@ -36,7 +36,7 @@ class ShowMessageApiView(APIView):
             message = Message.objects.filter(from_user=to_user, to_user=request.user)
             message.update(has_been_seen=True)
 
-            ser_data = ShowMessageSerializer(messages, many=True).data
+            ser_data = ShowMessageSerializer(messages, many=True,context={"request":request}).data
             return Response(ser_data)
 
         except self.user_model.DoesNotExist:
@@ -67,7 +67,7 @@ class GroupCreateView(APIView):
         serializer = GroupSerializer(data=request.data)
         if serializer.is_valid():
             group = serializer.save()
-            group.members.add(request.user)  # سازنده به گروه اضافه بشه
+            group.members.add(request.user)
             return Response(GroupSerializer(group).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
