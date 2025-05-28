@@ -22,6 +22,7 @@ INSTALLED_APPS += [
     'forum.apps.ForumConfig',
     'adv_search.apps.AdvSearchConfig',
     'chat.apps.ChatConfig',
+    'playlist.apps.PlaylistConfig'
 ]
 
 # Third-Party Apps

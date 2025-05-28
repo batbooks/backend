@@ -6,7 +6,7 @@ class ThreadSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(slug_field='name', read_only=True)
     class Meta:
         model = Thread
-        fields = ['id', 'forum', 'name', 'status', 'created_at','author']
+        fields = ['id', 'forum', 'name', 'status','text', 'created_at','author']
         read_only_fields = ['id', 'created_at', 'author']
 
 class ForumSerializer(serializers.ModelSerializer):

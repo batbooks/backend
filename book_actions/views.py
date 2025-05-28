@@ -2,7 +2,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from book.models import Book
-from .models import Favorite, Blocked, Rating
+from playlist.serializer import PlaylistSerializer
+from .models import Favorite, Blocked, Rating,FavoritePlaylist
+from playlist.models import Playlist
 from rest_framework.response import Response
 from rest_framework import status
 from book.serializers import BookAllGetSerializer
@@ -47,6 +49,47 @@ class BookIsFavoriteView(APIView):
         book = get_object_or_404(Book, id=book_id)
         favorite = Favorite.objects.filter(user=request.user, book=book)
         return Response({"is_favorite": favorite.exists()}, status=status.HTTP_200_OK)
+
+class PlaylistToggleFavoriteView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, playlist_id, *args, **kwargs):
+        playlist = get_object_or_404(Playlist, id=playlist_id)
+        favorite, created = FavoritePlaylist.objects.get_or_create(user=request.user)
+
+        if playlist in favorite.playlist.all():
+            favorite.playlist.remove(playlist)
+            return Response({"detail": "Removed from favorites."}, status=status.HTTP_200_OK)
+        else:
+            favorite.playlist.add(playlist)
+            return Response({"detail": "Added to favorites."}, status=status.HTTP_201_CREATED)
+
+
+class UserPlaylistFavoriteView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        favorite = FavoritePlaylist.objects.filter(user=request.user).first()
+        if not favorite:
+            return Response({"results": []})
+
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(favorite.playlist.all(), request)
+        serializer = PlaylistSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class PlaylistIsFavoriteView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, playlist_id):
+        playlist = get_object_or_404(Playlist, id=playlist_id)
+        is_favorite = FavoritePlaylist.objects.filter(user=request.user, playlist=playlist).exists()
+        return Response({"is_favorite": is_favorite}, status=status.HTTP_200_OK)
+
+
+
+
 
 
 class BookToggleBlockedView(APIView):

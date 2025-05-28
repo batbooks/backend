@@ -10,23 +10,19 @@ class CommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     tag_id = serializers.SerializerMethodField()
 
-    def get_tag_id(self, obj):
-        if obj.tag:
-            return obj.tag.id
-        return 0
     class Meta:
         model = Comment
         fields = '__all__'
-        read_only_fields =['user',]
+        read_only_fields = ['user']
 
-    def validate_text(self, value):
-        if len(value) < 5:
-            raise ValidationError("متن کامنت باید حداقل ۵ حرف باشد.")
-        return value
+    def get_tag_id(self, obj):
+        return obj.tag.id if obj.tag else 0
 
-    def get_reply_count(self,obj):
-        if obj.replies :
-            return obj.replies.all().count()
+    def get_reply_count(self, obj):
+        # Use prefetched replies if available
+        if hasattr(obj, 'replies') and isinstance(obj.replies, list):
+            return len(obj.replies)
+        return obj.replies.count()
 
     def get_image(self, obj):
         if obj.user.user_info.image :

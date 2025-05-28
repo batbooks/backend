@@ -94,7 +94,7 @@ class BookGetAllSerializer(serializers.ModelSerializer):
     tags = serializers.StringRelatedField(many=True)
 
     def get_chapters(self, obj):
-        res = obj.chapters.filter(is_approved=True).order_by('created_at')
+        res = obj.chapters.filter(is_approved=True).order_by('chapter_num')
         return ChapterSummarySerializer(instance=res, many=True).data
 
     class Meta:
