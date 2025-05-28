@@ -23,7 +23,7 @@ class UserChannel(models.Model):
 class Group(models.Model):
     name = models.CharField(max_length=255)
     members = models.ManyToManyField(get_user_model(), related_name='groups')
-
+    image = models.ImageField(upload_to='groups/images/%Y/%m/%d/', null=True, blank=True)
     def __str__(self):
         return self.name
 
