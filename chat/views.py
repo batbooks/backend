@@ -27,13 +27,14 @@ class ShowMessageApiView(APIView):
             messages = Message.objects.filter(
                 Q(from_user=request.user, to_user=to_user) | Q(from_user=to_user, to_user=request.user))
 
-            user_channel = UserChannel.objects.get(user=to_user)
+            user_channel = UserChannel.objects.filter(user=to_user).first()
             data = {
                 'type': 'receiver_function',
                 'type_of_data': 'message_seen',
             }
             channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.send)(user_channel.channel, data)
+            if user_channel:
+                async_to_sync(channel_layer.send)(user_channel.channel, data)
 
             message = Message.objects.filter(from_user=to_user, to_user=request.user)
             message.update(has_been_seen=True)
