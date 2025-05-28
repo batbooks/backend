@@ -1,5 +1,5 @@
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
-from .models import Message, UserChannel,GroupMessage,Group
+from .models import Message, UserChannel, GroupMessage, Group
 from django.contrib.auth import get_user_model
 import json
 from asgiref.sync import async_to_sync, sync_to_async
@@ -35,21 +35,21 @@ class ChatConsumer(WebsocketConsumer):
                 'type_of_data': 'new_message',
                 'data': load_data.get('message'),
             }
-            try:
-                user_channel = UserChannel.objects.get(user=to_user)
+            user_channel = UserChannel.objects.filter(user=to_user).first()
+            if user_channel:
                 async_to_sync(self.channel_layer.send)(user_channel.channel, data)
-            except:
-                pass
         elif load_data['type'] == 'message_seen':
-            user_channel = UserChannel.objects.get(user=from_user)
+            user_channel = UserChannel.objects.filter(user=from_user).first()
+
             data = {
                 'type': 'receiver_function',
                 'type_of_data': 'message_seen',
             }
+
             message = Message.objects.filter(from_user=to_user, to_user=from_user)
             message.update(has_been_seen=True)
-
-            async_to_sync(self.channel_layer.send)(user_channel.channel, data)
+            if user_channel:
+                async_to_sync(self.channel_layer.send)(user_channel.channel, data)
 
     def receiver_function(self, data):
         load_data = json.dumps(data)
@@ -79,13 +79,12 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
         message_text = data['message']
 
-
         group = await sync_to_async(Group.objects.get)(id=self.group_id)
         await sync_to_async(GroupMessage.objects.create)(
             group=group, sender=user, message=message_text
         )
 
-        user_info = await sync_to_async(lambda  : user.user_info)()
+        user_info = await sync_to_async(lambda: user.user_info)()
         await  self.channel_layer.group_send(
             self.group_name,
             {
