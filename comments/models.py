@@ -41,6 +41,7 @@ class Review(CommentAbstract):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
     rating = models.DecimalField(max_digits=2,decimal_places=1)
 
+
     class Meta:
         unique_together = ('user', 'book')
 
@@ -56,5 +57,9 @@ class Post(CommentAbstract):
 
     def __str__(self):
         return f"{self.user.name} on {self.thread.name}: {self.body[:30]}"
+
+
+
+
 
 

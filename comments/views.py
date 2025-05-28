@@ -12,9 +12,21 @@ from permissions import ReviewPostIsOwnerOrReadOnly
 from comments.models import Comment, Review, Post
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
+from user_info.models import UserNotInterested
 from django.db.models import Case, When, Value, IntegerField, Count, Prefetch
 from book_actions.serializers import RatingBookSerializer
 from django.db.models import Case, When, Value, IntegerField, Count
+
+
+def exclude_not_interested_users(queryset, user):
+    if user.is_authenticated:
+        not_interested_user_ids = UserNotInterested.objects.filter(
+            user=user
+        ).values_list('not_interested_id', flat=True)
+        return queryset.exclude(user__id__in=not_interested_user_ids)
+    return queryset
+
+
 
 
 class CommentCreateAPIView(APIView):
@@ -126,6 +138,7 @@ class CommentChapterAPIView(APIView):
             )
 
         comments = chapter.ch_comments_comment.filter(reply__isnull=True)
+        comments = exclude_not_interested_users(comments, request.user)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
@@ -148,7 +161,7 @@ class CommentGetAllReplyAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        comments = comment.replies.all().order_by('created')
+        comments = exclude_not_interested_users(comment.replies.all(), request.user).order_by('created')
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
@@ -195,14 +208,17 @@ class ReviewListAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        reviews = (
-            Review.objects.filter(book_id=book_id)
-            .select_related('user', 'user__user_info', 'chapter')
+        reviews = Review.objects.filter(book=book)\
+            .select_related('user', 'user__user_info', 'chapter')\
             .prefetch_related('like', 'dislike')
-            .filter(book=book)
-        )
 
         if request.user.is_authenticated:
+            excluded_users = UserNotInterested.objects.filter(
+                user=request.user
+            ).values_list('not_interested_id', flat=True)
+
+            reviews = reviews.exclude(user_id__in=excluded_users)
+
             reviews = reviews.annotate(
                 priority=Case(
                     When(user=request.user, then=Value(0)),
@@ -335,7 +351,7 @@ class PostGetAPIView(APIView):
 
     def get(self, request, thread_id):
         thread = get_object_or_404(Thread, id=thread_id)
-        posts = thread.posts.all()
+        posts = exclude_not_interested_users(thread.posts.all(), request.user)
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 

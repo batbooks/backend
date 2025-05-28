@@ -68,7 +68,7 @@ class BookAdmin(admin.ModelAdmin):
         }),
     )
 
-    readonly_fields = ('created_at', 'updated_at', 'image_preview')
+    readonly_fields = ('created_at', 'updated_at')
 
 
 @admin.register(Chapter)
