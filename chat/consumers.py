@@ -2,12 +2,17 @@ from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from .models import Message, UserChannel, GroupMessage, Group
 from django.contrib.auth import get_user_model
 import json
+from django.contrib.auth.models import AnonymousUser
 from asgiref.sync import async_to_sync, sync_to_async
 
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
+        if isinstance(self.scope['user'], AnonymousUser):
+            self.close()
+            return
+
         user_channels = UserChannel.objects.filter(user=self.scope['user'])
         if user_channels.exists():
             user_channel = user_channels.first()
@@ -67,6 +72,9 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
+        if isinstance(self.scope['user'], AnonymousUser):
+            await self.close()
+            return
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
