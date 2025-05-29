@@ -6,7 +6,8 @@ from rest_framework import status
 from book.models import Chapter, Book
 from forum.models import Thread
 from book_actions.models import Rating
-from comments.serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer, PostSerializer
+from comments.serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer, PostSerializer, \
+    ReplyPostSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from permissions import ReviewPostIsOwnerOrReadOnly
 from comments.models import Comment, Review, Post
@@ -25,8 +26,6 @@ def exclude_not_interested_users(queryset, user):
         ).values_list('not_interested_id', flat=True)
         return queryset.exclude(user__id__in=not_interested_user_ids)
     return queryset
-
-
 
 
 class CommentCreateAPIView(APIView):
@@ -195,6 +194,7 @@ class ReviewCreateAPIView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ReviewListAPIView(APIView):
     permission_classes = (AllowAny,)
     serializer_class = ReviewSerializer
@@ -208,8 +208,8 @@ class ReviewListAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        reviews = Review.objects.filter(book=book)\
-            .select_related('user', 'user__user_info', 'chapter')\
+        reviews = Review.objects.filter(book=book) \
+            .select_related('user', 'user__user_info', 'chapter') \
             .prefetch_related('like', 'dislike')
 
         if request.user.is_authenticated:
@@ -458,6 +458,16 @@ class PostDisLikeAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class PostReplyAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ReplyPostSerializer
+    def post(self, request, post_id):
+        ser_data  = self.serializer_class(data=request.data)
+        psot_replying = get_object_or_404(Post, id=post_id)
+        if ser_data.is_valid():
+            ser_data.save(reply=psot_replying,user=request.user)
+            return Response(ser_data.data, status=status.HTTP_201_CREATED)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserReviewListAPIView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -481,13 +491,3 @@ class UserCommentListAPIView(APIView):
         page = paginator.paginate_queryset(comments, request)
         serializer = self.serializer_class(page, many=True)
         return paginator.get_paginated_response(serializer.data)
-
-
-
-
-
-
-
-
-
-

@@ -84,6 +84,15 @@ class ReviewSerializer(serializers.ModelSerializer):
         return obj.chapter.title if obj.chapter else None
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+    post_reply_msg = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        if obj.user.user_info.image:
+            return obj.user.user_info.image.url
+
+    def get_post_reply_msg(self, obj):
+        return obj.reply.body if obj.reply else None
     class Meta:
         model = Post
         fields = '__all__'
@@ -94,3 +103,31 @@ class PostSerializer(serializers.ModelSerializer):
             "id": obj.user.id,
             "name": obj.user.name
         }
+
+
+class ReplyPostSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    post_reply_msg = serializers.SerializerMethodField()
+
+
+    class Meta:
+        model = Post
+        fields = '__all__'
+        extra_kwargs = {
+            'chapter':{'read_only':True},
+            'user': {'read_only': True},
+        }
+
+    def get_image(self, obj):
+        if obj.user.user_info.image :
+            return obj.user.user_info.image.url
+
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "name": obj.user.name
+        }
+
+    def get_post_reply_msg(self,obj):
+        return obj.reply.body if obj.reply else None
