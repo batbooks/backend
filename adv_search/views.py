@@ -4,7 +4,7 @@ from rest_framework import generics
 from book.serializers import BookSerializer
 from rest_framework import filters as drf_filters
 from .fIlters import BookFilter
-from django.db.models import F, ExpressionWrapper, DecimalField, Count, IntegerField, When, Value
+from django.db.models import F, ExpressionWrapper, DecimalField, Count, IntegerField, When, Value,Case
 from django.db.models.functions import Cast, Coalesce
 from django.db.models.functions import Coalesce
 
