@@ -39,7 +39,8 @@ class ShowMessageApiView(APIView):
             message = Message.objects.filter(from_user=to_user, to_user=request.user)
             message.update(has_been_seen=True)
 
-            ser_data = ShowMessageSerializer(messages, many=True, context={"request": request}).data
+            ser_data = ShowMessageSerializer(messages, many=True,
+                                             context={"request": request, 'user': request.user}).data
             return Response(ser_data)
 
         except self.user_model.DoesNotExist:
@@ -92,7 +93,7 @@ class GroupCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = GroupSerializer(data=request.data,context={"user": request.user,})
+        serializer = GroupSerializer(data=request.data, context={"user": request.user, })
         if serializer.is_valid():
             group = serializer.save()
             group.members.add(request.user)
