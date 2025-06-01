@@ -64,8 +64,16 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class GroupMessageSerializer(serializers.ModelSerializer):
-    sender = serializers.StringRelatedField()
+    sender = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    sender_id = serializers.SerializerMethodField()
+    sender_img = serializers.SerializerMethodField()
+
+    def get_sender_img(self, obj):
+        return obj.sender.user_info.image.url if obj.sender.user_info.image else None
+
+    def get_sender_id(self, obj):
+        return obj.sender.id
 
     class Meta:
         model = GroupMessage
-        fields = ['id', 'sender', 'message', 'date']
+        fields = ['id', 'sender', 'message', 'date','sender_id','sender_img']

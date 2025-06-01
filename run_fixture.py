@@ -8,7 +8,7 @@ from book_actions.models import Rating
 from book.models import Book
 
 fixtures = ['user', 'user_info', 'book', 'persian_chapters', 'sample1', 'sample2', 'sample3', 'sample4', 'sample5',
-            'sample6', 'sample7', 'reviews', 'comments', 'book_actions', 'tag']
+            'sample6', 'sample7', 'reviews', 'comments', 'tag','forum_post']
 for fixture in fixtures:
     print(f'{fixture}...')
     call_command('loaddata', fixture)

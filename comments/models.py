@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from forum.models import Thread
 
-from book.models import Chapter,Book
+from book.models import Chapter, Book
 
 
 class CommentAbstract(models.Model):
@@ -12,7 +12,6 @@ class CommentAbstract(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     like = models.ManyToManyField(get_user_model(), related_name='%(app_label)s_%(class)s_likes', blank=True)
     dislike = models.ManyToManyField(get_user_model(), related_name='%(app_label)s_%(class)s_dislikes', blank=True)
-
 
     class Meta:
         abstract = True
@@ -39,11 +38,10 @@ class Comment(CommentAbstract):
 class Review(CommentAbstract):
     title = models.TextField(default='Untitled Review')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.DecimalField(max_digits=2,decimal_places=1)
+    rating = models.DecimalField(max_digits=2, decimal_places=1)
 
     class Meta:
         unique_together = ('user', 'book')
-
 
     def __str__(self):
         return f"{self.user.name} - {self.book.name} ({self.rating})"
@@ -51,10 +49,9 @@ class Review(CommentAbstract):
 
 class Post(CommentAbstract):
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='posts')
+    reply = models.ForeignKey('Post', on_delete=models.CASCADE, null=True, blank=True, related_name='p_reply')
 
     chapter = None
 
     def __str__(self):
         return f"{self.user.name} on {self.thread.name}: {self.body[:30]}"
-
-
