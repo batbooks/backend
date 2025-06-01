@@ -5,12 +5,14 @@ from rest_framework import status
 from django.conf import settings
 from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import datetime
+from django.db import IntegrityError
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
-from .models import Book, Chapter
+from .models import Book, Chapter,UserBookProgress
 from permissions import BookIsOwnerOrReadOnly, ChapterIsOwnerOrReadOnly, IsOwnerOrReadOnly
 from .serializers import BookSerializer, BookGetAllSerializer, ChapterGetSerializer, ChapterCreateSerializer, \
-    BookAllGetSerializer, BookGetSerializer, User
+    BookAllGetSerializer, BookGetSerializer, User,UserBookProgressSerializer
 from book_actions.models import Blocked
 from paginations import CustomPagination
 from rest_framework import generics
@@ -259,3 +261,46 @@ class PDFUploadAPIView(APIView):
             'message': 'pdf  با موفقیت اپلود شد.',
             'chapter_id': chapter.id
         }, status=status.HTTP_201_CREATED)
+
+
+
+
+class UserBookProgressListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        progresses = UserBookProgress.objects.filter(user=request.user)
+        serializer = UserBookProgressSerializer(progresses, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserBookProgressSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                raise ValidationError({
+                    "detail": "You have already created progress for this book."
+                })
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserBookProgressDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk, user):
+        return get_object_or_404(UserBookProgress, pk=pk, user=user)
+
+    def put(self, request, pk):
+        progress = self.get_object(pk, request.user)
+        serializer = UserBookProgressSerializer(progress, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        progress = self.get_object(pk, request.user)
+        progress.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

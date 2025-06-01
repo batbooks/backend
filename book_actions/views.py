@@ -132,3 +132,6 @@ class BookRatingView(APIView):
             ser_data.save(user=request.user)
             return Response(ser_data.data, status=status.HTTP_201_CREATED)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
