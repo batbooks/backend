@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Book, Chapter
+from .models import Book, Chapter,UserBookProgress
 from rest_framework.reverse import reverse
 from django.db.models import Avg
 
@@ -173,3 +173,41 @@ class ChapterCreateSerializer(serializers.ModelSerializer):
         model = Chapter
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'is_approved']
+
+
+
+
+class UserBookProgressSerializer(serializers.ModelSerializer):
+    book_name = serializers.CharField(source='book.name', read_only=True)
+    book_image = serializers.ImageField(source='book.image', read_only=True)
+    chapter_title = serializers.CharField(source='last_read_chapter.title', read_only=True)
+
+    class Meta:
+        model = UserBookProgress
+        fields = [
+            'id',
+            'user',
+            'book',
+            'book_name',
+            'book_image',
+            'last_read_chapter',
+            'chapter_title',
+            'status',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'updated_at', 'user']
+
+    def validate(self, data):
+        book = data.get('book') or getattr(self.instance, 'book', None)
+        chapter = data.get('last_read_chapter') or getattr(self.instance, 'last_read_chapter', None)
+
+        if chapter and book and chapter.book_id != book.id:
+            raise serializers.ValidationError({
+                "last_read_chapter": "This chapter does not belong to the selected book."
+            })
+
+        return data
+
+
+
+

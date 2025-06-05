@@ -1,3 +1,4 @@
+import analytics.apps
 from .base import *
 
 INSTALLED_APPS = [
@@ -22,7 +23,8 @@ INSTALLED_APPS += [
     'forum.apps.ForumConfig',
     'adv_search.apps.AdvSearchConfig',
     'chat.apps.ChatConfig',
-    'playlist.apps.PlaylistConfig'
+    'playlist.apps.PlaylistConfig',
+    'analytics.apps.AnalyticsConfig'
 ]
 
 # Third-Party Apps

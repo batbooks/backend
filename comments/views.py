@@ -491,3 +491,20 @@ class UserCommentListAPIView(APIView):
         page = paginator.paginate_queryset(comments, request)
         serializer = self.serializer_class(page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class UserPostListAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PostSerializer
+
+    def get(self, request):
+        posts = Post.objects.filter(user=request.user).order_by('-created')
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(posts, request)
+        serializer = self.serializer_class(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+
+
+
