@@ -122,12 +122,15 @@ class BookGetSerializer(serializers.ModelSerializer):
 
 class ChapterGetSerializer(serializers.ModelSerializer):
     book = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    book_id = serializers.SerializerMethodField()
     Author = serializers.SerializerMethodField()
     book_image = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
     next_chapter = serializers.SerializerMethodField()
     previous_chapter = serializers.SerializerMethodField()
 
+    def get_book_id(self, obj):
+        return obj.book.id
     def get_rating(self, obj):
         return obj.book.rating_avg
 
