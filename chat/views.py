@@ -39,18 +39,18 @@ class ShowMessageApiView(APIView):
             message = Message.objects.filter(from_user=to_user, to_user=request.user)
             message.update(has_been_seen=True)
 
-            ser_data = ShowMessageSerializer(messages, many=True, context={"request": request}).data
+            ser_data = ShowMessageSerializer(messages, many=True,
+                                             context={"request": request, 'user': request.user}).data
             return Response(ser_data)
 
         except self.user_model.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-
-
 class DirectMessageGetApiView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = DirectMessageSerializer
+
     def setup(self, request, *args, **kwargs):
         self.user_model = get_user_model()
         return super().setup(request, *args, **kwargs)
@@ -93,10 +93,13 @@ class GroupCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = GroupSerializer(data=request.data)
+        serializer = GroupSerializer(data=request.data, context={"user": request.user, })
         if serializer.is_valid():
             group = serializer.save()
             group.members.add(request.user)
+            user_ids = request.data.get('members', []).split(',')
+            for user_id in user_ids:
+                group.members.add(user_id)
             return Response(GroupSerializer(group).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -106,7 +109,7 @@ class GroupListView(APIView):
 
     def get(self, request):
         groups = Group.objects.filter(members=request.user)
-        serializer = GroupSerializer(groups, many=True,context={"request": request})
+        serializer = GroupSerializer(groups, many=True, context={"request": request})
         return Response(serializer.data)
 
 
@@ -140,4 +143,4 @@ class GroupMembersView(APIView):
             return Response({'error': 'شما عضو این گروه نیستید.'}, status=status.HTTP_403_FORBIDDEN)
         members = group.members.all()
         ser_data = UserReadSerializer(members, many=True)
-        return Response({"members":ser_data.data })
+        return Response({"members": ser_data.data})

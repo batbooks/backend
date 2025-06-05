@@ -11,7 +11,7 @@ class ShowMessageSerializer(serializers.ModelSerializer):
     is_you = serializers.SerializerMethodField()
 
     def get_is_you(self, obj):
-        req_user = self.context.get('request').user
+        req_user = self.context.get('user')
         return req_user.id == obj.from_user.id
 
     def get_to_user_id(self, obj):
@@ -46,7 +46,7 @@ class GroupSerializer(serializers.ModelSerializer):
         return obj.members.count()
 
     def get_is_last_you(self, obj):
-        req_user = self.context.get('request').user
+        req_user = self.context.get('user')
         last_msg = obj.messages.all().order_by('-date').first()
         if not last_msg:
             return True
