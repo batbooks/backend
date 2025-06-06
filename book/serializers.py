@@ -184,6 +184,11 @@ class UserBookProgressSerializer(serializers.ModelSerializer):
     book_name = serializers.CharField(source='book.name', read_only=True)
     book_image = serializers.ImageField(source='book.image', read_only=True)
     chapter_title = serializers.CharField(source='last_read_chapter.title', read_only=True)
+    chapter_num = serializers.IntegerField(source='last_read_chapter.chapter_num', read_only=True)
+
+    rating = serializers.SerializerMethodField()
+    author_name = serializers.CharField(source='book.Author.name', read_only=True)
+    chapter_count = serializers.SerializerMethodField()
 
     class Meta:
         model = UserBookProgress
@@ -195,10 +200,20 @@ class UserBookProgressSerializer(serializers.ModelSerializer):
             'book_image',
             'last_read_chapter',
             'chapter_title',
+            'chapter_num',
+            'rating',
+            'author_name',
+            'chapter_count',
             'status',
             'updated_at',
         ]
         read_only_fields = ['id', 'updated_at', 'user']
+
+    def get_rating(self, obj):
+        return round(obj.book.rating_avg, 2) if obj.book else 0
+
+    def get_chapter_count(self, obj):
+        return obj.book.chapters.count() if obj.book else 0
 
     def validate(self, data):
         book = data.get('book') or getattr(self.instance, 'book', None)

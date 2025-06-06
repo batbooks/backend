@@ -9,6 +9,7 @@ class CommentSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
     tag_id = serializers.SerializerMethodField()
+    chapter_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -19,7 +20,6 @@ class CommentSerializer(serializers.ModelSerializer):
         return obj.tag.id if obj.tag else 0
 
     def get_reply_count(self, obj):
-        # Use prefetched replies if available
         if hasattr(obj, 'replies') and isinstance(obj.replies, list):
             return len(obj.replies)
         return obj.replies.count()
@@ -34,6 +34,8 @@ class CommentSerializer(serializers.ModelSerializer):
             "name": obj.user.name
         }
 
+    def get_chapter_name(self, obj):
+        return obj.chapter.title if obj.chapter else None
 
 class ReplyCommentSerializer(serializers.ModelSerializer):
     tag = serializers.SlugRelatedField(slug_field='name', read_only=True)
@@ -64,6 +66,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
     chapter_name = serializers.SerializerMethodField()
+    book_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
@@ -82,6 +85,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def get_chapter_name(self, obj):
         return obj.chapter.title if obj.chapter else None
+
+    def get_book_name(self, obj):
+        return obj.book.name if obj.book else None
 
 
 class PostSerializer(serializers.ModelSerializer):
