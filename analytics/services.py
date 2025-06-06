@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import timedelta
 
 from django.utils import timezone
@@ -58,9 +59,9 @@ def get_favorites_and_blocks(book_id):
 
 def get_top_reviewers_by_words(book_id, limit=10):
     """
-    Returns top reviewers by total word count in their reviews.
+    Returns top reviewers by total word count and includes review bodies.
     """
-    return list(
+    top_reviewers_qs = (
         Review.objects.filter(book_id=book_id)
         .annotate(word_count=Length('body'))
         .values('user')
@@ -68,6 +69,26 @@ def get_top_reviewers_by_words(book_id, limit=10):
         .order_by('-total_words')[:limit]
     )
 
+    top_user_ids = [r['user'] for r in top_reviewers_qs]
+
+    review_bodies = Review.objects.filter(book_id=book_id, user__in=top_user_ids).values(
+        'user', 'body'
+    )
+
+    user_reviews_map = defaultdict(list)
+    for r in review_bodies:
+        user_reviews_map[r['user']].append(r['body'])
+
+    enriched_results = []
+    for reviewer in top_reviewers_qs:
+        user_id = reviewer['user']
+        enriched_results.append({
+            'user': user_id,
+            'total_words': reviewer['total_words'],
+            'reviews': user_reviews_map[user_id]
+        })
+
+    return enriched_results
 
 
 
@@ -87,7 +108,6 @@ def get_top_users(limit=10):
     )
 
 
-# === Engagement & Activity ===
 
 def get_most_discussed_chapter(book_id):
     """
@@ -157,13 +177,26 @@ def get_top_comments(book_id, limit=5):
 # === Aggregated Reports ===
 
 def get_book_basic_stats(book_id):
-    """
-    Combined basic stats for a book: reviews, comments, favorites, blocks.
-    """
     stats = {}
-    stats.update(get_recent_reviews_stats(book_id))
-    stats.update(get_recent_comments_stats(book_id))
+
+    stats['total_reviews'] = Review.objects.filter(book_id=book_id).count()
+    stats['total_comments'] = Comment.objects.filter(chapter__book_id=book_id).count()
+    stats['recent_reviews'] = get_recent_reviews_stats(book_id)['reviews']
+    stats['recent_comments'] = get_recent_comments_stats(book_id)['comments']
+
     stats.update(get_favorites_and_blocks(book_id))
+
+    stats['unique_reviewers'] = Review.objects.filter(book_id=book_id).values('user_id').distinct().count()
+    stats['unique_commenters'] = Comment.objects.filter(chapter__book_id=book_id).values('user_id').distinct().count()
+
+    stats['average_rating'] = (
+        Review.objects.filter(book_id=book_id).aggregate(avg=Avg('rating'))['avg'] or 0
+    )
+
+    stats['recent_review_bodies'] = list(
+        Review.objects.filter(book_id=book_id).order_by('-created').values('user_id', 'body', 'created')[:3]
+    )
+
     return stats
 
 
@@ -191,28 +224,29 @@ def get_book_engagement_stats(book_id):
 
 def get_monthly_stats_for_last_year(book_id):
     """
-    Returns monthly review and comment stats for each month of last year.
+    Returns monthly review, comment stats, most active chapter, top commenters,
+    and top reviewers by word count including review content.
     """
     now = timezone.now()
     start_year = now.year - 1
     monthly_stats = []
 
     for month in range(1, 13):
-        # Get first day and next month start for filtering
         month_start = timezone.make_aware(datetime(start_year, month, 1))
         if month == 12:
             next_month_start = timezone.make_aware(datetime(start_year + 1, 1, 1))
         else:
             next_month_start = timezone.make_aware(datetime(start_year, month + 1, 1))
 
-        # === Reviews ===
-        reviews_count = Review.objects.filter(
+
+        reviews_qs = Review.objects.filter(
             book_id=book_id,
             created__gte=month_start,
             created__lt=next_month_start
-        ).count()
+        )
+        reviews_count = reviews_qs.count()
 
-        # === Comments and avg likes ===
+
         comments_qs = Comment.objects.filter(
             chapter__book_id=book_id,
             created__gte=month_start,
@@ -220,10 +254,56 @@ def get_monthly_stats_for_last_year(book_id):
         )
         comments_count = comments_qs.count()
 
+
+        most_active_chapter_data = comments_qs.values('chapter_id').annotate(
+            count=Count('id')
+        ).order_by('-count').first()
+        most_active_chapter = most_active_chapter_data['chapter_id'] if most_active_chapter_data else None
+
+
+        top_commenters = list(
+            comments_qs.values('user_id').annotate(
+                count=Count('id')
+            ).order_by('-count')[:3]
+        )
+
+
+        top_reviewers_ids = (
+            reviews_qs
+            .annotate(word_count=Length('body'))
+            .values('user_id')
+            .annotate(total_words=Sum('word_count'))
+            .order_by('-total_words')[:3]
+        )
+
+
+        reviewer_ids = [r['user_id'] for r in top_reviewers_ids]
+        reviews_with_content = (
+            reviews_qs
+            .filter(user_id__in=reviewer_ids)
+            .values('user_id', 'body', 'created')
+            .order_by('user_id', '-created')
+        )
+
+
+        from collections import defaultdict
+        reviewer_content_map = defaultdict(list)
+        for review in reviews_with_content:
+            reviewer_content_map[review['user_id']].append(review['body'])
+
+
+        top_reviewers = []
+        for reviewer in top_reviewers_ids:
+            reviewer['reviews'] = reviewer_content_map.get(reviewer['user_id'], [])
+            top_reviewers.append(reviewer)
+
         monthly_stats.append({
             'month': month_start.strftime('%Y-%m'),
             'reviews': reviews_count,
             'comments': comments_count,
+            'most_active_chapter': most_active_chapter,
+            'top_commenters': top_commenters,
+            'top_reviewers_by_words': top_reviewers,
         })
 
     return monthly_stats
