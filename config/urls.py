@@ -7,9 +7,9 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 urlpatterns = ([
     path('admin/', admin.site.urls),
-    path('auth/', include('accounts.urls')),
+    path('auth/', include('accounts.urls',namespace='accounts')),
     path('', include('home.urls')),
-    path('book/', include('book.urls')),
+    path('book/', include('book.urls', namespace='book')),
     path('user/', include('user_info.urls')),
     path('comments/', include('comments.urls')),
     path('book-actions/', include('book_actions.urls')),
