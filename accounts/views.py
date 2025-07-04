@@ -13,7 +13,6 @@ class UserView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserReadSerializer
     def get(self, request:Request):
-
         user = request.user
         ser_data = UserReadSerializer(instance = user)
         return Response(ser_data.data, status=status.HTTP_200_OK)
