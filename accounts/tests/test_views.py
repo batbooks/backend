@@ -40,7 +40,7 @@ class TestUserViewWithFactory(APITestCase):
     def test_user_GET(self):
         request = self.client.get(reverse('accounts:user'))
         force_authenticate(request, user=self.u)
-        response = UserView.as_view()(request)
+        response = UserView.as_view()(request).render()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['email'], 'root@gmail.com')
 
