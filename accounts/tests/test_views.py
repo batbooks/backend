@@ -1,10 +1,9 @@
-from rest_framework.test import APIClient,APIRequestFactory,force_authenticate
-from django.test import TestCase
+from rest_framework.test import APIClient,APIRequestFactory,force_authenticate,APITestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from accounts.views import UserView
 
-class TestUserRegisterView(TestCase):
+class TestUserRegisterView(APITestCase):
 
     def setUp(self):
         self.client = APIClient()
@@ -20,7 +19,7 @@ class TestUserRegisterView(TestCase):
         self.assertEqual(response.status_code, 400)
 
 
-class TestUserView(TestCase):
+class TestUserView(APITestCase):
     def setUp(self):
         user = get_user_model()
         u = user.objects.create_user(email='root@gmail.com', password='12345678')
@@ -32,7 +31,7 @@ class TestUserView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestUserViewWithFactory(TestCase):
+class TestUserViewWithFactory(APITestCase):
     def setUp(self):
         user = get_user_model()
         self.u = user.objects.create_user(email='root@gmail.com', password='12345678')
