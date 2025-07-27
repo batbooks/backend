@@ -4,7 +4,7 @@ from config.sett1ng.base import *
 from django.conf import settings
 
 if deploy :
-    resend.api_key = env("RESEND_API_KEY")
+    resend_api_key = os.getenv("RESEND_API_KEY")
 
 
 def send_mail(subject, body, to_email):
