@@ -121,7 +121,16 @@ class PlaylistBookDetailView(APIView):
 
     def delete(self, request, playlist_id, book_id):
         playlist_book = self.get_object(playlist_id, book_id)
+        playlist = playlist_book.playlist  # keep reference to the playlist
         playlist_book.delete()
+
+        # Rerank remaining items
+        remaining_books = PlaylistBook.objects.filter(playlist=playlist).order_by('rank', 'id')
+        for index, item in enumerate(remaining_books, start=1):
+            if item.rank != index:  # update only if rank is out of order
+                item.rank = index
+                item.save(update_fields=['rank'])
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
