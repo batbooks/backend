@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from playlist.models import Playlist,PlaylistBook
-from playlist.serializer import PlaylistSerializer,AddBookToPlaylistSerializer,PlaylistBookSerializer
+from playlist.serializer import PlaylistSerializer,AddBookToPlaylistSerializer,PlaylistBookSerializer,PlaylistDetailSerializer
 from django.shortcuts import get_object_or_404
 from permissions import IsPlaylistOwnerOrReadOnly
 from django.contrib.auth import get_user_model
@@ -78,15 +78,13 @@ class PlaylistDetailView(APIView):
 
 class PlaylistBookListView(APIView):
     permission_classes = [AllowAny]
+
     def get(self, request, playlist_id, *args, **kwargs):
         playlist = get_object_or_404(Playlist, pk=playlist_id)
         if not playlist.is_public:
-            return Response(
-                {"error": error['error1']},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        playlist_books = PlaylistBook.objects.filter(playlist=playlist)
-        serializer = PlaylistBookSerializer(playlist_books, many=True)
+            return Response({"error": error['error1']}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = PlaylistDetailSerializer(playlist)
         return Response(serializer.data)
 
 

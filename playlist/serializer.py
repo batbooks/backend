@@ -66,3 +66,24 @@ class AddBookToPlaylistSerializer(serializers.ModelSerializer):
         playlist_book = PlaylistBook.objects.create(playlist=playlist, **validated_data)
 
         return playlist_book
+
+class PlaylistDetailSerializer(serializers.ModelSerializer):
+    tags = TagTitleSerializer(many=True, read_only=True)
+    genres = GenreTitleSerializer(many=True, read_only=True)
+    book_count = serializers.SerializerMethodField()
+    books = serializers.SerializerMethodField()
+
+    def get_book_count(self, obj):
+        return PlaylistBook.objects.filter(playlist=obj).count()
+
+    def get_books(self, obj):
+        playlist_books = PlaylistBook.objects.filter(playlist=obj).order_by('rank')
+        return PlaylistBookSerializer(playlist_books, many=True).data
+
+    class Meta:
+        model = Playlist
+        fields = [
+            'id', 'user', 'name', 'description',
+            'tags', 'genres', 'is_public',
+            'created_at', 'book_count', 'books'
+        ]
