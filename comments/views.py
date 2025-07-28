@@ -241,7 +241,7 @@ class ReviewListAPIView(APIView):
 
         rating_counts = defaultdict(int)
         for item in rating_data:
-            quantized_rating = floor(float(item['rating']))
+            quantized_rating = round(float(item['rating']))
             rating_counts[quantized_rating] += item['count']
 
         return paginator.get_paginated_response({
