@@ -14,6 +14,12 @@ def create_forum_for_book(sender, instance, created, **kwargs):
             description=instance.description,
             image=instance.image
         )
+    else:
+        Forum.objects.filter(book=instance).update(
+            name=instance.name,
+            description=instance.description,
+            image=instance.image
+        )
 
 @receiver(post_save, sender=Chapter)
 def update_book_timestamp(sender, instance, **kwargs):

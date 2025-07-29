@@ -9,7 +9,7 @@ class PlaylistFilter(filters.FilterSet):
     name = filters.CharFilter(field_name='name', lookup_expr='icontains')
     description = filters.CharFilter(field_name='description', lookup_expr='icontains')
     date = filters.DateFromToRangeFilter(field_name='created_at')
-    user = filters.CharFilter(field_name='Author__name', lookup_expr='icontains')
+    user = filters.CharFilter(field_name='user__name', lookup_expr='icontains')
     book_count = filters.RangeFilter(field_name='book_count')
     tag_or = filters.CharFilter(method='filter_by_tag_or')
     genre_or = filters.CharFilter(method='filter_by_genre_or')
