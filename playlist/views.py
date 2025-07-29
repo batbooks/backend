@@ -25,7 +25,7 @@ class PublicPlaylistListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        playlists = Playlist.objects.filter(is_public=True)
+        playlists = Playlist.objects.filter(is_public=True).select_related('user')
         serializer = PlaylistSerializer(playlists, many=True)
         return Response(serializer.data)
 
@@ -34,7 +34,7 @@ class AnotherUserPublicPlaylistsView(APIView):
 
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        playlists = Playlist.objects.filter(user=user, is_public=True)
+        playlists = Playlist.objects.filter(user=user, is_public=True).select_related('user')
         serializer = PlaylistSerializer(playlists, many=True)
         return Response(serializer.data)
 

@@ -12,6 +12,7 @@ class PlaylistSerializer(serializers.ModelSerializer):
     tags = TagTitleSerializer(many=True, read_only=True)
     genres = GenreTitleSerializer(many=True, read_only=True)
     book_count = serializers.SerializerMethodField()
+    user_name = serializers.SerializerMethodField()  # <-- Add this
 
     tag_ids = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True, write_only=True, source='tags'
@@ -23,14 +24,17 @@ class PlaylistSerializer(serializers.ModelSerializer):
     def get_book_count(self, obj):
         return PlaylistBook.objects.filter(playlist=obj).count()
 
+    def get_user_name(self, obj):
+        return obj.user.name  # Or obj.user.get_full_name() if you prefer
+
     class Meta:
         model = Playlist
         fields = [
-            'id', 'user', 'name', 'description',
+            'id', 'user_name', 'name', 'description',
             'tags', 'tag_ids', 'genres', 'genre_ids',
-            'is_public', 'created_at','book_count'
+            'is_public', 'created_at', 'book_count'
         ]
-        read_only_fields = ['id', 'created_at','user','book_count']
+        read_only_fields = ['id', 'created_at', 'user_name', 'book_count']
 
 
 
