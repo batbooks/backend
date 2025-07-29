@@ -1,25 +1,36 @@
 from collections import defaultdict
 from math import floor
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from book.models import Chapter, Book
 from forum.models import Thread
 from book_actions.models import Rating
-from comments.serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer, PostSerializer
+from comments.serializers import CommentSerializer, ReplyCommentSerializer, ReviewSerializer, PostSerializer, \
+    ReplyPostSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from permissions import ReviewPostIsOwnerOrReadOnly
 from comments.models import Comment, Review, Post
 from django.shortcuts import get_object_or_404
 from paginations import CustomPagination
-from django.db.models import Case, When, Value, IntegerField, Count
+from user_info.models import UserNotInterested
+from django.db.models import Case, When, Value, IntegerField, Count, Prefetch
 from book_actions.serializers import RatingBookSerializer
+from django.db.models import Case, When, Value, IntegerField, Count
 
 
-# Create your views here.
+def exclude_not_interested_users(queryset, user):
+    if user.is_authenticated:
+        not_interested_user_ids = UserNotInterested.objects.filter(
+            user=user
+        ).values_list('not_interested_id', flat=True)
+        return queryset.exclude(user__id__in=not_interested_user_ids)
+    return queryset
+
+
 class CommentCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = CommentSerializer
 
     def post(self, request):
         ser_data = CommentSerializer(data=request.data)
@@ -75,6 +86,7 @@ class CommentDisLikeAPIView(APIView):
 
 class CommentReplyAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = ReplyCommentSerializer
 
     def post(self, request, comment_id):
 
@@ -99,12 +111,24 @@ class CommentReplyAPIView(APIView):
 
 
 class CommentChapterAPIView(APIView):
+    serializer_class = CommentSerializer
+
     def get(self, request, chapter_id):
         try:
             chapter = Chapter.objects.prefetch_related(
-                'ch_comments_comment',
-                'ch_comments_comment__like',
-                'ch_comments_comment__dislike'
+                Prefetch(
+                    'ch_comments_comment',
+                    queryset=Comment.objects.filter(reply__isnull=True)
+                    .select_related('user', 'user__user_info', 'tag')
+                    .prefetch_related(
+                        'like', 'dislike',
+                        Prefetch(
+                            'replies',
+                            queryset=Comment.objects.select_related('user', 'user__user_info')
+                            .prefetch_related('like', 'dislike')
+                        )
+                    )
+                )
             ).get(pk=chapter_id)
         except Chapter.DoesNotExist:
             return Response(
@@ -113,6 +137,7 @@ class CommentChapterAPIView(APIView):
             )
 
         comments = chapter.ch_comments_comment.filter(reply__isnull=True)
+        comments = exclude_not_interested_users(comments, request.user)
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
@@ -120,6 +145,8 @@ class CommentChapterAPIView(APIView):
 
 
 class CommentGetAllReplyAPIView(APIView):
+    serializer_class = CommentSerializer
+
     def get(self, request, comment_id):
         try:
             comment = Comment.objects.prefetch_related(
@@ -133,7 +160,7 @@ class CommentGetAllReplyAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        comments = comment.replies.all().order_by('created')
+        comments = exclude_not_interested_users(comment.replies.all(), request.user).order_by('created')
         paginator = CustomPagination()
         page = paginator.paginate_queryset(comments, request)
         ser_data = CommentSerializer(page, many=True)
@@ -142,6 +169,7 @@ class CommentGetAllReplyAPIView(APIView):
 
 class ReviewCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = ReviewSerializer
 
     def post(self, request, book_id):
         try:
@@ -169,6 +197,7 @@ class ReviewCreateAPIView(APIView):
 
 class ReviewListAPIView(APIView):
     permission_classes = (AllowAny,)
+    serializer_class = ReviewSerializer
 
     def get(self, request, book_id):
         try:
@@ -179,9 +208,17 @@ class ReviewListAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        reviews = Review.objects.filter(book=book)
+        reviews = Review.objects.filter(book=book) \
+            .select_related('user', 'user__user_info', 'chapter') \
+            .prefetch_related('like', 'dislike')
 
         if request.user.is_authenticated:
+            excluded_users = UserNotInterested.objects.filter(
+                user=request.user
+            ).values_list('not_interested_id', flat=True)
+
+            reviews = reviews.exclude(user_id__in=excluded_users)
+
             reviews = reviews.annotate(
                 priority=Case(
                     When(user=request.user, then=Value(0)),
@@ -203,9 +240,8 @@ class ReviewListAPIView(APIView):
         )
 
         rating_counts = defaultdict(int)
-
         for item in rating_data:
-            quantized_rating = floor(float(item['rating']))
+            quantized_rating = round(float(item['rating']))
             rating_counts[quantized_rating] += item['count']
 
         return paginator.get_paginated_response({
@@ -216,6 +252,7 @@ class ReviewListAPIView(APIView):
 
 class ReviewUpdateDeleteAPIView(APIView):
     permission_classes = (IsAuthenticated, ReviewPostIsOwnerOrReadOnly)
+    serializer_class = ReviewSerializer
 
     def put(self, request, book_id):
         try:
@@ -310,16 +347,18 @@ class ReviewDisLikeAPIView(APIView):
 
 
 class PostGetAPIView(APIView):
+    serializer_class = PostSerializer
 
     def get(self, request, thread_id):
         thread = get_object_or_404(Thread, id=thread_id)
-        posts = thread.posts.all()
+        posts = exclude_not_interested_users(thread.posts.all(), request.user)
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 
 
 class PostCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = PostSerializer
 
     def post(self, request, thread_id):
         thread = get_object_or_404(Thread, id=thread_id)
@@ -337,6 +376,7 @@ class PostCreateAPIView(APIView):
 
 class PostUpdateAPIView(APIView):
     permission_classes = (IsAuthenticated, ReviewPostIsOwnerOrReadOnly)
+    serializer_class = PostSerializer
 
     def get_object(self, pk):
         return get_object_or_404(Post, pk=pk)
@@ -416,3 +456,55 @@ class PostDisLikeAPIView(APIView):
 
         post.dislike.add(user)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PostReplyAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ReplyPostSerializer
+    def post(self, request, post_id):
+        ser_data  = self.serializer_class(data=request.data)
+        psot_replying = get_object_or_404(Post, id=post_id)
+        if ser_data.is_valid():
+            ser_data.save(reply=psot_replying,user=request.user)
+            return Response(ser_data.data, status=status.HTTP_201_CREATED)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserReviewListAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ReviewSerializer
+
+    def get(self, request):
+        reviews = Review.objects.filter(user=request.user).order_by('-created')
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(reviews, request)
+        serializer = self.serializer_class(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class UserCommentListAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CommentSerializer
+
+    def get(self, request):
+        comments = Comment.objects.filter(user=request.user).order_by('-created')
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(comments, request)
+        serializer = self.serializer_class(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class UserPostListAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PostSerializer
+
+    def get(self, request):
+        posts = Post.objects.filter(user=request.user).order_by('-created')
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(posts, request)
+        serializer = self.serializer_class(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+
+
+

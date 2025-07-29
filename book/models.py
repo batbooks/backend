@@ -4,9 +4,6 @@ from tag.models import Tag,Genre
 from django.db.models import Avg
 
 
-
-# Create your models here.
-
 class Book(models.Model):
 
     STATUS_ONGOING = 'O'
@@ -78,6 +75,37 @@ class Chapter(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+
+class UserBookProgress(models.Model):
+    STATUS_READING = 'reading'
+    STATUS_COMPLETED = 'completed'
+    STATUS_DROPPED = 'dropped'
+    STATUS_PLAN_TO_READ = 'plan_to_read'
+    STATUS_ON_HOLD = 'on_hold'
+
+    STATUS_CHOICES = [
+        (STATUS_READING, 'Reading'),
+        (STATUS_COMPLETED, 'Completed'),
+        (STATUS_DROPPED, 'Dropped'),
+        (STATUS_PLAN_TO_READ, 'Plan to Read'),
+        (STATUS_ON_HOLD, 'On Hold'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='book_progress')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='user_progress')
+    last_read_chapter = models.ForeignKey(Chapter, on_delete=models.SET_NULL, null=True, blank=True, related_name='last_read_by_users')
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_PLAN_TO_READ)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'book')
+
+    def __str__(self):
+        return f"{self.user.name} - {self.book.name} ({self.status})"
+
 
 
 

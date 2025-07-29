@@ -24,3 +24,14 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ['id', 'title','description']
+
+
+class TagTitleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['title']
+
+class GenreTitleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ['title']

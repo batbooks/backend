@@ -2,8 +2,6 @@ from django.db import models
 from accounts.models import User
 from  book.models import Book
 
-# Create your models here.
-
 class Forum(models.Model):
     book = models.OneToOneField(Book, on_delete=models.CASCADE, related_name='forum')
     name = models.CharField(max_length=256)
@@ -30,6 +28,7 @@ class Thread(models.Model):
 
     forum = models.ForeignKey(Forum, related_name='threads', on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
+    text = models.TextField(default='subject of thread')
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='threads')
     status = models.CharField(choices=STATUS_CHOICE, max_length=1)

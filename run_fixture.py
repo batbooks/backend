@@ -8,7 +8,7 @@ from book_actions.models import Rating
 from book.models import Book
 
 fixtures = ['user', 'user_info', 'book', 'persian_chapters', 'sample1', 'sample2', 'sample3', 'sample4', 'sample5',
-            'sample6', 'sample7', 'reviews', 'comments', 'book_actions', 'tag']
+            'sample6', 'sample7', 'reviews', 'comments', 'tag','forum_post']
 for fixture in fixtures:
     print(f'{fixture}...')
     call_command('loaddata', fixture)
@@ -23,3 +23,10 @@ def update_all_book_ratings():
 
 
 update_all_book_ratings()
+
+for book in Book.objects.all():
+    if book.rating_sum is None:
+        book.rating_sum = 0
+    if book.rating_count is None:
+        book.rating_count = 0
+    book.save()

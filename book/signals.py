@@ -1,5 +1,3 @@
-# signals.py
-
 from django.db.models.signals import post_save , post_migrate
 from django.dispatch import receiver
 from book.models import Book,Chapter
@@ -12,6 +10,12 @@ def create_forum_for_book(sender, instance, created, **kwargs):
     if created:
         Forum.objects.create(
             book=instance,
+            name=instance.name,
+            description=instance.description,
+            image=instance.image
+        )
+    else:
+        Forum.objects.filter(book=instance).update(
             name=instance.name,
             description=instance.description,
             image=instance.image

@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,9 +11,14 @@ from user_info.models import UserInfo
 from rest_framework import status
 
 
+class HomeView(APIView):
+    def get(self, request):
+        return Response({"status": "ok", }, status.HTTP_200_OK)
+
+
 class HomeCategoryView(APIView):
     def get(self, request):
-        Genre_list = Genre.objects.annotate(book_count=Count('books')).order_by('-book_count')[:8]
+        Genre_list = Genre.objects.annotate(book_count=Count('books'))[:8]
         ser_data = GenreSerializer(Genre_list, many=True)
         return Response(ser_data.data, status=status.HTTP_200_OK)
 

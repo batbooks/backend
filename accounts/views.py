@@ -4,20 +4,21 @@ from rest_framework.response import Response
 from .serializers import UserReadSerializer,ResetPasswordSerializer,UserRegisterSerializer
 from .models import User, OTP
 from rest_framework import status
-from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 import random
-
+from config.mail_utils import send_mail
 class UserView(APIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserReadSerializer
     def get(self, request:Request):
 
         user = request.user
         ser_data = UserReadSerializer(instance = user)
         return Response(ser_data.data, status=status.HTTP_200_OK)
 class RegisterView(APIView):
+    serializer_class = UserRegisterSerializer
     def post(self, request):
         ser_data = UserRegisterSerializer(data=request.data)
         ser_data.validate(request.data)
@@ -29,9 +30,7 @@ class RegisterView(APIView):
             send_mail(
                 'کد تأیید ثبت ‌نام',
                 f' کد تأیید شما: {otp_code} ',
-                settings.EMAIL_HOST_USER,
                 [request.data['email']],
-                fail_silently=False,
             )
             return Response({'message': 'رمز شما با موفقیت فرستاده شد.', }, status=status.HTTP_200_OK)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -53,6 +52,7 @@ class VerifyOTPView(APIView):
 
 
 class SendOTPResetView(APIView):
+
     def post(self, request):
         email = request.data.get('email')
         if not email:
@@ -81,6 +81,7 @@ class SendOTPResetView(APIView):
 
 
 class VerifyOTPAndResetPasswordView(APIView):
+    serializer_class = ResetPasswordSerializer
     def post(self, request):
         ser_data = ResetPasswordSerializer(data=request.data)
         ser_data.validate(request.data)

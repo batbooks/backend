@@ -13,4 +13,7 @@ urlpatterns = [
      path('user/<int:id>/', views.UserBookAPIView.as_view(), name='user-detail'),
      path('my/', views.MyBookAPIView.as_view(), name='user-detail'),
      path('uploadfile/', views.PDFUploadAPIView.as_view(), name='upload_pdf'),
+
+     path('user-book-progress/', views.UserBookProgressListCreateView.as_view(), name='user-book-progress-list'),
+     path('user-book-progress/<int:pk>/',  views.UserBookProgressDetailView.as_view(), name='user-book-progress-detail'),
 ]
