@@ -177,6 +177,7 @@ class UserBookAPIView(generics.ListAPIView):
 class MyBookAPIView(generics.ListAPIView):
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None  # disables pagination
 
     def get_queryset(self):
         user = self.request.user
