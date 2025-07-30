@@ -77,12 +77,15 @@ class PlaylistDetailView(APIView):
 
 
 class PlaylistBookListView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # Can still allow any because we manually check
 
     def get(self, request, playlist_id, *args, **kwargs):
         playlist = get_object_or_404(Playlist, pk=playlist_id)
+
+        # If playlist is private and user is not authenticated OR not the owner
         if not playlist.is_public:
-            return Response({"error": error['error1']}, status=status.HTTP_403_FORBIDDEN)
+            if not request.user.is_authenticated or request.user != playlist.user:
+                return Response({"error": error['error1']}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = PlaylistDetailSerializer(playlist)
         return Response(serializer.data)
