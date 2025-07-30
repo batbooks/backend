@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import UserInfo, UserFollow, UserNotInterested
+from playlist.models import Playlist
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -10,6 +11,11 @@ class UserInfoSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField()
     joined_date = serializers.SerializerMethodField()
     book_count = serializers.SerializerMethodField()
+    playlist_count = serializers.SerializerMethodField()  # 👈 New field
+
+    class Meta:
+        model = UserInfo
+        fields = '__all__'
 
     def get_user_id(self, obj):
         return obj.user.id
@@ -17,21 +23,20 @@ class UserInfoSerializer(serializers.ModelSerializer):
     def get_book_count(self, obj):
         return obj.user.books.count()
 
-    class Meta:
-        model = UserInfo
-        fields = '__all__'
-
     def get_favorite_count(self, obj):
         return obj.user.favorite.book.count()
 
     def get_follower_count(self, obj):
+        return obj.user.follower.count()
+
+    def get_following_count(self, obj):
         return obj.user.following.count()
 
     def get_joined_date(self, obj):
         return obj.user.joined_date
 
-    def get_following_count(self, obj):
-        return obj.user.follower.count()
+    def get_playlist_count(self, obj):
+        return obj.user.playlists.filter(is_public=True).count() # 👈 Add this
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -39,7 +44,6 @@ class UserInfoSerializer(serializers.ModelSerializer):
         for f in hide_field:
             data.pop(f, None)
         return data
-
 
 class FollowSerializer(serializers.ModelSerializer):
     follower = serializers.SlugRelatedField(slug_field='name', read_only=True)

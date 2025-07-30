@@ -4,9 +4,14 @@ from user_info.serializers import UserInfoSerializer
 
 class UserReadSerializer(serializers.ModelSerializer):
     user_info = serializers.SerializerMethodField()
+    playlist_count = serializers.SerializerMethodField()
+
+    def get_playlist_count(self, obj):
+        return obj.playlists.count()
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'name','user_info','joined_date']
+        fields = ['id', 'email', 'name', 'user_info', 'joined_date', 'playlist_count']
 
     def get_user_info(self, obj):
         user_inf = obj.user_info
