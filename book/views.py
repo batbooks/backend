@@ -194,7 +194,7 @@ class PDFUploadAPIView(APIView):
         title = request.data.get('title', None)
 
         if not pdf_file or not book_id:
-            return Response({'error': 'فایل pdf  یا کتاب مورد نظر موجود نیست.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'فایل PDF یا کتاب مورد نظر موجود نیست.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             book = Book.objects.get(pk=book_id)
@@ -202,6 +202,7 @@ class PDFUploadAPIView(APIView):
         except Book.DoesNotExist:
             return Response({'error': 'کتاب پیدا نشد'}, status=status.HTTP_404_NOT_FOUND)
 
+        # باز کردن PDF با PyMuPDF
         doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
         images_to_save = []
         content = ""
@@ -209,15 +210,30 @@ class PDFUploadAPIView(APIView):
         for page_num, page in enumerate(doc, start=1):
             page_dict = page.get_text("dict")
             page_content = ""
+            paragraph_buffer = ""
 
             for block in page_dict["blocks"]:
-                if block["type"] == 0:
+                if block["type"] == 0:  # متن
                     for line in block["lines"]:
-                        for span in line["spans"]:
-                            page_content += span["text"]
-                    page_content += "\n"
+                        line_text = "".join(span["text"] for span in line["spans"]).strip()
+                        if not line_text:
+                            # خط خالی => پایان پاراگراف
+                            if paragraph_buffer.strip():
+                                page_content += f'<p class="ql-align-right" dir="rtl">{paragraph_buffer.strip()}</p>'
+                                paragraph_buffer = ""
+                        else:
+                            # ادامه پاراگراف
+                            if paragraph_buffer:
+                                paragraph_buffer += " " + line_text
+                            else:
+                                paragraph_buffer = line_text
 
-                elif block["type"] == 1:
+                    # اگر بعد از بلاک هنوز متن مانده، پاراگراف بساز
+                    if paragraph_buffer.strip():
+                        page_content += f'<p class="ql-align-right" dir="rtl">{paragraph_buffer.strip()}</p>'
+                        paragraph_buffer = ""
+
+                elif block["type"] == 1:  # تصویر
                     try:
                         images = page.get_images(full=True)
                         for img_index, img in enumerate(images):
@@ -235,8 +251,7 @@ class PDFUploadAPIView(APIView):
                                 f.write(image_bytes)
 
                             image_url = request.build_absolute_uri(settings.MEDIA_URL + image_rel_path)
-
-                            page_content += f'<img src="{image_url}" alt="Image on page {page_num}">\n'
+                            page_content += f'<p class="ql-align-center"><img src="{image_url}" alt="Image on page {page_num}"></p>'
 
                             images_to_save.append({
                                 "image": image_rel_path,
@@ -245,7 +260,7 @@ class PDFUploadAPIView(APIView):
                             break
 
                     except Exception as e:
-                        print(f"در هنگام استخراج عکس به مشکل برخورد کردیم.: {e}")
+                        print(f"خطا در استخراج تصویر: {e}")
                         continue
 
             content += page_content + "\n"
@@ -259,10 +274,9 @@ class PDFUploadAPIView(APIView):
         )
 
         return Response({
-            'message': 'pdf  با موفقیت اپلود شد.',
+            'message': 'PDF با موفقیت آپلود شد.',
             'chapter_id': chapter.id
         }, status=status.HTTP_201_CREATED)
-
 
 
 
