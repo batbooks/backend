@@ -60,15 +60,22 @@ class BookSerializer(serializers.ModelSerializer):
 class BookAllGetSerializer(serializers.ModelSerializer):
     Author = serializers.SlugRelatedField(slug_field='name', read_only=True)
     rating = serializers.SerializerMethodField()
+    chapter_count = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
         rating = obj.rating_avg
 
         return str(rating) if rating else '0'
 
+    def get_chapter_count(self, obj):
+        return obj.chapters.count()
+
     class Meta:
         model = Book
-        fields = ['id', 'name', 'description', 'created_at', 'updated_at', 'rating', 'status', 'Author', 'image']
+        fields = [
+            'id', 'name', 'description', 'created_at', 'updated_at',
+            'rating', 'status', 'Author', 'image', 'chapter_count'
+        ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'Author']
 
 
